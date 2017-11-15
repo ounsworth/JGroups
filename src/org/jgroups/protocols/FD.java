@@ -307,7 +307,7 @@ public class FD extends Protocol {
                 hdr.mbrs=new ArrayList<>();
                 hdr.mbrs.add(evt.getArg());
                 hdr.from=local_addr;
-                Message unsuspect_msg=new Message().setFlag(Message.Flag.INTERNAL).putHeader(id, hdr);
+                Message unsuspect_msg=new BytesMessage().setFlag(Message.Flag.INTERNAL).putHeader(id, hdr);
                 log.trace("%s: broadcasting UNSUSPECT message (mbrs=%s)", local_addr, hdr.mbrs);
                 down_prot.down(unsuspect_msg);
                 break;
@@ -321,7 +321,7 @@ public class FD extends Protocol {
 
 
     protected void sendHeartbeatResponse(Address dest) {
-        Message hb_ack=new Message(dest).setFlag(Message.Flag.INTERNAL);
+        Message hb_ack=new BytesMessage(dest).setFlag(Message.Flag.INTERNAL);
         FdHeader tmp_hdr=new FdHeader(FdHeader.HEARTBEAT_ACK);
         tmp_hdr.from=local_addr;
         hb_ack.putHeader(this.id, tmp_hdr);
@@ -456,7 +456,7 @@ public class FD extends Protocol {
             }
 
             // 1. send heartbeat request
-            Message hb_req=new Message(dest).setFlag(Message.Flag.INTERNAL).putHeader(id, new FdHeader(FdHeader.HEARTBEAT));
+            Message hb_req=new BytesMessage(dest).setFlag(Message.Flag.INTERNAL).putHeader(id, new FdHeader(FdHeader.HEARTBEAT));
             log.trace("%s: sending are-you-alive msg to %s", local_addr, dest);
             down_prot.down(hb_req);
             num_heartbeats++;
@@ -611,7 +611,7 @@ public class FD extends Protocol {
                 hdr.mbrs=new ArrayList<>(suspected_members);
                 hdr.from=local_addr;
             }
-            Message suspect_msg=new Message().setFlag(Message.Flag.INTERNAL).putHeader(id, hdr);
+            Message suspect_msg=new BytesMessage().setFlag(Message.Flag.INTERNAL).putHeader(id, hdr);
             log.trace("%s: broadcasting SUSPECT message (suspects=%s)", local_addr, suspected_members);
             down_prot.down(suspect_msg);
         }

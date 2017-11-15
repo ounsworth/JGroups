@@ -28,8 +28,8 @@ public class StreamableTest {
     public static void testStreamable() throws Exception {
         byte[] buf={'b', 'e', 'l', 'a', 'b', 'a', 'n'};
         byte[] tmp;
-        Message m1=new Message(null, buf, 0, 4);
-        Message m2=new Message(null, buf, 4, 3);
+        Message m1=new BytesMessage(null, buf, 0, 4);
+        Message m2=new BytesMessage(null, buf, 4, 3);
 
 
         ByteArrayOutputStream output=new ByteArrayOutputStream();
@@ -43,7 +43,7 @@ public class StreamableTest {
         DataInputStream in=new DataInputStream(input);
         Message m3, m4;
 
-        m3=new Message(false);
+        m3=new BytesMessage(false);
         m3.readFrom(in);
 
         Assert.assertEquals(4, m3.getLength());
@@ -64,7 +64,7 @@ public class StreamableTest {
         input=new ByteArrayInputStream(tmp);
         in=new DataInputStream(input);
 
-        m4=new Message();
+        m4=new BytesMessage();
         m4.readFrom(in);
 
 
@@ -79,41 +79,41 @@ public class StreamableTest {
 
     public static void testStreamable2() throws Exception {
         byte[] buf={'b', 'e', 'l', 'a', 'b', 'a', 'n'};
-        Message msg=new Message(null, buf, 0, 4);
+        Message msg=new BytesMessage(null, buf, 0, 4);
         stream(msg);
     }
 
 
     public static void testStreamable3() throws Exception {
         byte[] buf={'b', 'e', 'l', 'a', 'b', 'a', 'n'};
-        Message msg=new Message(null, buf, 4, 3);
+        Message msg=new BytesMessage(null, buf, 4, 3);
         stream(msg);
     }
 
 
     public static void testNullBuffer() throws Exception {
-        Message msg=new Message();
+        Message msg=new BytesMessage();
         stream(msg);
     }
 
 
 
     public static void testNonNullBuffer() throws Exception {
-        Message msg=new Message(null, "Hello world".getBytes());
+        Message msg=new BytesMessage(null, "Hello world".getBytes());
         stream(msg);
     }
 
 
 
     public static void testNonNullAddress() throws Exception {
-        stream(new Message(null, "Hello world".getBytes()).src(UUID.randomUUID()));
+        stream(new BytesMessage(null, "Hello world".getBytes()).src(UUID.randomUUID()));
     }
 
 
     public static void testHeaders() throws Exception {
         Address dest=UUID.randomUUID();
         Address src=UUID.randomUUID();
-        Message msg=new Message(dest, "Hello world".getBytes()).src(src);
+        Message msg=new BytesMessage(dest, "Hello world".getBytes()).src(src);
         PingHeader hdr=new PingHeader(PingHeader.GET_MBRS_REQ);
         msg.putHeader(PING_ID, hdr);
         TpHeader udp_hdr=new TpHeader("bla");
@@ -180,7 +180,7 @@ public class StreamableTest {
         ByteArrayInputStream input=new ByteArrayInputStream(tmp);
         DataInputStream in=new DataInputStream(input);
 
-        msg2=new Message();
+        msg2=new BytesMessage();
         msg2.readFrom(in);
 
         Assert.assertEquals(length, msg2.getLength());

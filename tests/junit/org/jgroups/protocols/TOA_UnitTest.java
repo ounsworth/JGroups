@@ -6,11 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Global;
-import org.jgroups.Message;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.conf.ClassConfigurator;
 import org.jgroups.protocols.tom.DeliveryManagerImpl;
 import org.jgroups.protocols.tom.MessageID;
@@ -210,7 +206,7 @@ public class TOA_UnitTest {
    }
 
    private Message newMessage(ToaHeader header, Address from, Address to) {
-      return new Message(to).setSrc(from).putHeader(TOA_ID, header);
+      return new BytesMessage(to).setSrc(from).putHeader(TOA_ID, header);
    }
 
    private static class MockUpProtocol extends Protocol {

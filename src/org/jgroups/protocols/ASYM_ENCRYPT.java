@@ -428,7 +428,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                 if(!targets.isEmpty()) {  // https://issues.jboss.org/browse/JGRP-2203
                     key_requesters=new ResponseCollectorTask<Boolean>(targets)
                       .setPeriodicTask(c -> {
-                          Message msg=new Message(null).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+                          Message msg=new BytesMessage(null).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
                             .putHeader(id, new EncryptHeader(EncryptHeader.NEW_KEYSERVER, sym_version));
                           down_prot.down(msg);
                       })
@@ -487,7 +487,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
     protected void sendSecretKey(Key secret_key, PublicKey public_key, Address source) throws Exception {
         byte[] encryptedKey=encryptSecretKey(secret_key, public_key);
-        Message newMsg=new Message(source, encryptedKey).src(local_addr)
+        Message newMsg=new BytesMessage(source, encryptedKey).src(local_addr)
           .putHeader(this.id, new EncryptHeader(EncryptHeader.SECRET_KEY_RSP, symVersion()));
         log.debug("%s: sending secret key response to %s (version: %s)", local_addr, source, Util.byteArrayToHexString(sym_version));
         down_prot.down(newMsg);
@@ -524,13 +524,13 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
         log.debug("%s: asking %s for the secret key (my version: %s)",
                   local_addr, key_server, Util.byteArrayToHexString(sym_version));
-        Message newMsg=new Message(key_server, key_pair.getPublic().getEncoded()).src(local_addr)
+        Message newMsg=new BytesMessage(key_server, key_pair.getPublic().getEncoded()).src(local_addr)
           .putHeader(this.id,new EncryptHeader(EncryptHeader.SECRET_KEY_REQ, null));
         down_prot.down(newMsg);
     }
 
     protected void sendNewKeyserverAck(Address dest) {
-        Message msg=new Message(dest).putHeader(id, new EncryptHeader(EncryptHeader.NEW_KEYSERVER_ACK, null));
+        Message msg=new BytesMessage(dest).putHeader(id, new EncryptHeader(EncryptHeader.NEW_KEYSERVER_ACK, null));
         down_prot.down(msg);
     }
 

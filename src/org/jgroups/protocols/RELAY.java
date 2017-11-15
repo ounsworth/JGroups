@@ -320,7 +320,7 @@ public class RELAY extends Protocol {
 
     /** Forwards the message across the TCP link to the other local cluster */
     protected void forward(byte[] buffer, int offset, int length) {
-        Message msg=new Message(null, buffer, offset, length).putHeader(id, new RelayHeader(RelayHeader.Type.FORWARD));
+        Message msg=new BytesMessage(null, buffer, offset, length).putHeader(id, new RelayHeader(RelayHeader.Type.FORWARD));
         if(bridge != null) {
             try {
                 bridge.send(msg);
@@ -346,7 +346,7 @@ public class RELAY extends Protocol {
                     return;
                 }
 
-                tmp=new Message(coord, buf, 0, buf.length) // reusing tmp is OK here ...
+                tmp=new BytesMessage(coord, buf, 0, buf.length) // reusing tmp is OK here ...
                   .putHeader(id, new RelayHeader(RelayHeader.Type.FORWARD));
                 down_prot.down(tmp);
             }
@@ -362,7 +362,7 @@ public class RELAY extends Protocol {
         try {
             if(bridge != null && bridge.isConnected()) {
                 byte[] buf=Util.streamableToByteBuffer(view_data);
-                final Message msg=new Message(null, buf).putHeader(id, RelayHeader.create(RelayHeader.Type.VIEW));
+                final Message msg=new BytesMessage(null, buf).putHeader(id, RelayHeader.create(RelayHeader.Type.VIEW));
                 if(use_seperate_thread) {
                     timer.execute(() -> {
                         try {
@@ -434,7 +434,7 @@ public class RELAY extends Protocol {
 
     protected void sendOnLocalCluster(byte[] buf, int offset, int length) {
         try {
-            Message msg=Util.streamableFromByteBuffer(Message.class, buf, offset, length);
+            Message msg=Util.streamableFromByteBuffer(BytesMessage.class, buf, offset, length);
             Address sender=msg.getSrc();
             Address dest=msg.getDest();
 
@@ -489,7 +489,7 @@ public class RELAY extends Protocol {
 
     protected void sendViewOnLocalCluster(final List<Address> destinations, final byte[] buffer) {
         for(Address dest: destinations) {
-            Message view_msg=new Message(dest, buffer).putHeader(id, RelayHeader.create(RelayHeader.Type.VIEW));
+            Message view_msg=new BytesMessage(dest, buffer).putHeader(id, RelayHeader.create(RelayHeader.Type.VIEW));
             down_prot.down(view_msg);
         }
     }
@@ -592,7 +592,7 @@ public class RELAY extends Protocol {
         public void run() {
             if(bridge == null || !bridge.isConnected() || remote_view != null)
                 return;
-            Message msg=new Message().putHeader(id, RelayHeader.create(RELAY.RelayHeader.Type.BROADCAST_VIEW));
+            Message msg=new BytesMessage().putHeader(id, RelayHeader.create(RELAY.RelayHeader.Type.BROADCAST_VIEW));
             try {
                 bridge.send(msg);
             }

@@ -1,5 +1,6 @@
 package org.jgroups.protocols;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.stack.Protocol;
@@ -103,7 +104,7 @@ public class RATE_LIMITER_Test {
 
         public void run() {
             for(;;) {
-                Message msg=new Message(false);
+                Message msg=new BytesMessage(false);
                 msg.setBuffer(buffer);
                 limiter.down(msg);
                 if(System.nanoTime() > target_time)

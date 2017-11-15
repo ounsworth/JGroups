@@ -72,9 +72,9 @@ public abstract class EncryptTest {
 
     /** Same as above, but all message payloads are null */
     public void testRegularMessageReceptionWithNullMessages() throws Exception {
-        a.send(new Message(null));
-        b.send(new Message(null));
-        c.send(new Message(null));
+        a.send(new BytesMessage(null));
+        b.send(new BytesMessage(null));
+        c.send(new BytesMessage(null));
         for(int i=0; i < 10; i++) {
             if(ra.size() == 3 && rb.size() == 3 && rc.size() == 3)
                 break;
@@ -88,9 +88,9 @@ public abstract class EncryptTest {
 
     /** Same as above, but all message payloads are empty (0-length String) */
     public void testRegularMessageReceptionWithEmptyMessages() throws Exception {
-        a.send(new Message(null).setBuffer(new byte[0]));
-        b.send(new Message(null).setBuffer(new byte[0]));
-        c.send(new Message(null).setBuffer(new byte[0]));
+        a.send(new BytesMessage(null).setBuffer(new byte[0]));
+        b.send(new BytesMessage(null).setBuffer(new byte[0]));
+        c.send(new BytesMessage(null).setBuffer(new byte[0]));
         for(int i=0; i < 10; i++) {
             if(ra.size() == 3 && rb.size() == 3 && rc.size() == 3)
                 break;
@@ -176,7 +176,7 @@ public abstract class EncryptTest {
 
         short encrypt_id=ClassConfigurator.getProtocolId(SYM_ENCRYPT.class);
         EncryptHeader hdr=new EncryptHeader(EncryptHeader.ENCRYPT, encrypt.symVersion());
-        Message msg=new Message(null).putHeader(encrypt_id, hdr);
+        Message msg=new BytesMessage(null).putHeader(encrypt_id, hdr);
 
         byte[] buf="hello from rogue".getBytes();
         byte[] encrypted_buf=encrypt.code(buf, 0, buf.length, false);
@@ -294,7 +294,7 @@ public abstract class EncryptTest {
         View rogue_view=View.create(rogue_addr, a.getView().getViewId().getId()+1,
                                     rogue_addr, a.getAddress(), b.getAddress(), c.getAddress());
 
-        Message view_change_msg=new Message().putHeader(GMS_ID, new GMS.GmsHeader(GMS.GmsHeader.VIEW))
+        Message view_change_msg=new BytesMessage().putHeader(GMS_ID, new GMS.GmsHeader(GMS.GmsHeader.VIEW))
           .setBuffer(marshal(rogue_view));
         rogue.send(view_change_msg);
 

@@ -129,7 +129,7 @@ public class RequestCorrelator {
         Header hdr=opts.hasExclusionList()? new MultiDestinationHeader(Header.REQ, 0, this.corr_id, opts.exclusionList())
           : new Header(Header.REQ, 0, this.corr_id);
 
-        Message msg=new Message(null, data).putHeader(this.corr_id, hdr)
+        Message msg=new BytesMessage(null, data).putHeader(this.corr_id, hdr)
           .setFlag(opts.flags()).setTransientFlag(opts.transientFlags());
 
         if(req != null) { // sync
@@ -178,7 +178,7 @@ public class RequestCorrelator {
         }
 
         Header hdr=new Header(Header.REQ, 0, this.corr_id);
-        Message msg=new Message(dest, data).putHeader(this.corr_id, hdr)
+        Message msg=new BytesMessage(dest, data).putHeader(this.corr_id, hdr)
           .setFlag(opts.flags()).setTransientFlag(opts.transientFlags());
 
         if(req != null) { // sync RPC

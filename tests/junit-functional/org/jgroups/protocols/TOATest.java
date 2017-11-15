@@ -413,7 +413,7 @@ public class TOATest {
         }
 
         public void sendAnycastMessage(AnycastAddress anycastAddress, String data) throws Exception {
-            Message msg = new Message();
+            Message msg = new BytesMessage();
             msg.setSrc(channel.getAddress());
             msg.setDest(anycastAddress);
             msg.setFlag(Message.Flag.NO_TOTAL_ORDER);
@@ -422,7 +422,7 @@ public class TOATest {
         }
 
         public void sendTotalOrderAnycastMessage(AnycastAddress anycastAddress, String data) throws Exception {
-            Message msg = new Message();
+            Message msg = new BytesMessage();
             msg.setSrc(channel.getAddress());
             msg.setDest(anycastAddress);
             msg.setObject(data);

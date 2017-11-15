@@ -1,9 +1,6 @@
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.ManagedOperation;
@@ -175,7 +172,7 @@ public class FRAG3 extends Protocol {
         for(Message msg: batch) {
             Frag3Header hdr=msg.getHeader(this.id);
             if(hdr != null) { // needs to be defragmented
-                Message assembled_msg=unfragment(msg,hdr);
+                Message assembled_msg=unfragment(msg, hdr);
                 if(assembled_msg != null) {
                     // the reassembled msg has to be add in the right place (https://issues.jboss.org/browse/JGRP-1648),
                     // and canot be added to the tail of the batch !
@@ -277,7 +274,7 @@ public class FRAG3 extends Protocol {
      */
     protected Message unfragment(Message msg, Frag3Header hdr) {
         Address   sender=msg.getSrc();
-        Message   assembled_msg=null;
+        Message assembled_msg=null;
 
         ConcurrentMap<Integer,FragEntry> frag_table=fragment_list.get(sender);
         if(frag_table == null) {
@@ -317,7 +314,7 @@ public class FRAG3 extends Protocol {
         protected final Lock            lock=new ReentrantLock();
 
         // the message to be passed up; fragments write their payloads into the buffer at the correct offsets
-        protected       Message         msg;
+        protected Message msg;
         protected       byte[]          buffer;
         protected final int             num_frags; // number of expected fragments
         protected final FixedSizeBitSet received;

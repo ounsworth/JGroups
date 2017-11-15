@@ -1,12 +1,16 @@
 
 package org.jgroups.tests;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.Version;
 import org.jgroups.util.*;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -122,7 +126,7 @@ public class UnicastTestTcpSlow {
         System.out.println("sending " + num_msgs + " messages (" + Util.printBytes(msg_size) +
                              ") to " + remote + ": oob=" + oob + ", " + num_threads + " sender thread(s)");
         ByteBuffer buf=ByteBuffer.allocate(Global.BYTE_SIZE + Global.LONG_SIZE).put(START).putLong(num_msgs);
-        Message msg=new Message(null, buf.array());
+        Message msg=new BytesMessage(null, buf.array());
         // msg.writeTo(output);
 
         ByteArrayDataOutputStream dos=new ByteArrayDataOutputStream((int)(msg.size()));
@@ -280,7 +284,7 @@ public class UnicastTestTcpSlow {
             Message msg=readMessage(buf, 0, len);
             receive(msg);
 
-            // Message msg=new Message(false);
+            // Message msg=new BytesMessage(false);
             // msg.readFrom(in);
             // receive(msg);
         }
@@ -304,7 +308,7 @@ public class UnicastTestTcpSlow {
         public void run() {
             for(int i=1; i <= number_of_msgs; i++) {
                 try {
-                    Message msg=new Message(null, buf);
+                    Message msg=new BytesMessage(null, buf);
                     if(oob)
                         msg.setFlag(Message.Flag.OOB);
                     if(dont_bundle)
@@ -350,7 +354,7 @@ public class UnicastTestTcpSlow {
         short ver=in.readShort();
         byte flags=in.readByte();
         // final boolean multicast=(flags & (byte)2) == (byte)2;
-        Message msg=new Message(false); // don't create headers, readFrom() will do this
+        Message msg=new BytesMessage(false); // don't create headers, readFrom() will do this
         msg.readFrom(in);
         return msg;
     }

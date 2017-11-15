@@ -2,10 +2,7 @@
 package org.jgroups.protocols.pbcast;
 
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.util.*;
 
 import java.util.*;
@@ -229,7 +226,7 @@ public class CoordGmsImpl extends ServerGmsImpl {
     
     private void sendLeaveResponses(Collection<Address> leaving_members) {
         for(Address address: leaving_members){
-            Message msg=new Message(address).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.NO_RELIABILITY)
+            Message msg=new BytesMessage(address).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.NO_RELIABILITY)
               .putHeader(gms.getId(), new GMS.GmsHeader(GMS.GmsHeader.LEAVE_RSP));
             log.trace("%s: sending LEAVE response to %s", gms.local_addr, address);
             gms.getDownProtocol().down(msg);

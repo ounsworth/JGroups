@@ -478,7 +478,7 @@ public abstract class FlowControl extends Protocol {
     protected void sendCredit(Address dest, long credits) {
         if(log.isTraceEnabled())
             log.trace("sending %d credits to %s", credits, dest);
-        Message msg=new Message(dest, longToBuffer(credits))
+        Message msg=new BytesMessage(dest, longToBuffer(credits))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE)
           .putHeader(this.id,getReplenishHeader());
         down_prot.down(msg);
@@ -494,7 +494,7 @@ public abstract class FlowControl extends Protocol {
     protected void sendCreditRequest(final Address dest, long credits_needed) {
         if(log.isTraceEnabled())
             log.trace("sending request for %d credits to %s", credits_needed, dest);
-        Message msg=new Message(dest, longToBuffer(credits_needed))
+        Message msg=new BytesMessage(dest, longToBuffer(credits_needed))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE)
           .putHeader(this.id, getCreditRequestHeader());
         down_prot.down(msg);

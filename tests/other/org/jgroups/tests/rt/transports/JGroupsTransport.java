@@ -92,7 +92,7 @@ public class JGroupsTransport extends ReceiverAdapter implements RtTransport {
     }
 
     public void send(Object dest, byte[] buf, int offset, int length) throws Exception {
-        Message msg=new Message((Address)dest, buf, offset, length);
+        Message msg=new BytesMessage((Address)dest, buf, offset, length);
         if(oob)
             msg.setFlag(Message.Flag.OOB);
         if(dont_bundle)

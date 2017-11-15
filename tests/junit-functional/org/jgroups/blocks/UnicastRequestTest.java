@@ -32,7 +32,7 @@ public class UnicastRequestTest {
 
 
     public void testSimpleInvocation() throws Exception {
-        MyCorrelator corr=new MyCorrelator(false, new Object[]{new Message(b, (long)322649)}, 0);
+        MyCorrelator corr=new MyCorrelator(false, new Object[]{new BytesMessage(b, (long)322649)}, 0);
         UnicastRequest<Long> req=new UnicastRequest<>(corr, a, RequestOptions.SYNC().timeout(1000));
         corr.setRequest(req);
         Long result=req.execute(buf, true);
@@ -45,7 +45,7 @@ public class UnicastRequestTest {
     }
 
     public void testSimpleVoidInvocation() throws Exception {
-        MyCorrelator corr=new MyCorrelator(false, new Object[]{new Message(b, (String)null)}, 0);
+        MyCorrelator corr=new MyCorrelator(false, new Object[]{new BytesMessage(b, (String)null)}, 0);
         UnicastRequest<String> req=new UnicastRequest<>(corr, a, RequestOptions.SYNC().timeout(1000));
         corr.setRequest(req);
         String result=req.execute(buf, true);
@@ -59,7 +59,7 @@ public class UnicastRequestTest {
     }
 
     public void testInvocationWithException() throws Exception {
-        MyCorrelator corr=new MyCorrelator(false, new Object[]{new Message(b, (long)322649)}, 0);
+        MyCorrelator corr=new MyCorrelator(false, new Object[]{new BytesMessage(b, (long)322649)}, 0);
         UnicastRequest<Object> req=new UnicastRequest<>(corr, a, RequestOptions.SYNC().timeout(1000));
         corr.setRequest(req);
         req.receiveResponse(new NullPointerException("booom"), b, false);

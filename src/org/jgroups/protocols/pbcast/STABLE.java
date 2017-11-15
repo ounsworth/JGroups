@@ -659,8 +659,8 @@ public class STABLE extends Protocol {
             return;
         }
 
-        final Message msg=new Message(dest)
-          .setFlag(Message.Flag.OOB,Message.Flag.INTERNAL,Message.Flag.NO_RELIABILITY)
+        final Message msg=new BytesMessage(dest)
+          .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.NO_RELIABILITY)
           .putHeader(this.id, new StableHeader(StableHeader.STABLE_GOSSIP, current_view.getViewId()))
           .setBuffer(marshal(d));
         try {
@@ -728,7 +728,7 @@ public class STABLE extends Protocol {
         // https://issues.jboss.org/browse/JGRP-1638: we reverted to sending the STABILITY message *unreliably*,
         // but clear votes *before* sending it
         try {
-            Message msg=new Message().setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.NO_RELIABILITY)
+            Message msg=new BytesMessage().setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.NO_RELIABILITY)
               .putHeader(id, new StableHeader(StableHeader.STABILITY, view_id))
               .setBuffer(marshal(stability_digest));
             log.trace("%s: sending stability msg %s", local_addr, printDigest(stability_digest));

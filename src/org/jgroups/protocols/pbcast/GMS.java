@@ -577,7 +577,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 new_view=createDeltaView(view, new_view);
         }
 
-        Message view_change_msg=new Message().putHeader(this.id, new GmsHeader(GmsHeader.VIEW))
+        Message view_change_msg=new BytesMessage().putHeader(this.id, new GmsHeader(GmsHeader.VIEW))
           .setBuffer(marshal(new_view, digest)).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
         if(new_view instanceof MergeView) // https://issues.jboss.org/browse/JGRP-1484
             view_change_msg.setFlag(Message.Flag.NO_TOTAL_ORDER);
@@ -616,13 +616,13 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
     }
 
     public void sendJoinResponse(JoinRsp rsp, Address dest) {
-        Message m=new Message(dest).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
+        Message m=new BytesMessage(dest).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
           .setBuffer(marshal(rsp)).setFlag(OOB, INTERNAL);
         getDownProtocol().down(m);
     }
 
     protected void sendJoinResponse(Buffer marshalled_rsp, Address dest) {
-        Message m=new Message(dest, marshalled_rsp).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
+        Message m=new BytesMessage(dest, marshalled_rsp).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
           .setFlag(OOB, INTERNAL);
         getDownProtocol().down(m);
     }
@@ -904,7 +904,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                         if(view != null)
                             log.warn("%s: failed to create view from delta-view; dropping view: %s", local_addr, t.toString());
                         log.trace("%s: sending request for full view to %s", local_addr, msg.src());
-                        Message full_view_req=new Message(msg.src())
+                        Message full_view_req=new BytesMessage(msg.src())
                           .putHeader(id, new GmsHeader(GmsHeader.GET_CURRENT_VIEW)).setFlag(OOB, INTERNAL);
                         down_prot.down(full_view_req);
                         return null;
@@ -985,7 +985,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 // fetch only my own digest
                 Digest digest=(Digest)down_prot.down(new Event(Event.GET_DIGEST, local_addr));
                 if(digest != null) {
-                    Message get_digest_rsp=new Message(msg.getSrc())
+                    Message get_digest_rsp=new BytesMessage(msg.getSrc())
                       .setFlag(OOB, Message.Flag.INTERNAL)
                       .putHeader(this.id, new GmsHeader(GmsHeader.GET_DIGEST_RSP))
                       .setBuffer(marshal(null, digest));
@@ -1011,7 +1011,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 }
                 // either my view-id differs from sender's view-id, or sender's view-id is null: send view
                 log.trace("%s: received request for full view from %s, sending view %s", local_addr, msg.src(), view);
-                Message view_msg=new Message(msg.getSrc()).putHeader(id,new GmsHeader(GmsHeader.VIEW))
+                Message view_msg=new BytesMessage(msg.getSrc()).putHeader(id, new GmsHeader(GmsHeader.VIEW))
                   .setBuffer(marshal(view, null)).setFlag(OOB, Message.Flag.INTERNAL);
                 down_prot.down(view_msg);
                 break;
@@ -1086,7 +1086,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 Address coord=view != null? view.getCreator() : null;
                 if(coord != null) {
                     ViewId view_id=view != null? view.getViewId() : null;
-                    Message msg=new Message(coord).putHeader(id, new GmsHeader(GmsHeader.GET_CURRENT_VIEW))
+                    Message msg=new BytesMessage(coord).putHeader(id, new GmsHeader(GmsHeader.GET_CURRENT_VIEW))
                       .setBuffer(marshal(view_id)).setFlag(OOB, Message.Flag.INTERNAL);
                     down_prot.down(msg);
                 }
@@ -1120,7 +1120,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
 
 
     protected void sendViewAck(Address dest) {
-        Message view_ack=new Message(dest).setFlag(OOB, INTERNAL)
+        Message view_ack=new BytesMessage(dest).setFlag(OOB, INTERNAL)
           .putHeader(this.id, new GmsHeader(GmsHeader.VIEW_ACK));
         down_prot.down(view_ack);
     }

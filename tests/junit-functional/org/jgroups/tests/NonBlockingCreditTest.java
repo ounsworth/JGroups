@@ -1,6 +1,7 @@
 package org.jgroups.tests;
 
 import org.jgroups.Address;
+import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.util.NonBlockingCredit;
 import org.jgroups.util.Util;
@@ -91,7 +92,7 @@ public class NonBlockingCreditTest {
 
     protected static Message msg(int size) {
         byte[] buf=new byte[size];
-        return new Message(dest, buf);
+        return new BytesMessage(dest, buf);
     }
 
     protected static class MessageSender implements Consumer<Message> {

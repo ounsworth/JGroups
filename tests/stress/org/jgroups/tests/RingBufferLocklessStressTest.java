@@ -1,5 +1,6 @@
 package org.jgroups.tests;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.util.RingBufferSeqnoLockless;
 import org.jgroups.util.Util;
@@ -13,7 +14,7 @@ public class RingBufferLocklessStressTest {
     static int NUM_THREADS=10;
     static int NUM_MSGS=1000000;
 
-    static final Message MSG=new Message(false);
+    static final Message MSG=new BytesMessage(false);
 
 
     static final AtomicInteger added=new AtomicInteger(0);

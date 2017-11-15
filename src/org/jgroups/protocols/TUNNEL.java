@@ -1,9 +1,6 @@
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.PhysicalAddress;
+import org.jgroups.*;
 import org.jgroups.annotations.Experimental;
 import org.jgroups.annotations.ManagedOperation;
 import org.jgroups.annotations.Property;

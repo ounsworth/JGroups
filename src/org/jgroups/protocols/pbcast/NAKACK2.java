@@ -139,10 +139,10 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
     @ManagedAttribute(description="Number of messages received")
     protected int                          num_messages_received;
 
-    protected static final Message         DUMMY_OOB_MSG=new Message().setFlag(Message.Flag.OOB);
+    protected static final Message DUMMY_OOB_MSG=new BytesMessage().setFlag(Message.Flag.OOB);
 
     // Accepts messages which are (1) non-null, (2) no DUMMY_OOB_MSGs and (3) not OOB_DELIVERED
-    protected final Predicate<Message> no_dummy_and_no_oob_delivered_msgs_and_no_dont_loopback_msgs= msg ->
+    protected final Predicate<Message> no_dummy_and_no_oob_delivered_msgs_and_no_dont_loopback_msgs=msg ->
       msg != null && msg != DUMMY_OOB_MSG
         && (!msg.isFlagSet(Message.Flag.OOB) || msg.setTransientFlagIfAbsent(Message.TransientFlag.OOB_DELIVERED))
         && !(msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK) && this.local_addr != null && this.local_addr.equals(msg.getSrc()));
@@ -1421,7 +1421,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
                 dest=random_member;
         }
 
-        Message retransmit_msg=new Message(dest).setBuffer(Util.streamableToBuffer(missing_msgs))
+        Message retransmit_msg=new BytesMessage(dest).setBuffer(Util.streamableToBuffer(missing_msgs))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
           .putHeader(this.id, NakAckHeader2.createXmitRequestHeader(sender));
 
@@ -1530,7 +1530,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
             }
             else
                 num_resends++;
-            Message msg=new Message(null).putHeader(id, NakAckHeader2.createHighestSeqnoHeader(seqno))
+            Message msg=new BytesMessage(null).putHeader(id, NakAckHeader2.createHighestSeqnoHeader(seqno))
               .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
               .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK); // we don't need to receive our own broadcast
             down_prot.down(msg);

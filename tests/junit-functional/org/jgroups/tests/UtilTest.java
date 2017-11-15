@@ -484,11 +484,11 @@ public class UtilTest {
 
 
     public static void testMessageToByteBuffer() throws Exception {
-        _testMessage(new Message());
-        _testMessage(new Message(null, "hello world"));
-        _testMessage(new Message(null).src(Util.createRandomAddress()));
-        _testMessage(new Message(null).src(Util.createRandomAddress()));
-        _testMessage(new Message(null, "bela").src(Util.createRandomAddress()));
+        _testMessage(new BytesMessage());
+        _testMessage(new BytesMessage(null, "hello world"));
+        _testMessage(new BytesMessage(null).src(Util.createRandomAddress()));
+        _testMessage(new BytesMessage(null).src(Util.createRandomAddress()));
+        _testMessage(new BytesMessage(null, "bela").src(Util.createRandomAddress()));
     }
 
     private static void _testMessage(Message msg) throws Exception {
@@ -661,7 +661,7 @@ public class UtilTest {
     }
 
     public static void testWriteStreamable() throws Exception {
-        Message m=new Message(null, "Hello");
+        Message m=new BytesMessage(null, "Hello");
         ViewId vid2=new ViewId(Util.createRandomAddress(), 35623);
         ByteArrayOutputStream outstream=new ByteArrayOutputStream();
         DataOutputStream dos=new DataOutputStream(outstream);
@@ -783,9 +783,9 @@ public class UtilTest {
 
     public static void testWriteAndReadStreamableArray() throws Exception {
         Message[] msgs={
-          new Message(null, "hello world").setFlag(Message.Flag.OOB, Message.Flag.NO_RELIABILITY),
-          new Message(Util.createRandomAddress("dest"), "bela ban"),
-          new Message(Util.createRandomAddress("dest"), "hello world again").src(Util.createRandomAddress("src"))
+          new BytesMessage(null, "hello world").setFlag(Message.Flag.OOB, Message.Flag.NO_RELIABILITY),
+          new BytesMessage(Util.createRandomAddress("dest"), "bela ban"),
+          new BytesMessage(Util.createRandomAddress("dest"), "hello world again").src(Util.createRandomAddress("src"))
             .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
         };
 
@@ -793,7 +793,7 @@ public class UtilTest {
         Util.write(msgs, out);
 
         ByteArrayDataInputStream in=new ByteArrayDataInputStream(out.buffer(), 0, out.position());
-        Message[] tmp=Util.read(Message.class, in);
+        Message[] tmp=Util.read(BytesMessage.class, in);
         for(int i=0; i < msgs.length; i++) {
             if(msgs[i].dest() == null)
                 assert tmp[i].dest() == null;

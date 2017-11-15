@@ -162,7 +162,7 @@ public class TOA extends Protocol implements DeliveryProtocol {
             long finalSequenceNumber = senderManager.removeLeavers(messageID, leavers);
             if (finalSequenceNumber != SenderManager.NOT_READY) {
                 ToaHeader finalHeader = ToaHeader.newFinalMessageHeader(messageID, finalSequenceNumber);
-                Message finalMessage = new Message().src(localAddress).putHeader(this.id, finalHeader)
+                Message finalMessage = new BytesMessage().src(localAddress).putHeader(this.id, finalHeader)
                         .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE);
 
                 Set<Address> destinations = senderManager.getDestination(messageID);
@@ -277,7 +277,7 @@ public class TOA extends Protocol implements DeliveryProtocol {
             //create a new message and send it back
             ToaHeader newHeader = ToaHeader.newProposeMessageHeader(messageID, myProposeSequenceNumber);
 
-            Message proposeMessage = new Message().src(localAddress).dest(messageID.getAddress())
+            Message proposeMessage = new BytesMessage().src(localAddress).dest(messageID.getAddress())
                     .putHeader(this.id, newHeader).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE);
 
             //multicastSenderThread.addUnicastMessage(proposeMessage);
@@ -311,7 +311,7 @@ public class TOA extends Protocol implements DeliveryProtocol {
 
                 ToaHeader finalHeader = ToaHeader.newFinalMessageHeader(messageID, finalSequenceNumber);
 
-                Message finalMessage = new Message().src(localAddress).putHeader(this.id, finalHeader)
+                Message finalMessage = new BytesMessage().src(localAddress).putHeader(this.id, finalHeader)
                         .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE);
 
                 Set<Address> destinations = senderManager.getDestination(messageID);

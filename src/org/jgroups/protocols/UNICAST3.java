@@ -132,9 +132,9 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
     /** Keep track of when a SEND_FIRST_SEQNO message was sent to a given sender */
     protected ExpiryCache<Address>         last_sync_sent=null;
 
-    protected static final Message         DUMMY_OOB_MSG=new Message().setFlag(Message.Flag.OOB);
+    protected static final Message DUMMY_OOB_MSG=new BytesMessage().setFlag(Message.Flag.OOB);
 
-    protected final Predicate<Message>     drop_oob_and_dont_loopback_msgs_filter= msg ->
+    protected final Predicate<Message>     drop_oob_and_dont_loopback_msgs_filter=msg ->
       msg != null && msg != DUMMY_OOB_MSG
         && (!msg.isFlagSet(Message.Flag.OOB) || msg.setTransientFlagIfAbsent(Message.TransientFlag.OOB_DELIVERED))
         && !(msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK) && local_addr != null && local_addr.equals(msg.src()));
@@ -670,7 +670,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
 
     /** Sends a retransmit request to the given sender */
     protected void retransmit(SeqnoList missing, Address sender) {
-        Message xmit_msg=new Message(sender).setBuffer(Util.streamableToBuffer(missing))
+        Message xmit_msg=new BytesMessage(sender).setBuffer(Util.streamableToBuffer(missing))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL).putHeader(id, UnicastHeader3.createXmitReqHeader());
         if(is_trace)
             log.trace("%s: sending XMIT_REQ (%s) to %s", local_addr, missing, sender);
@@ -914,7 +914,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
 
     protected ReceiverEntry createReceiverEntry(Address sender, long seqno, short conn_id) {
         Table<Message> table=new Table<>(xmit_table_num_rows, xmit_table_msgs_per_row, seqno-1,
-                                                xmit_table_resize_factor, xmit_table_max_compaction_time);
+                                         xmit_table_resize_factor, xmit_table_max_compaction_time);
         ReceiverEntry entry=new ReceiverEntry(table, conn_id);
         ReceiverEntry entry2=recv_table.putIfAbsent(sender, entry);
         if(entry2 != null)
@@ -1049,7 +1049,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
     protected void sendAck(Address dst, long seqno, short conn_id) {
         if(!running) // if we are disconnected, then don't send any acks which throw exceptions on shutdown
             return;
-        Message ack=new Message(dst).setFlag(Message.Flag.INTERNAL).
+        Message ack=new BytesMessage(dst).setFlag(Message.Flag.INTERNAL).
           putHeader(this.id, UnicastHeader3.createAckHeader(seqno, conn_id, timestamper.incrementAndGet()));
         if(is_trace)
             log.trace("%s --> ACK(%s: #%d)", local_addr, dst, seqno);
@@ -1075,7 +1075,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
 
     protected void sendRequestForFirstSeqno(Address dest) {
         if(last_sync_sent.addIfAbsentOrExpired(dest)) {
-            Message msg=new Message(dest).setFlag(Message.Flag.OOB)
+            Message msg=new BytesMessage(dest).setFlag(Message.Flag.OOB)
               .putHeader(this.id, UnicastHeader3.createSendFirstSeqnoHeader(timestamper.incrementAndGet()));
             log.trace("%s --> SEND_FIRST_SEQNO(%s)", local_addr, dest);
             down_prot.down(msg);
@@ -1083,7 +1083,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
     }
 
     public void sendClose(Address dest, short conn_id) {
-        Message msg=new Message(dest).setFlag(Message.Flag.INTERNAL).putHeader(id, UnicastHeader3.createCloseHeader(conn_id));
+        Message msg=new BytesMessage(dest).setFlag(Message.Flag.INTERNAL).putHeader(id, UnicastHeader3.createCloseHeader(conn_id));
         log.trace("%s --> CLOSE(%s, conn-id=%d)", local_addr, dest, conn_id);
         down_prot.down(msg);
     }

@@ -1,6 +1,7 @@
 package org.jgroups.auth.sasl;
 
 import org.jgroups.Address;
+import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.protocols.SASL;
 import org.jgroups.protocols.SaslHeader;
@@ -62,7 +63,7 @@ public class SaslClientContext implements SaslContext {
 
     @Override
     public Message nextMessage(Address address, SaslHeader header) throws SaslException {
-        Message message = new Message(address).setFlag(Message.Flag.OOB);
+        Message message = new BytesMessage(address).setFlag(Message.Flag.OOB);
         return addHeader(message, header.getPayload());
     }
 

@@ -1,13 +1,11 @@
 package org.jgroups.stack;
 
-import org.jgroups.Address;
-import org.jgroups.Global;
-import org.jgroups.Message;
-import org.jgroups.PhysicalAddress;
+import org.jgroups.*;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.ManagedOperation;
 import org.jgroups.annotations.Property;
 import org.jgroups.blocks.cs.*;
+import org.jgroups.blocks.cs.ReceiverAdapter;
 import org.jgroups.jmx.JmxConfigurator;
 import org.jgroups.logging.Log;
 import org.jgroups.logging.LogFactory;

@@ -188,7 +188,7 @@ public class Draw extends ReceiverAdapter implements ActionListener, ChannelList
 
     private void sendToAll(byte[] buf) throws Exception {
         for(Address mbr: members)
-            channel.send(new Message(mbr, buf));
+            channel.send(new BytesMessage(mbr, buf));
     }
 
 
@@ -340,7 +340,7 @@ public class Draw extends ReceiverAdapter implements ActionListener, ChannelList
             if(use_unicasts)
                 sendToAll(buf);
             else
-                channel.send(new Message(null, buf));
+                channel.send(new BytesMessage(null, buf));
         }
         catch(Exception ex) {
             System.err.println(ex);
@@ -392,7 +392,7 @@ public class Draw extends ReceiverAdapter implements ActionListener, ChannelList
                 if(use_unicasts)
                     sendToAll(buf);
                 else
-                    channel.send(new Message(null, buf));
+                    channel.send(new BytesMessage(null, buf));
             }
             catch(Exception ex) {
                 System.err.println(ex);
@@ -533,7 +533,7 @@ public class Draw extends ReceiverAdapter implements ActionListener, ChannelList
                 if(use_unicasts)
                     sendToAll(buf);
                 else
-                    channel.send(new Message(null, buf));
+                    channel.send(new BytesMessage(null, buf));
             }
             catch(Exception ex) {
                 System.err.println(ex);

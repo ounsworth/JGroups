@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests NAKACK2 functionality, especially flag {@link org.jgroups.Message.TransientFlag#DONT_LOOPBACK}.
+ * Tests NAKACK2 functionality, especially flag {@link Message.TransientFlag#DONT_LOOPBACK}.
  * @author Bela Ban
  * @since  3.5
  */
@@ -63,7 +63,7 @@ public class NakackUnitTest {
     }
 
 
-    protected void send(JChannel ch, Message ... msgs) throws Exception {
+    protected void send(JChannel ch, Message... msgs) throws Exception {
         int cnt=1;
         for(Message msg: msgs) {
             msg.setObject(cnt++);
@@ -90,7 +90,7 @@ public class NakackUnitTest {
         b.setReceiver(rb=new MyReceiver());
     }
 
-    protected Message msg() {return new Message(null);}
+    protected Message msg() {return new BytesMessage(null);}
 
     protected JChannel create(String name, boolean use_batching) throws Exception {
         Protocol[] protocols={

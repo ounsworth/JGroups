@@ -122,7 +122,7 @@ public class ABP extends Protocol {
             }
 
             byte ack_bit=(byte)(this.bit ^ 1);
-            Message ack=new Message(sender).putHeader(id, new ABPHeader(Type.ack, ack_bit));
+            Message ack=new BytesMessage(sender).putHeader(id, new ABPHeader(Type.ack, ack_bit));
             log.trace("%s: --> %s.ack(%d)", local_addr, sender, ack_bit);
             down_prot.down(ack);
             return retval;

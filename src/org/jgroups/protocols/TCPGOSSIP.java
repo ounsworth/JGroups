@@ -1,10 +1,7 @@
 
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.PhysicalAddress;
+import org.jgroups.*;
 import org.jgroups.annotations.ManagedOperation;
 import org.jgroups.annotations.Property;
 import org.jgroups.conf.PropertyConverters;
@@ -170,7 +167,7 @@ public class TCPGOSSIP extends Discovery implements RouterStub.MembersNotificati
             if(physical_addr != null && own_physical_addr.equals(physical_addr)) // no need to send the request to myself
                 continue;
             // the message needs to be DONT_BUNDLE, see explanation above
-            final Message msg=new Message(physical_addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
+            final Message msg=new BytesMessage(physical_addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
               .putHeader(this.id, hdr).setBuffer(marshal(data));
             log.trace("%s: sending discovery request to %s", local_addr, msg.getDest());
             down_prot.down(msg);

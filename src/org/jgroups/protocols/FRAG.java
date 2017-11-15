@@ -1,10 +1,7 @@
 
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.Property;
@@ -24,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * number is added to the messages as a header (and removed at the receiving side).
  * <p>
  * Contrary to {@link org.jgroups.protocols.FRAG2}, FRAG marshals the entire message (including the headers) into
- * a byte[] buffer and the fragments that buffer. Because {@link org.jgroups.Message#size()} is called rather than
- * {@link org.jgroups.Message#getLength()}, and because of the overhead of marshalling, this will be slower than
+ * a byte[] buffer and the fragments that buffer. Because {@link BaseMessage#size()} is called rather than
+ * {@link BaseMessage#getLength()}, and because of the overhead of marshalling, this will be slower than
  * FRAG2.
  * <p>
  * Each fragment is identified by (a) the sender (part of the message to which
@@ -148,7 +145,7 @@ public class FRAG extends Protocol {
         for(Message msg: batch) {
             FragHeader hdr=msg.getHeader(this.id);
             if(hdr != null) { // needs to be defragmented
-                Message assembled_msg=unfragment(msg,hdr);
+                Message assembled_msg=unfragment(msg, hdr);
                 if(assembled_msg != null)
                     // the reassembled msg has to be add in the right place (https://issues.jboss.org/browse/JGRP-1648),
                     // and canot be added to the tail of the batch !
@@ -212,7 +209,7 @@ public class FRAG extends Protocol {
             }
 
             for(int i=0; i < num_frags; i++) {
-                Message frag_msg=new Message(dest, fragments[i]).src(src);
+                Message frag_msg=new BytesMessage(dest, fragments[i]).src(src);
                 FragHeader hdr=new FragHeader(frag_id, i, num_frags);
                 frag_msg.putHeader(this.id, hdr);
                 down_prot.down(frag_msg);
@@ -250,7 +247,7 @@ public class FRAG extends Protocol {
 
         try {
             DataInput in=new ByteArrayDataInputStream(buf);
-            Message assembled_msg=new Message(false);
+            Message assembled_msg=new BytesMessage(false);
             assembled_msg.readFrom(in);
             assembled_msg.setSrc(sender); // needed ? YES, because fragments have a null src !!
             if(log.isTraceEnabled()) log.trace("assembled_msg is " + assembled_msg);

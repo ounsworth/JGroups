@@ -111,7 +111,7 @@ public class GMS_MergeTest {
         JChannel c1=new JChannel(use_flush_props? getFlushProps() : getProps()).name("A");
         try {
             c1.connect(cluster_name);
-            Message merge_request=new Message()
+            Message merge_request=new BytesMessage()
               .putHeader(GMS_ID, new GMS.GmsHeader(GMS.GmsHeader.MERGE_REQ).mergeId(MergeId.create(c1.getAddress())));
             GMS gms=c1.getProtocolStack().findProtocol(GMS.class);
             gms.setMergeTimeout(2000);

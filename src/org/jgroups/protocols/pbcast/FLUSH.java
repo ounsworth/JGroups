@@ -551,7 +551,7 @@ public class FLUSH extends Protocol {
             log.debug(localAddress + ": returned from FLUSH_RECONCILE, "
                     + " sending RECONCILE_OK to " + requester);
 
-        Message reconcileOk = new Message(requester).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
+        Message reconcileOk = new BytesMessage(requester).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
           .putHeader(this.id,new FlushHeader(FlushHeader.FLUSH_RECONCILE_OK));
         down_prot.down(reconcileOk);
     }
@@ -569,7 +569,7 @@ public class FLUSH extends Protocol {
             Tuple<Collection<? extends Address>,Digest> tuple=readParticipantsAndDigest(msg.getRawBuffer(),
                                                                                         msg.getOffset(),msg.getLength());
             Collection<? extends Address> flushParticipants=tuple.getVal1();
-            Message response = new Message(flushRequester)
+            Message response = new BytesMessage(flushRequester)
               .putHeader(this.id,new FlushHeader(FlushHeader.FLUSH_NOT_COMPLETED,fh.viewID))
               .setBuffer(marshal(flushParticipants,null));
             down_prot.down(response);
@@ -584,7 +584,7 @@ public class FLUSH extends Protocol {
         for (Address flushMember : participants) {
             if(flushMember == null)
                 continue;
-            Message reject = new Message(flushMember).src(localAddress).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
+            Message reject = new BytesMessage(flushMember).src(localAddress).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
               .putHeader(this.id, new FlushHeader(FlushHeader.ABORT_FLUSH, viewId))
               .setBuffer(marshal(participants, null));
             down_prot.down(reject);
@@ -697,7 +697,7 @@ public class FLUSH extends Protocol {
          flushMembers.addAll(participantsInFlush);
          flushMembers.removeAll(suspected);
          
-          msg = new Message(null).src(localAddress).setBuffer(marshal(participantsInFlush, null))
+          msg = new BytesMessage(null).src(localAddress).setBuffer(marshal(participantsInFlush, null))
             .putHeader(this.id, new FlushHeader(FlushHeader.START_FLUSH, currentViewId()));
 
       }
@@ -720,7 +720,7 @@ public class FLUSH extends Protocol {
             isParticipant = flushMembers.contains(localAddress) || (members != null && members.contains(localAddress));
         }
         if (members == null || members.isEmpty()) {
-            Message msg = new Message(null).src(localAddress);
+            Message msg = new BytesMessage(null).src(localAddress);
             // Cannot be OOB since START_FLUSH is not OOB
             // we have to FIFO order two subsequent flushes
             if (log.isDebugEnabled())
@@ -729,7 +729,7 @@ public class FLUSH extends Protocol {
             down_prot.down(msg);
         } else {
             for (Address address : members) {
-                Message msg = new Message(address).src(localAddress);
+                Message msg = new BytesMessage(address).src(localAddress);
                 // Cannot be OOB since START_FLUSH is not OOB
                 // we have to FIFO order two subsequent flushes
                 if (log.isDebugEnabled())
@@ -781,7 +781,7 @@ public class FLUSH extends Protocol {
             }
 
             Digest digest = (Digest) down_prot.down(Event.GET_DIGEST_EVT);
-            Message start_msg = new Message(flushStarter)
+            Message start_msg = new BytesMessage(flushStarter)
               .putHeader(this.id, new FlushHeader(FlushHeader.FLUSH_COMPLETED, fh.viewID))
               .setBuffer(marshal(tuple.getVal1(),digest));
             down_prot.down(start_msg);
@@ -812,7 +812,7 @@ public class FLUSH extends Protocol {
             needsReconciliationPhase = enable_reconciliation && flushCompleted && hasVirtualSynchronyGaps();
             if (needsReconciliationPhase) {
                 Digest d = findHighestSequences(currentView);
-                msg = new Message().setFlag(Message.Flag.OOB);
+                msg = new BytesMessage().setFlag(Message.Flag.OOB);
                 reconcileOks.clear();
                 msg.putHeader(this.id, new FlushHeader(FlushHeader.FLUSH_RECONCILE, currentViewId()))
                   .setBuffer(marshal(flushMembers, d));
@@ -914,7 +914,7 @@ public class FLUSH extends Protocol {
             viewID = currentViewId();
             flushOkCompleted = !flushCompletedMap.isEmpty() && flushCompletedMap.keySet().containsAll(flushMembers);
             if (flushOkCompleted) {
-                m = new Message(flushCoordinator).src(localAddress);
+                m = new BytesMessage(flushCoordinator).src(localAddress);
             }
             log.debug(localAddress + ": suspects: " + addresses + ", completed " + flushOkCompleted
                         + ", flushOkSet " + flushCompletedMap + ", flushMembers " + flushMembers);

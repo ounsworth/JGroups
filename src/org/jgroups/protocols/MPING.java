@@ -1,5 +1,6 @@
 package org.jgroups.protocols;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Event;
 import org.jgroups.Global;
 import org.jgroups.Message;
@@ -8,7 +9,8 @@ import org.jgroups.annotations.Property;
 import org.jgroups.conf.PropertyConverters;
 import org.jgroups.util.*;
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 
@@ -235,7 +237,7 @@ public class MPING extends PING implements Runnable {
             try {
                 mcast_sock.receive(packet);
                 DataInput inp=new ByteArrayDataInputStream(packet.getData(), packet.getOffset(), packet.getLength());
-                Message msg=new Message();
+                Message msg=new BytesMessage();
                 msg.readFrom(inp);
                 if(!Objects.equals(local_addr,msg.getSrc())) // discard discovery request from self
                     up(msg);

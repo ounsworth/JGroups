@@ -982,6 +982,33 @@ public class Util {
         }
     }
 
+    public static Buffer messageToBuffer(Message msg) {
+        int expected_size=(int)(msg.size() +1);
+        final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(expected_size);
+        try {
+            out.write(msg.getType());
+            msg.writeTo(out);
+            return out.getBuffer();
+        }
+        catch(Exception ex) {
+            return null;
+        }
+    }
+
+
+    public static Message messageFromBuffer(byte[] buf, int offset, int length, MessageFactory mf) {
+        ByteArrayDataInputStream in=new ByteArrayDataInputStream(buf, offset, length);
+        try {
+            byte type=in.readByte();
+            Message msg=mf.create(type);
+            msg.readFrom(in);
+            return msg;
+        }
+        catch(Exception ex) {
+            return null;
+        }
+    }
+
 
     public static byte[] collectionToByteBuffer(Collection<Address> c) throws Exception {
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream((int)Util.size(c));
@@ -1066,15 +1093,16 @@ public class Util {
         if(multicast)
             flags+=MULTICAST;
         dos.writeByte(flags);
+        dos.write(msg.getType());
         msg.writeTo(dos);
     }
 
-    public static Message readMessage(DataInput instream) throws Exception {
-        Message msg=new Message(false); // don't create headers, readFrom() will do this
-        msg.readFrom(instream);
+    public static Message readMessage(DataInput in, MessageFactory mf) throws Exception {
+        byte type=in.readByte();
+        Message msg=mf.create(type);
+        msg.readFrom(in);
         return msg;
     }
-
 
 
     /**
@@ -1098,8 +1126,10 @@ public class Util {
         writeMessageListHeader(dest, src, cluster_name, msgs != null ? msgs.size() : 0, dos, multicast);
 
         if(msgs != null)
-            for(Message msg: msgs)
+            for(Message msg: msgs) {
+                dos.write(msg.getType());
                 msg.writeToNoAddrs(src, dos, transport_id); // exclude the transport header
+            }
     }
 
     public static void writeMessageListHeader(Address dest, Address src, byte[] cluster_name, int numMsgs, DataOutput dos, boolean multicast) throws Exception {
@@ -1123,7 +1153,7 @@ public class Util {
     }
 
 
-    public static List<Message> readMessageList(DataInput in, short transport_id) throws Exception {
+    public static List<Message> readMessageList(DataInput in, short transport_id, MessageFactory mf) throws Exception {
         List<Message> list=new LinkedList<>();
         Address dest=Util.readAddress(in);
         Address src=Util.readAddress(in);
@@ -1136,7 +1166,8 @@ public class Util {
         int len=in.readInt();
 
         for(int i=0; i < len; i++) {
-            Message msg=new Message(false);
+            byte type=in.readByte(); // skip the
+            Message msg=mf.create(type);
             msg.readFrom(in);
             msg.setDest(dest);
             if(msg.getSrc() == null)
@@ -1162,7 +1193,7 @@ public class Util {
      * @return an array of 4 MessageBatches in the order above, the first batch is at index 0
      * @throws Exception
      */
-    public static MessageBatch[] readMessageBatch(DataInput in, boolean multicast) throws Exception {
+    public static MessageBatch[] readMessageBatch(DataInput in, boolean multicast, MessageFactory factory) throws Exception {
         MessageBatch[] batches=new MessageBatch[4]; // [0]: reg, [1]: OOB, [2]: internal-oob, [3]: internal
         Address dest=Util.readAddress(in);
         Address src=Util.readAddress(in);
@@ -1173,7 +1204,8 @@ public class Util {
 
         int len=in.readInt();
         for(int i=0; i < len; i++) {
-            Message msg=new Message(false);
+            byte type=in.readByte();
+            Message msg=factory.create(type);  // new BytesMessage(false);
             msg.readFrom(in);
             msg.setDest(dest);
             if(msg.getSrc() == null)
@@ -1211,6 +1243,7 @@ public class Util {
     public static List<Message> parse(InputStream input) {
         List<Message>   retval=new ArrayList<>();
         DataInputStream dis=null;
+        MessageFactory mf=new DefaultMessageFactory();
         try {
             dis=new DataInputStream(input);
 
@@ -1231,7 +1264,7 @@ public class Util {
                 boolean multicast=(flags & MULTICAST) == MULTICAST;
 
                 if(is_message_list) { // used if message bundling is enabled
-                    final MessageBatch[] batches=Util.readMessageBatch(dis,multicast);
+                    final MessageBatch[] batches=Util.readMessageBatch(dis,multicast, mf);
                     for(MessageBatch batch: batches) {
                         if(batch != null)
                             for(Message msg: batch)
@@ -1239,7 +1272,7 @@ public class Util {
                     }
                 }
                 else {
-                    Message msg=Util.readMessage(dis);
+                    Message msg=Util.readMessage(dis, mf);
                     retval.add(msg);
                 }
             }
@@ -1760,11 +1793,11 @@ public class Util {
         return out.getBuffer();
     }
 
-    public static Message byteBufferToMessage(byte[] buffer,int offset,int length) throws Exception {
+    public static Message byteBufferToMessage(byte[] buffer, int offset, int length) throws Exception {
         DataInput in=new ByteArrayDataInputStream(buffer,offset,length);
         if(!in.readBoolean())
             return null;
-        Message msg=new Message(false); // don't create headers, readFrom() will do this
+        Message msg=new BytesMessage(false); // don't create headers, readFrom() will do this
         msg.readFrom(in);
         return msg;
     }
@@ -4188,7 +4221,6 @@ public class Util {
         final int IN_BRACKET=2;
         final char[] chars=string.toCharArray();
         StringBuilder buffer=new StringBuilder();
-        boolean properties=false;
         int state=NORMAL;
         int start=0;
         for(int i=0; i < chars.length; ++i) {
@@ -4267,7 +4299,6 @@ public class Util {
                     }
 
                     if(value != null) {
-                        properties=true;
                         buffer.append(value);
                     }
                 }

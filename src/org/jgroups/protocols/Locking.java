@@ -376,7 +376,7 @@ abstract public class Locking extends Protocol {
     }
 
     protected void send(Address dest, Request req) {
-        Message msg=new Message(dest, Util.streamableToBuffer(req)).putHeader(id, new LockingHeader());
+        Message msg=new BytesMessage(dest, Util.streamableToBuffer(req)).putHeader(id, new LockingHeader());
         if(bypass_bundling)
             msg.setFlag(Message.Flag.DONT_BUNDLE);
         log.trace("[%s] --> %s] %s", local_addr, dest == null? "ALL" : dest, req);

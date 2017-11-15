@@ -49,7 +49,7 @@ public class HeadersResizeTest {
         Address dest=b.getAddress();
         bundler.hold();
         for(int i=1; i <= 5; i++) { // these 5 messages will be queued by the bundler
-            Message msg=new Message(dest, i).setFlag(OOB, Message.Flag.DONT_BUNDLE);
+            Message msg=new BytesMessage(dest, i).setFlag(OOB, Message.Flag.DONT_BUNDLE);
             a.send(msg);
         }
         bundler.release(); // sends all bundled messages as a batch

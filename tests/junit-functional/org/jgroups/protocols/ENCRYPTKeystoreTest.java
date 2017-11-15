@@ -4,6 +4,7 @@
 package org.jgroups.protocols;
 
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.conf.ClassConfigurator;
@@ -45,7 +46,7 @@ public class ENCRYPTKeystoreTest {
         encrypt.setDownProtocol(observer);
 
         String messageText="hello this is a test message";
-        Message msg=new Message(null, messageText.getBytes());
+        Message msg=new BytesMessage(null, messageText.getBytes());
 
         encrypt.down(msg);
         Message sentMsg=observer.getDownMessages().get("message0");
@@ -74,7 +75,7 @@ public class ENCRYPTKeystoreTest {
         digest.update(encrypt.secretKey().getEncoded());
 
         byte[] symVersion=digest.digest();
-        Message msg=new Message(null, encodedBytes).putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, symVersion));
+        Message msg=new BytesMessage(null, encodedBytes).putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, symVersion));
         encrypt.up(msg);
         Message rcvdMsg=observer.getUpMessages().get("message0");
         String decText=new String(rcvdMsg.getBuffer());
@@ -98,7 +99,7 @@ public class ENCRYPTKeystoreTest {
 
         byte[] symVersion=digest.digest();
 
-        Message msg=new Message(null, encodedBytes).putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, symVersion));
+        Message msg=new BytesMessage(null, encodedBytes).putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, symVersion));
         encrypt.up(msg);
         assert observer.getUpMessages().isEmpty();
     }
@@ -111,7 +112,7 @@ public class ENCRYPTKeystoreTest {
         byte[] bytes=messageText.getBytes();
         byte[] encodedBytes=encrypt2.code(bytes, 0, bytes.length, false);
         assert !new String(encodedBytes).equals(messageText);
-        Message msg=new Message(null, encodedBytes);
+        Message msg=new BytesMessage(null, encodedBytes);
         encrypt.up(msg);
         assert observer.getUpMessages().isEmpty();
     }
@@ -128,13 +129,13 @@ public class ENCRYPTKeystoreTest {
         SYM_ENCRYPT encrypt=create("defaultStore.keystore");
         MockProtocol observer=new MockProtocol();
         encrypt.setUpProtocol(observer);
-        encrypt.up(new Message().putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, "bla".getBytes())));
+        encrypt.up(new BytesMessage().putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, "bla".getBytes())));
         assert observer.getUpMessages().isEmpty();
     }
 
     public void testEncryptEntireMessage() throws Exception {
         SYM_ENCRYPT encrypt=create("defaultStore.keystore").encryptEntireMessage(true);
-        Message msg=new Message(null, "hello world".getBytes()).putHeader((short)1, new TpHeader("cluster"));
+        Message msg=new BytesMessage(null, "hello world".getBytes()).putHeader((short)1, new TpHeader("cluster"));
         MockProtocol mock=new MockProtocol();
         encrypt.setDownProtocol(mock);
         encrypt.down(msg);

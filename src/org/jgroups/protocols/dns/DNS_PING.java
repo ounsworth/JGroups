@@ -1,9 +1,6 @@
 package org.jgroups.protocols.dns;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.PhysicalAddress;
+import org.jgroups.*;
 import org.jgroups.annotations.Property;
 import org.jgroups.protocols.Discovery;
 import org.jgroups.protocols.PingData;
@@ -154,7 +151,7 @@ public class DNS_PING extends Discovery {
         for (final Address addr : discovered_hosts) {
 
             // the message needs to be DONT_BUNDLE, see explanation above
-            final Message msg = new Message(addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
+            final Message msg = new BytesMessage(addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
                     .putHeader(this.id, hdr);
             if (data != null)
                 msg.setBuffer(marshal(data));

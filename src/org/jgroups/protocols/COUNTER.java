@@ -434,7 +434,7 @@ public class COUNTER extends Protocol {
     protected void sendRequest(Address dest, Request req) {
         try {
             Buffer buffer=requestToBuffer(req);
-            Message msg=new Message(dest, buffer).putHeader(id, new CounterHeader());
+            Message msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
                 msg.setFlag(Message.Flag.DONT_BUNDLE);
             if(log.isTraceEnabled())
@@ -451,7 +451,7 @@ public class COUNTER extends Protocol {
     protected void sendResponse(Address dest, Response rsp) {
         try {
             Buffer buffer=responseToBuffer(rsp);
-            Message rsp_msg=new Message(dest, buffer).putHeader(id, new CounterHeader());
+            Message rsp_msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
                 rsp_msg.setFlag(Message.Flag.DONT_BUNDLE);
 
@@ -481,7 +481,7 @@ public class COUNTER extends Protocol {
 
     protected void send(Address dest, Buffer buffer) {
         try {
-            Message rsp_msg=new Message(dest, buffer).putHeader(id, new CounterHeader());
+            Message rsp_msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
                 rsp_msg.setFlag(Message.Flag.DONT_BUNDLE);
             down_prot.down(rsp_msg);

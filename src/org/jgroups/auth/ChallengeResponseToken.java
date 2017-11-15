@@ -1,6 +1,7 @@
 package org.jgroups.auth;
 
 import org.jgroups.Address;
+import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.annotations.Property;
 import org.jgroups.protocols.ASYM_ENCRYPT;
@@ -43,7 +44,7 @@ public class ChallengeResponseToken extends AuthToken implements AUTH.UpHandler 
     // Used to correlate pending challenge requests sent with responses received
     protected final Map<Address,Entry> pending_requests=new HashMap<>();
 
-    protected static final BiPredicate<Message,Boolean> BYPASSER_FUNCTION=(msg,up) -> {
+    protected static final BiPredicate<Message,Boolean> BYPASSER_FUNCTION=(msg, up) -> {
         ChallengeResponseHeader hdr=msg.getHeader(ID);
         return hdr != null && (hdr.type == ChallengeResponseHeader.CHALLENGE || hdr.type == ChallengeResponseHeader.RESPONSE);
     };
@@ -66,7 +67,7 @@ public class ChallengeResponseToken extends AuthToken implements AUTH.UpHandler 
 
         // 1. send a challenge to the sender
         byte[] buf=generateRandomBytes(challenge_size);
-        Message challenge=new Message(sender).setFlag(Message.Flag.OOB)
+        Message challenge=new BytesMessage(sender).setFlag(Message.Flag.OOB)
           .putHeader(ID, new ChallengeResponseHeader(buf));
 
         Entry entry=new Entry(buf);
@@ -100,7 +101,7 @@ public class ChallengeResponseToken extends AuthToken implements AUTH.UpHandler 
         switch(hdr.type) {
             case ChallengeResponseHeader.CHALLENGE:
                 long hash=hash(encrypt(hdr.payload));
-                Message response=new Message(msg.getSrc()).setFlag(Message.Flag.OOB)
+                Message response=new BytesMessage(msg.getSrc()).setFlag(Message.Flag.OOB)
                   .putHeader(ID, new ChallengeResponseHeader(hash));
                 log.trace("%s: received CHALLENGE from %s; sending RESPONSE (hash=%d)", auth.getAddress(), msg.src(), hash);
                 auth.getDownProtocol().down(response);

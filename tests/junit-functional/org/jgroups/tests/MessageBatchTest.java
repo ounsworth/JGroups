@@ -1,8 +1,6 @@
 package org.jgroups.tests;
 
-import org.jgroups.Address;
-import org.jgroups.Global;
-import org.jgroups.Message;
+import org.jgroups.*;
 import org.jgroups.conf.ClassConfigurator;
 import org.jgroups.protocols.*;
 import org.jgroups.util.MessageBatch;
@@ -55,7 +53,7 @@ public class MessageBatchTest {
     public void testCreationWithFilter() {
         List<Message> msgs=new ArrayList<>(10);
         for(int i=1; i <= 10; i++)
-            msgs.add(new Message(null, i));
+            msgs.add(new BytesMessage(null, i));
         MessageBatch batch=new MessageBatch(null, null, null, true, msgs,
                                             msg -> msg != null && ((Integer)msg.getObject()) % 2 == 0);
         System.out.println(batch.map(print_numbers));
@@ -68,7 +66,7 @@ public class MessageBatchTest {
     public void testCreationWithFilter2() {
         List<Message> msgs=new ArrayList<>(20);
         for(int i=1; i <= 20; i++) {
-            Message msg=new Message(null, i);
+            Message msg=new BytesMessage(null, i);
             if(i <= 10) {
                 msg.setFlag(Message.Flag.OOB);
                 if(i % 2 == 0)
@@ -89,21 +87,21 @@ public class MessageBatchTest {
 
 
     public void testIsEmpty() {
-        MessageBatch batch=new MessageBatch(3).add(new Message()).add(new Message()).add(new Message());
+        MessageBatch batch=new MessageBatch(3).add(new BytesMessage()).add(new BytesMessage()).add(new BytesMessage());
         assert !batch.isEmpty();
         for(Iterator<Message> it=batch.iterator(); it.hasNext();) {
             it.next();
             it.remove();
         }
 
-        set(batch, 2, new Message());
+        set(batch, 2, new BytesMessage());
         assert !batch.isEmpty();
     }
 
     public void testIsEmpty2() {
         List<Message> msgs=createMessages();
         MessageBatch batch=new MessageBatch(msgs);
-        batch.add(new Message());
+        batch.add(new BytesMessage());
         assert !batch.isEmpty();
         batch.clear();
         assert batch.isEmpty();
@@ -131,7 +129,7 @@ public class MessageBatchTest {
     public void testReplace() {
         List<Message> msgs=createMessages();
         MessageBatch batch=new MessageBatch(msgs);
-        final Message MSG=new Message();
+        final Message MSG=new BytesMessage();
 
         int index=0;
         for(Message msg: batch) {
@@ -151,7 +149,7 @@ public class MessageBatchTest {
     public void testReplace2() {
         List<Message> msgs=createMessages();
         MessageBatch batch=new MessageBatch(msgs);
-        final Message MSG=new Message();
+        final Message MSG=new BytesMessage();
         batch.replace(MSG, null);
         assert batch.size() == msgs.size(); // MSG was *not* found and therefore *not* nulled
 
@@ -160,8 +158,8 @@ public class MessageBatchTest {
     }
 
     public void testReplace3() {
-        MessageBatch batch=new MessageBatch(1).add(new Message(null, "Bela")).add(new Message(null, "Michi"))
-          .add(new Message(null, "Nicole"));
+        MessageBatch batch=new MessageBatch(1).add(new BytesMessage(null, "Bela")).add(new BytesMessage(null, "Michi"))
+          .add(new BytesMessage(null, "Nicole"));
         System.out.println("batch = " + batch);
         for(Message msg: batch) {
             if("Michi".equals(msg.getObject())) {
@@ -199,7 +197,7 @@ public class MessageBatchTest {
         MessageBatch batch=new MessageBatch(10);
         for(int j=0; j < 2; j++)
             for(int i=1; i <= 5; i++)
-                batch.add(new Message(null, i));
+                batch.add(new BytesMessage(null, i));
         System.out.println(batch.map(print_numbers));
         assert batch.size() == 10;
         batch.replace(filter,  null, true);
@@ -230,7 +228,7 @@ public class MessageBatchTest {
         Predicate<Message> filter=msg -> msg != null && msg.isTransientFlagSet(Message.TransientFlag.OOB_DELIVERED);
         MessageBatch batch=new MessageBatch(10);
         for(int i=1; i <= 10; i++) {
-            Message msg=new Message(null, i);
+            Message msg=new BytesMessage(null, i);
             if(i % 2 == 0)
                 msg.setTransientFlag(Message.TransientFlag.OOB_DELIVERED);
             batch.add(msg);
@@ -242,7 +240,7 @@ public class MessageBatchTest {
         assert batch.size() == 5;
 
         for(int i=0; i < 5; i++)
-            batch.add(new Message(null, i).setTransientFlag(Message.TransientFlag.OOB_DELIVERED));
+            batch.add(new BytesMessage(null, i).setTransientFlag(Message.TransientFlag.OOB_DELIVERED));
         System.out.println("batch = " + batch);
         batch.replace(filter, null, false);
         assert batch.size() == 9;
@@ -401,6 +399,7 @@ public class MessageBatchTest {
 
 
     public void testSize() throws Exception {
+        MessageFactory mf=new DefaultMessageFactory();
         List<Message> msgs=createMessages();
         ByteArrayOutputStream output=new ByteArrayOutputStream();
         DataOutputStream out=new DataOutputStream(output);
@@ -413,7 +412,7 @@ public class MessageBatchTest {
         DataInputStream in=new DataInputStream(new ByteArrayInputStream(buf));
         in.readShort(); // version
         in.readByte(); // flags
-        List<Message> list=Util.readMessageList(in, UDP_ID);
+        List<Message> list=Util.readMessageList(in, UDP_ID, mf);
         assert msgs.size() == list.size();
     }
 
@@ -526,7 +525,7 @@ public class MessageBatchTest {
             count++;
         assert count == msgs.size() - 5;
         count=0;
-        batch.add(new Message()).add(new Message());
+        batch.add(new BytesMessage()).add(new BytesMessage());
         System.out.println("batch = " + batch);
         for(Message ignored : batch)
             count++;
@@ -546,7 +545,7 @@ public class MessageBatchTest {
         List<Message> msgs=createMessages();
         MessageBatch batch=new MessageBatch(msgs);
         int index=0;
-        final Message MSG=new Message();
+        final Message MSG=new BytesMessage();
         for(Message msg: batch) {
             if(index % 2 == 0)
                 batch.replace(msg, MSG);
@@ -586,7 +585,7 @@ public class MessageBatchTest {
         for(Message ignored : batch) {
             count++;
             if(count % 2 == 0)
-                batch.add(new Message());
+                batch.add(new BytesMessage());
         }
 
         System.out.println("batch = " + batch);
@@ -604,7 +603,7 @@ public class MessageBatchTest {
             it.next();
             count++;
             if(count % 2 == 0)
-                batch.add(new Message());
+                batch.add(new BytesMessage());
         }
 
         System.out.println("batch = " + batch);
@@ -615,7 +614,7 @@ public class MessageBatchTest {
     public void testForEach() {
         MessageBatch batch=new MessageBatch(10);
         for(int i=0; i < 10; i++)
-            batch.add(new Message(a, i));
+            batch.add(new BytesMessage(a, i));
         System.out.println("batch = " + batch);
         assert batch.size() == 10;
         batch.remove(msg -> { // removes all msgs with even-numbered payloads
@@ -650,14 +649,14 @@ public class MessageBatchTest {
         List<Message> retval=new ArrayList<>(10);
 
         for(long seqno=1; seqno <= 5; seqno++)
-            retval.add(new Message(b).putHeader(UNICAST3_ID, UnicastHeader3.createDataHeader(seqno, (short)22, false)));
+            retval.add(new BytesMessage(b).putHeader(UNICAST3_ID, UnicastHeader3.createDataHeader(seqno, (short)22, false)));
 
-        retval.add(new Message(b).putHeader(PING_ID, new PingHeader(PingHeader.GET_MBRS_RSP).clusterName("demo-cluster")));
-        retval.add(new Message(b).putHeader(FD_ID, new FD.FdHeader(org.jgroups.protocols.FD.FdHeader.HEARTBEAT)));
-        retval.add(new Message(b).putHeader(MERGE_ID, MERGE3.MergeHeader.createViewResponse()));
+        retval.add(new BytesMessage(b).putHeader(PING_ID, new PingHeader(PingHeader.GET_MBRS_RSP).clusterName("demo-cluster")));
+        retval.add(new BytesMessage(b).putHeader(FD_ID, new FD.FdHeader(org.jgroups.protocols.FD.FdHeader.HEARTBEAT)));
+        retval.add(new BytesMessage(b).putHeader(MERGE_ID, MERGE3.MergeHeader.createViewResponse()));
 
         for(long seqno=6; seqno <= 10; seqno++)
-            retval.add(new Message(b).putHeader(UNICAST3_ID, UnicastHeader3.createDataHeader(seqno, (short)22, false)));
+            retval.add(new BytesMessage(b).putHeader(UNICAST3_ID, UnicastHeader3.createDataHeader(seqno, (short)22, false)));
 
         for(Message msg: retval)
             msg.putHeader(UDP_ID, new TpHeader("demo-cluster"));

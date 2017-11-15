@@ -570,6 +570,8 @@ public class SizeTest {
     public void testFragHeader() throws Exception {
         FragHeader hdr=new FragHeader(322649, 1, 10);
         _testSize(hdr);
+        hdr.needsDeserialization(true);
+        _testSize(hdr);
     }
 
     public void testFragHeader3() throws Exception {

@@ -93,7 +93,7 @@ public class NAKACK2_RetransmissionTest {
 
     /** Makes NAKACK2 receive a message with the given seqno */
     protected void injectMessage(long seqno) {
-        Message msg=new Message(null).src(B);
+        Message msg=new BytesMessage(null).src(B);
         NakAckHeader2 hdr=NakAckHeader2.createMessageHeader(seqno);
         msg.putHeader(ID, hdr);
         nak.up(msg);

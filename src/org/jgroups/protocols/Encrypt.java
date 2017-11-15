@@ -319,7 +319,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             return msg;
         }
 
-        Message ret=Util.streamableFromBuffer(Message.class,decrypted_msg,0,decrypted_msg.length);
+        Message ret=Util.streamableFromBuffer(BytesMessage.class, decrypted_msg, 0, decrypted_msg.length);
         if(ret.getDest() == null)
             ret.setDest(msg.getDest());
         if(ret.getSrc() == null)
@@ -344,7 +344,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             }
 
             // exclude existing headers, they will be seen again when we decrypt and unmarshal the msg at the receiver
-            Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id,hdr);
+            Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id, hdr);
             down_prot.down(tmp);
             return;
         }

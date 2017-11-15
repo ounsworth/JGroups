@@ -89,7 +89,7 @@ public class COMPRESS extends Protocol {
                 int compressed_size=deflater.getTotalOut();
 
                 if(compressed_size < length ) { // JGRP-1000
-                    Message copy=msg.copy(false).putHeader(this.id,new CompressHeader(length))
+                    Message copy=msg.copy(false).putHeader(this.id, new CompressHeader(length))
                       .setBuffer(compressed_payload, 0, compressed_size);
                     if(log.isTraceEnabled())
                         log.trace("compressed payload from %d bytes to %d bytes", length, compressed_size);

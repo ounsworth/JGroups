@@ -1,5 +1,6 @@
 package org.jgroups.tests;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.util.AverageMinMax;
@@ -93,7 +94,7 @@ public class DrainTest {
                 e.printStackTrace();
             }
             while(running) {
-                Message msg=new Message();
+                Message msg=new BytesMessage();
                 add(msg);
             }
         }
@@ -103,7 +104,7 @@ public class DrainTest {
         int num=(int)Util.random(max);
         Message[] msgs=new Message[num];
         for(int i=0; i < msgs.length; i++)
-            msgs[i]=new Message();
+            msgs[i]=new BytesMessage();
         return msgs;
     }
 }

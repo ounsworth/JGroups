@@ -1,18 +1,12 @@
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.View;
+import org.jgroups.*;
 import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.ManagedOperation;
 import org.jgroups.annotations.Property;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.AverageMinMax;
-import org.jgroups.util.MessageBatch;
-import org.jgroups.util.Range;
-import org.jgroups.util.Util;
+import org.jgroups.util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +63,9 @@ public class FRAG2 extends Protocol {
 
     protected Address             local_addr;
 
+    protected MessageFactory      msg_factory;
+
+
     @ManagedAttribute(description="Number of sent fragments")
     protected LongAdder           num_frags_sent=new LongAdder();
     @ManagedAttribute(description="Number of received fragments")
@@ -102,13 +99,12 @@ public class FRAG2 extends Protocol {
             throw new Exception("frag_size=" + old_frag_size + ", new frag_size=" + frag_size + ": new frag_size is invalid");
 
         TP transport=getTransport();
-        if(transport != null) {
-            int max_bundle_size=transport.getMaxBundleSize();
-            if(frag_size >= max_bundle_size)
-                throw new IllegalArgumentException("frag_size (" + frag_size + ") has to be < TP.max_bundle_size (" +
-                                                     max_bundle_size + ")");
-        }
+        int max_bundle_size=transport.getMaxBundleSize();
+        if(frag_size >= max_bundle_size)
+            throw new IllegalArgumentException("frag_size (" + frag_size + ") has to be < TP.max_bundle_size (" +
+                                                 max_bundle_size + ")");
 
+        msg_factory=transport.getMessageFactory();
         Map<String,Object> info=new HashMap<>(1);
         info.put("frag_size", frag_size);
         down_prot.down(new Event(Event.CONFIG, info));
@@ -181,7 +177,7 @@ public class FRAG2 extends Protocol {
         for(Message msg: batch) {
             FragHeader hdr=msg.getHeader(this.id);
             if(hdr != null) { // needs to be defragmented
-                Message assembled_msg=unfragment(msg,hdr);
+                Message assembled_msg=unfragment(msg, hdr);
                 if(assembled_msg != null) {
                     // the reassembled msg has to be add in the right place (https://issues.jboss.org/browse/JGRP-1648),
                     // and canot be added to the tail of the batch !
@@ -235,8 +231,12 @@ public class FRAG2 extends Protocol {
      */
     protected void fragment(Message msg) {
         try {
-            byte[] buffer=msg.getRawBuffer();
-            final List<Range> fragments=Util.computeFragOffsets(msg.getOffset(), msg.getLength(), frag_size);
+            boolean serialize=!msg.hasArray();
+            Buffer tmp=null;
+            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
+            int offset=serialize? tmp.getOffset() : msg.getOffset();
+            int length=serialize? tmp.getLength() : msg.getLength();
+            final List<Range> fragments=Util.computeFragOffsets(offset, length, frag_size);
             int num_frags=fragments.size();
             num_frags_sent.add(num_frags);
 
@@ -250,9 +250,18 @@ public class FRAG2 extends Protocol {
             for(int i=0; i < num_frags; i++) {
                 Range r=fragments.get(i);
                 // don't copy the buffer, only src, dest and headers. Only copy the headers one time !
-                Message frag_msg=msg.copy(false, i == 0);
+                Message frag_msg=null;
+
+
+                if(serialize) {
+                    frag_msg=new BytesMessage(msg.getDest());
+                }
+                else {
+                    frag_msg=msg.copy(false, i == 0);
+                }
+
                 frag_msg.setBuffer(buffer, (int)r.low, (int)r.high);
-                FragHeader hdr=new FragHeader(frag_id, i, num_frags);
+                FragHeader hdr=new FragHeader(frag_id, i, num_frags).needsDeserialization(serialize);
                 frag_msg.putHeader(this.id, hdr);
                 down_prot.down(frag_msg);
             }
@@ -272,7 +281,7 @@ public class FRAG2 extends Protocol {
      */
     protected Message unfragment(Message msg, FragHeader hdr) {
         Address   sender=msg.getSrc();
-        Message   assembled_msg=null;
+        Message assembled_msg=null;
 
         ConcurrentMap<Long,FragEntry> frag_table=fragment_list.get(sender);
         if(frag_table == null) {
@@ -285,13 +294,14 @@ public class FRAG2 extends Protocol {
 
         FragEntry entry=frag_table.get(hdr.id);
         if(entry == null) {
-            entry=new FragEntry(hdr.num_frags);
+            entry=new FragEntry(hdr.num_frags, hdr.needs_deserialization, msg_factory);
             FragEntry tmp=frag_table.putIfAbsent(hdr.id, entry);
             if(tmp != null)
                 entry=tmp;
         }
 
-        entry.lock();
+        Lock lock=entry.lock;
+        lock.lock();
         try {
             entry.set(hdr.frag_id, msg);
             if(entry.isComplete()) {
@@ -303,11 +313,12 @@ public class FRAG2 extends Protocol {
             }
         }
         finally {
-            entry.unlock();
+            lock.unlock();
         }
 
         return assembled_msg;
     }
+
 
 
 
@@ -319,30 +330,23 @@ public class FRAG2 extends Protocol {
      * All methods are unsynchronized, use getLock() to obtain a lock for concurrent access.
      */
     protected static class FragEntry {
-        // each fragment is a byte buffer
-        final Message fragments[];
-        //the number of fragments we have received
-        int number_of_frags_recvd=0;
-
-        protected final Lock lock=new ReentrantLock();
+        protected final Message        fragments[];
+        protected int                  number_of_frags_recvd;
+        protected final boolean        needs_deserialization;
+        protected final MessageFactory msg_factory;
+        protected final Lock           lock=new ReentrantLock();
 
 
         /**
          * Creates a new entry
          * @param tot_frags the number of fragments to expect for this message
          */
-        protected FragEntry(int tot_frags) {
+        protected FragEntry(int tot_frags, boolean needs_deserialization, MessageFactory mf) {
             fragments=new Message[tot_frags];
+            this.needs_deserialization=needs_deserialization;
+            this.msg_factory=mf;
         }
 
-        /** Use to synchronize on FragEntry */
-        public void lock() {
-            lock.lock();
-        }
-
-        public void unlock() {
-            lock.unlock();
-        }
 
         /**
          * adds on fragmentation buffer to the message
@@ -405,8 +409,10 @@ public class FRAG2 extends Protocol {
                 System.arraycopy(tmp, offset, combined_buffer, index, length);
                 index+=length;
             }
-
-            retval.setBuffer(combined_buffer);
+            if(needs_deserialization)
+                retval=Util.messageFromBuffer(combined_buffer, 0, combined_buffer.length, msg_factory);
+            else
+                retval.setBuffer(combined_buffer);
             return retval;
         }
 

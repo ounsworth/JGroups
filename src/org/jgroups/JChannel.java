@@ -526,7 +526,7 @@ public class JChannel implements Closeable {
      * @throws Exception exception thrown if message sending was not successful
      */
     public JChannel send(Address dst, Object obj) throws Exception {
-        return send(new Message(dst, obj));
+        return send(new BytesMessage(dst, obj));
     }
 
     /**
@@ -536,7 +536,7 @@ public class JChannel implements Closeable {
      * @throws Exception exception thrown if the message sending was not successful
      */
     public JChannel send(Address dst, byte[] buf) throws Exception {
-        return send(new Message(dst, buf));
+        return send(new BytesMessage(dst, buf));
     }
 
     /**
@@ -549,7 +549,7 @@ public class JChannel implements Closeable {
      * @throws Exception thrown if send() failed
      */
     public JChannel send(Address dst, byte[] buf, int offset, int length) throws Exception {
-        return send(new Message(dst, buf, offset, length));
+        return send(new BytesMessage(dst, buf, offset, length));
     }
 
 

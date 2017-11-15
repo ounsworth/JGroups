@@ -86,7 +86,7 @@ public class NAMING extends Protocol {
             if(logical_name == null)
                 continue;
             Header hdr=new Header(Type.CACHE_RSP, addr, logical_name);
-            Message msg=new Message(sender).putHeader(id, hdr);
+            Message msg=new BytesMessage(sender).putHeader(id, hdr);
             if(log.isTraceEnabled())
                 log.trace("%s: sending %s to %s", local_addr, hdr, sender);
             try {
@@ -123,7 +123,7 @@ public class NAMING extends Protocol {
                     Address coord=new_view.getCoord();
                     if(Objects.equals(local_addr, coord))
                         return;
-                    Message msg=new Message(coord).setFlag(Message.Flag.OOB).putHeader(id, new Header(Type.CACHE_REQ));
+                    Message msg=new BytesMessage(coord).setFlag(Message.Flag.OOB).putHeader(id, new Header(Type.CACHE_REQ));
                     down_prot.down(msg);
                     return;
                 }
@@ -141,7 +141,7 @@ public class NAMING extends Protocol {
     protected void multicastOwnMapping() {
         String logical_name=NameCache.get(local_addr);
         if(logical_name != null) {
-            Message msg=new Message(null).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+            Message msg=new BytesMessage(null).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
               .putHeader(id, new Header(Type.CACHE_RSP, local_addr, logical_name));
             down_prot.down(msg);
         }

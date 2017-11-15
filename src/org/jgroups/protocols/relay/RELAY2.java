@@ -586,7 +586,7 @@ public class RELAY2 extends Protocol {
      * @param target_site
      */
     protected void sendSiteUnreachableTo(Address dest, String target_site) {
-        Message msg=new Message(dest).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
+        Message msg=new BytesMessage(dest).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
           .src(new SiteUUID((UUID)local_addr, NameCache.get(local_addr), site))
           .putHeader(id,new Relay2Header(Relay2Header.SITE_UNREACHABLE,new SiteMaster(target_site),null));
         down_prot.down(msg);

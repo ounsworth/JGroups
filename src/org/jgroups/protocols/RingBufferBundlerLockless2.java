@@ -1,6 +1,7 @@
 package org.jgroups.protocols;
 
 import org.jgroups.Address;
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.util.*;
@@ -28,7 +29,7 @@ public class RingBufferBundlerLockless2 extends BaseBundler {
     protected Runner                bundler_thread;
     protected final Runnable        run_function=this::readMessages;
     protected static final String   THREAD_NAME=RingBufferBundlerLockless2.class.getSimpleName();
-    public static final Message     NULL_MSG=new Message(false); // public for unit test
+    public static final Message NULL_MSG=new BytesMessage(false); // public for unit test
 
 
 

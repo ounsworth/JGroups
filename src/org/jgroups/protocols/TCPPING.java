@@ -168,7 +168,7 @@ public class TCPPING extends Discovery {
                 continue;
 
             // the message needs to be DONT_BUNDLE, see explanation above
-            final Message msg=new Message(addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
+            final Message msg=new BytesMessage(addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
               .putHeader(this.id,hdr);
             if(data != null)
                 msg.setBuffer(marshal(data));

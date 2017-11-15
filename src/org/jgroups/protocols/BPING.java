@@ -1,5 +1,6 @@
 package org.jgroups.protocols;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Message;
 import org.jgroups.annotations.Property;
 import org.jgroups.util.ByteArrayDataInputStream;
@@ -125,7 +126,7 @@ public class BPING extends PING implements Runnable {
             try {
                 sock.receive(packet);
                 inp=new ByteArrayDataInputStream(packet.getData(), packet.getOffset(), packet.getLength());
-                Message msg=new Message();
+                Message msg=new BytesMessage();
                 msg.readFrom(inp);
                 up(msg);
             }

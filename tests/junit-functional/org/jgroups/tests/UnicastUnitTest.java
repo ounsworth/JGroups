@@ -133,7 +133,7 @@ public class UnicastUnitTest {
     }
 
 
-    protected void send(JChannel ch, Message ... msgs) throws Exception {
+    protected void send(JChannel ch, Message... msgs) throws Exception {
         int cnt=1;
         for(Message msg: msgs) {
             assert msg.dest() != null;
@@ -159,7 +159,7 @@ public class UnicastUnitTest {
                 assert num[i] == received.get(i);
     }
 
-    protected Message msg(Address dest) {return new Message(dest);}
+    protected Message msg(Address dest) {return new BytesMessage(dest);}
 
     protected JChannel create(String name, boolean use_batching) throws Exception {
         Protocol[] protocols={
@@ -209,7 +209,7 @@ public class UnicastUnitTest {
             List<Address> members=new LinkedList<>(new_view.getMembers());
             assert 2 == members.size() : "members=" + members + ", local_addr=" + local_addr + ", view=" + new_view;
             Address dest=members.get(0);
-            Message unicast_msg=new Message(dest);
+            Message unicast_msg=new BytesMessage(dest);
             try {
                 channel.send(unicast_msg);
             }

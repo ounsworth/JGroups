@@ -347,7 +347,7 @@ public abstract class Protocol {
      * messages, although the transport itself will create initial MessageBatches that contain only either OOB or
      * regular messages.<p/>
      * The default processing below sends messages up the stack individually, based on a matching criteria
-     * (calling {@link #accept(org.jgroups.Message)}), and - if true - calls {@link #up(org.jgroups.Event)}
+     * (calling {@link #accept(Message)}), and - if true - calls {@link #up(org.jgroups.Event)}
      * for that message and removes the message. If the batch is not empty, it is passed up, or else it is dropped.<p/>
      * Subclasses should check if there are any messages destined for them (e.g. using
      * {@link MessageBatch#getMatchingMessages(short,boolean)}), then possibly remove and process them and finally pass

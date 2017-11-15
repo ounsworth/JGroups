@@ -1,5 +1,6 @@
 package org.jgroups.tests;
 
+import org.jgroups.BytesMessage;
 import org.jgroups.Global;
 import org.jgroups.Message;
 import org.jgroups.util.AverageMinMax;
@@ -144,7 +145,7 @@ public class MessageBatchDrainTest {
             }
             while(running) {
                 if(Util.tossWeightedCoin(.3))
-                    add(new Message());
+                    add(new BytesMessage());
                 else {
                     Message[] msgs=create(10);
                     MessageBatch mb=new MessageBatch(Arrays.asList(msgs));
@@ -158,7 +159,7 @@ public class MessageBatchDrainTest {
         int num=(int)Util.random(max);
         Message[] msgs=new Message[num];
         for(int i=0; i < msgs.length; i++)
-            msgs[i]=new Message();
+            msgs[i]=new BytesMessage();
         return msgs;
     }
 }

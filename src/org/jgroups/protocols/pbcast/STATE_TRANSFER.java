@@ -176,7 +176,7 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
                     up_prot.up(new Event(Event.GET_STATE_OK, new StateTransferInfo()));
                 }
                 else {
-                    Message state_req=new Message(target).putHeader(this.id, new StateHeader(StateHeader.STATE_REQ))
+                    Message state_req=new BytesMessage(target).putHeader(this.id, new StateHeader(StateHeader.STATE_REQ))
                       .setFlag(Message.Flag.DONT_BUNDLE, Message.Flag.OOB, Message.Flag.SKIP_BARRIER);
                     log.debug("%s: asking %s for state", local_addr, target);
 
@@ -335,7 +335,7 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
             avg_state_size=num_bytes_sent.doubleValue() / num_state_reqs.doubleValue();
         }
 
-        Message state_rsp=new Message(requester, state).putHeader(this.id, new StateHeader(StateHeader.STATE_RSP, digest));
+        Message state_rsp=new BytesMessage(requester, state).putHeader(this.id, new StateHeader(StateHeader.STATE_RSP, digest));
         log.trace("%s: sending state to %s (size=%s)", local_addr, state_rsp.getDest(), Util.printBytes(state != null? state.length : 0));
         down_prot.down(state_rsp);
     }
@@ -343,7 +343,7 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
 
     protected void sendException(Address requester, Throwable exception) {
         try {
-            Message ex_msg=new Message(requester).setBuffer(Util.exceptionToBuffer(exception))
+            Message ex_msg=new BytesMessage(requester).setBuffer(Util.exceptionToBuffer(exception))
               .putHeader(getId(), new StateHeader(StateHeader.STATE_EX));
             down(ex_msg);
         }

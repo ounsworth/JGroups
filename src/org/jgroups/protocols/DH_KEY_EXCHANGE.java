@@ -120,7 +120,7 @@ public class DH_KEY_EXCHANGE extends KeyExchange {
             }
         }
         if(encoded_dh_key != null) {
-            Message msg=new Message(target).putHeader(id, DhHeader.createSecretKeyRequest(encoded_dh_key));
+            Message msg=new BytesMessage(target).putHeader(id, DhHeader.createSecretKeyRequest(encoded_dh_key));
             down_prot.down(msg);
         }
     }
@@ -197,7 +197,7 @@ public class DH_KEY_EXCHANGE extends KeyExchange {
         log.debug("%s: sending public key rsp %s.. to %s", local_addr, print16(public_key_rsp), sender);
 
         // send response to sender with public_key_rsp, encrypted secret key and secret key version
-        Message rsp=new Message(sender)
+        Message rsp=new BytesMessage(sender)
           .putHeader(id, DhHeader.createSecretKeyResponse(public_key_rsp.getEncoded(),
                                                           encrypted_secret_key, version));
         down_prot.down(rsp);

@@ -1,9 +1,6 @@
 package org.jgroups.protocols;
 
-import org.jgroups.Address;
-import org.jgroups.Event;
-import org.jgroups.Message;
-import org.jgroups.PhysicalAddress;
+import org.jgroups.*;
 import org.jgroups.util.NameCache;
 import org.jgroups.util.Responses;
 import org.jgroups.util.Util;
@@ -56,8 +53,8 @@ public class PING extends Discovery {
         // address, then the bundler thread blocks until the discovery request has returned. However, we cannot send
         // the discovery *request* until the bundler thread has returned from sending M
         PingHeader hdr=new PingHeader(PingHeader.GET_MBRS_REQ).clusterName(cluster_name).initialDiscovery(initial_discovery);
-        Message msg=new Message(null).putHeader(getId(),hdr)
-          .setFlag(Message.Flag.INTERNAL,Message.Flag.DONT_BUNDLE,Message.Flag.OOB)
+        Message msg=new BytesMessage(null).putHeader(getId(), hdr)
+          .setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
           .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
         if(data != null)
             msg.setBuffer(marshal(data));

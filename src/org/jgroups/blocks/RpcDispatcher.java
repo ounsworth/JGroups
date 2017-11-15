@@ -2,10 +2,7 @@
 package org.jgroups.blocks;
 
 
-import org.jgroups.Address;
-import org.jgroups.JChannel;
-import org.jgroups.MembershipListener;
-import org.jgroups.Message;
+import org.jgroups.*;
 import org.jgroups.util.*;
 
 import java.lang.reflect.Method;

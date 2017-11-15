@@ -128,7 +128,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
 
 
         // now fabricate a KEY_REQUEST message and send it to the key server (A)
-        Message newMsg=new Message(a.getAddress(), encrypt.keyPair().getPublic().getEncoded()).src(rogue.getAddress())
+        Message newMsg=new BytesMessage(a.getAddress(), encrypt.keyPair().getPublic().getEncoded()).src(rogue.getAddress())
           .putHeader(encrypt.getId(),new EncryptHeader(EncryptHeader.SECRET_KEY_REQ, encrypt.symVersion()));
 
         discard.setDiscardAll(false);
@@ -169,7 +169,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
                                     a.getAddress(),b.getAddress(),c.getAddress(),rogue.getAddress());
         JoinRsp join_rsp=new JoinRsp(rogue_view, null);
         GMS.GmsHeader gms_hdr=new GMS.GmsHeader(GMS.GmsHeader.JOIN_RSP);
-        Message rogue_join_rsp=new Message(b.getAddress(), rogue.getAddress()).putHeader(GMS_ID, gms_hdr)
+        Message rogue_join_rsp=new BytesMessage(b.getAddress(), rogue.getAddress()).putHeader(GMS_ID, gms_hdr)
           .setBuffer(GMS.marshal(join_rsp)).setFlag(Message.Flag.NO_RELIABILITY); // bypasses NAKACK2 / UNICAST3
         rogue.down(rogue_join_rsp);
         for(int i=0; i < 10; i++) {
@@ -208,7 +208,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
         MergeView merge_view=new MergeView(a.getAddress(), a.getView().getViewId().getId()+5,
                                            Arrays.asList(a.getAddress(), b.getAddress(), c.getAddress(), rogue.getAddress()), null);
         GMS.GmsHeader hdr=new GMS.GmsHeader(GMS.GmsHeader.INSTALL_MERGE_VIEW, a.getAddress());
-        Message merge_view_msg=new Message(null, marshalView(merge_view)).putHeader(GMS_ID, hdr)
+        Message merge_view_msg=new BytesMessage(null, marshalView(merge_view)).putHeader(GMS_ID, hdr)
           .setFlag(Message.Flag.NO_RELIABILITY);
         System.out.printf("** %s: trying to install MergeView %s in all members\n", rogue.getAddress(), merge_view);
         rogue.down(merge_view_msg);

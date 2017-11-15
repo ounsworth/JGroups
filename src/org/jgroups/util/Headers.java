@@ -1,5 +1,6 @@
 package org.jgroups.util;
 
+import org.jgroups.BaseMessage;
 import org.jgroups.Global;
 import org.jgroups.Header;
 import org.jgroups.conf.ClassConfigurator;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper class providing functions to manipulate the {@link org.jgroups.Message#headers} array. The headers are stored
+ * Helper class providing functions to manipulate the {@link BaseMessage#headers} array. The headers are stored
  * in the array as follows:
  * <pre>
  * Headers:  hdr-1 | hdr-2 | hdr-3 | ... | hdr-n |
