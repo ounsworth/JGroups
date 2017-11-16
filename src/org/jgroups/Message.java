@@ -1,7 +1,6 @@
 package org.jgroups;
 
 import org.jgroups.util.Buffer;
-import org.jgroups.util.ByteArrayDataInputStream;
 import org.jgroups.util.Streamable;
 
 import java.io.DataInput;
@@ -177,12 +176,10 @@ public interface Message extends Streamable, Constructable<Message> {
 
     void readFrom(DataInput in) throws Exception;
 
-    int readFromSkipPayload(ByteArrayDataInputStream in) throws Exception;
-
     long size();
 
     // =============================== Flags ====================================
-    public enum Flag {
+    enum Flag {
         OOB((short)            1),           // message is out-of-band
         DONT_BUNDLE(   (short)(1 <<  1)),    // don't bundle message at the transport
         NO_FC(         (short)(1 <<  2)),    // bypass flow control
@@ -201,7 +198,7 @@ public interface Message extends Streamable, Constructable<Message> {
     }
 
     // =========================== Transient flags ==============================
-    public enum TransientFlag {
+    enum TransientFlag {
         OOB_DELIVERED( (short)(1)),
         DONT_LOOPBACK( (short)(1 << 1));   // don't loop back up if this flag is set and it is a multicast message
 

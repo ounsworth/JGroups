@@ -5,7 +5,6 @@ import org.jgroups.*;
 import org.jgroups.protocols.PingHeader;
 import org.jgroups.protocols.TpHeader;
 import org.jgroups.protocols.pbcast.NakAckHeader2;
-import org.jgroups.util.ByteArrayDataInputStream;
 import org.jgroups.util.Range;
 import org.jgroups.util.UUID;
 import org.jgroups.util.Util;
@@ -403,55 +402,6 @@ public class MessageTest {
         _testSize(msg);
     }
 
-    public void testReadFromSkipPayload() throws Exception {
-        Message msg=new BytesMessage(Util.createRandomAddress("A"), "bela".getBytes()).src(Util.createRandomAddress("B"));
-        addHeaders(msg);
-        byte[] buf=Util.streamableToByteBuffer(msg);
-
-        // ExposedByteArrayInputStream input=new ExposedByteArrayInputStream(buf);
-        // DataInput in=new DataInputStream(input);
-        ByteArrayDataInputStream in=new ByteArrayDataInputStream(buf);
-
-        Message msg2=new BytesMessage(false);
-        int payload_position=msg2.readFromSkipPayload(in);
-        msg2.setBuffer(buf, payload_position, buf.length - payload_position);
-        assert msg2.getOffset() == payload_position;
-        assert msg2.getLength() == msg.getLength();
-        assert msg2.size() == msg.size();
-
-        Message copy=msg2.copy();
-        assert copy.getOffset() == payload_position;
-        assert copy.getLength() == msg.getLength();
-        assert copy.size() == msg2.size();
-    }
-
-    public static void testReadFromSkipPayloadNullPayload() throws Exception {
-        Message msg=new BytesMessage(Util.createRandomAddress("A")).src(Util.createRandomAddress("B"));
-        addHeaders(msg);
-        byte[] buf=Util.streamableToByteBuffer(msg);
-
-        // ExposedByteArrayInputStream input=new ExposedByteArrayInputStream(buf);
-        // DataInput in=new DataInputStream(input);
-        ByteArrayDataInputStream in=new ByteArrayDataInputStream(buf);
-        Message msg2=new BytesMessage(false);
-        int payload_position=msg2.readFromSkipPayload(in);
-        if(payload_position >= 0)
-            msg2.setBuffer(buf, payload_position, buf.length - payload_position);
-        assert msg2.getOffset() == 0;
-        assert msg2.getLength() == msg.getLength();
-        assert msg.getRawBuffer() == null;
-        assert msg2.getRawBuffer() == null;
-        assert msg.getBuffer() == null;
-        assert msg2.getBuffer() == null;
-        assert msg2.size() == msg.size();
-
-        Message copy=msg2.copy();
-        assert copy.getOffset() == 0;
-        assert copy.getLength() == msg.getLength();
-        assert copy.getRawBuffer() == null;
-        assert copy.getBuffer() == null;
-        assert copy.size() == msg2.size();
-    }
 
     protected static void addHeaders(Message msg) {
         TpHeader tp_hdr=new TpHeader("DemoChannel2");

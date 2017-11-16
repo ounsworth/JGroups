@@ -25,20 +25,13 @@ import java.util.Map;
 public abstract class BaseMessage implements Message {
     protected Address           dest_addr;
     protected Address           src_addr;
-
-
-    /** All headers are placed here */
     protected volatile Header[] headers;
-
     protected volatile short    flags;
-
     protected volatile byte     transient_flags; // transient_flags is neither marshalled nor copied
-
 
 
     static final byte           DEST_SET         =  1;
     static final byte           SRC_SET          =  1 << 1;
-    static final byte           BUF_SET          =  1 << 2;
 
 
     /**
@@ -434,8 +427,104 @@ public abstract class BaseMessage implements Message {
     }
 
 
+    public void writeTo(DataOutput out) throws Exception {
+        byte leading=0;
 
-    /* ----------------------------------- Private methods ------------------------------- */
+        if(dest_addr != null)
+            leading=Util.setFlag(leading, DEST_SET);
+
+        if(src_addr != null)
+            leading=Util.setFlag(leading, SRC_SET);
+
+        // 1. write the leading byte first
+        out.write(leading);
+
+        // 2. the flags (e.g. OOB, LOW_PRIO), skip the transient flags
+        out.writeShort(flags);
+
+        // 3. dest_addr
+        if(dest_addr != null)
+            Util.writeAddress(dest_addr, out);
+
+        // 4. src_addr
+        if(src_addr != null)
+            Util.writeAddress(src_addr, out);
+
+        // 5. headers
+        Header[] hdrs=this.headers;
+        int size=Headers.size(hdrs);
+        out.writeShort(size);
+        if(size > 0) {
+            for(Header hdr : hdrs) {
+                if(hdr == null)
+                    break;
+                out.writeShort(hdr.getProtId());
+                writeHeader(hdr, out);
+            }
+        }
+    }
+
+    public void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception {
+        byte leading=0;
+
+        boolean write_src_addr=src == null || src_addr != null && !src_addr.equals(src);
+
+        if(write_src_addr)
+            leading=Util.setFlag(leading, SRC_SET);
+
+        // 1. write the leading byte first
+        out.write(leading);
+
+        // 2. the flags (e.g. OOB, LOW_PRIO)
+        out.writeShort(flags);
+
+        // 4. src_addr
+        if(write_src_addr)
+            Util.writeAddress(src_addr, out);
+
+        // 5. headers
+        Header[] hdrs=this.headers;
+        int size=Headers.size(hdrs, excluded_headers);
+        out.writeShort(size);
+        if(size > 0) {
+            for(Header hdr : hdrs) {
+                if(hdr == null)
+                    break;
+                short id=hdr.getProtId();
+                if(excluded_headers != null && Util.containsId(id, excluded_headers))
+                    continue;
+                out.writeShort(id);
+                writeHeader(hdr, out);
+            }
+        }
+    }
+
+
+    public void readFrom(DataInput in) throws Exception {
+        // 1. read the leading byte first
+        byte leading=in.readByte();
+
+        // 2. the flags
+        flags=in.readShort();
+
+        // 3. dest_addr
+        if(Util.isFlagSet(leading, DEST_SET))
+            dest_addr=Util.readAddress(in);
+
+        // 4. src_addr
+        if(Util.isFlagSet(leading, SRC_SET))
+            src_addr=Util.readAddress(in);
+
+        // 5. headers
+        int len=in.readShort();
+        this.headers=createHeaders(len);
+        for(int i=0; i < len; i++) {
+            short id=in.readShort();
+            Header hdr=readHeader(in).setProtId(id);
+            this.headers[i]=hdr;
+        }
+    }
+
 
 
     protected static void writeHeader(Header hdr, DataOutput out) throws Exception {
@@ -456,8 +545,6 @@ public abstract class BaseMessage implements Message {
     protected static Header[] createHeaders(int size) {
         return size > 0? new Header[size] : new Header[3];
     }
-
-    /* ------------------------------- End of Private methods ---------------------------- */
 
 
 }

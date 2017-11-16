@@ -315,7 +315,6 @@ public class FRAG2 extends Protocol {
         finally {
             lock.unlock();
         }
-
         return assembled_msg;
     }
 
@@ -367,45 +366,38 @@ public class FRAG2 extends Protocol {
          *
          */
         public boolean isComplete() {
-            /*first make a simple check*/
-            if(number_of_frags_recvd < fragments.length) {
+            /* first a simple check */
+            if(number_of_frags_recvd < fragments.length)
                 return false;
-            }
-            /*then double check just in case*/
+
+            /* then double check just in case */
             for(Message msg: fragments) {
                 if(msg == null)
                     return false;
             }
-            /* have all fragments been received */
             return true;
         }
 
         /**
-         * Assembles all the fragments into one buffer. Takes all Messages, and combines their buffers into one
-         * buffer.
-         * This method does not check if the fragmentation is complete (use {@link #isComplete()} to verify
+         * Assembles all the message fragments into one message.
+         * This method does not check if the fragmentation is complete (use {@link #isComplete()} to verify)
          * before calling this method)
-         * @return the complete message in one buffer
-         *
+         * @return the complete message
          */
         protected Message assembleMessage() {
-            Message retval;
-            byte[]  combined_buffer, tmp;
-            int     combined_length=0, length, offset;
-            int     index=0;
+            int combined_length=0, index=0;
 
             for(Message fragment: fragments)
                 combined_length+=fragment.getLength();
 
-            combined_buffer=new byte[combined_length];
-            retval=fragments[0].copy(false); // doesn't copy the payload, but copies the headers
+            byte[] combined_buffer=new byte[combined_length];
+            Message retval=fragments[0].copy(false); // doesn't copy the payload, but copies the headers
 
             for(int i=0; i < fragments.length; i++) {
                 Message fragment=fragments[i];
                 fragments[i]=null; // help garbage collection a bit
-                tmp=fragment.getRawBuffer();
-                length=fragment.getLength();
-                offset=fragment.getOffset();
+                byte[] tmp=fragment.getRawBuffer();
+                int length=fragment.getLength(), offset=fragment.getOffset();
                 System.arraycopy(tmp, offset, combined_buffer, index, length);
                 index+=length;
             }

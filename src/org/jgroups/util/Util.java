@@ -4234,7 +4234,7 @@ public class Util {
                     state=SEEN_DOLLAR;
             }
 
-                // Open bracket immediatley after dollar
+            // Open bracket immediatley after dollar
             else if(c == '{' && state == SEEN_DOLLAR) {
                 // buffer.append(string.substring(start,i - 1));
                 append(buffer, string.substring(start,i - 1));
@@ -4255,7 +4255,6 @@ public class Util {
                 else // Collect the system property
                 {
                     String value=null;
-
                     String key=string.substring(start + 2,i);
 
                     // check for alias
@@ -4306,17 +4305,9 @@ public class Util {
                 state=NORMAL;
             }
         }
-
-        // No properties
-       // if(!properties)
-         //   return string;
-
         // Collect the trailing characters
-        if(start != chars.length) {
-            // buffer.append(string.substring(start,chars.length));
+        if(start != chars.length)
             append(buffer, string.substring(start, chars.length));
-        }
-
         return buffer.toString();
     }
 

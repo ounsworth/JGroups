@@ -237,186 +237,48 @@ public class ObjectMessage extends BaseMessage {
 
     /* ----------------------------------- Interface Streamable  ------------------------------- */
 
-    /**
-     * Streams all members (dest and src addresses, buffer and headers) to the output stream.
-     *
-     *
-     * @param out
-     * @throws Exception
-     */
+    /** Streams all members (dest and src addresses, buffer and headers) to the output stream */
     public void writeTo(DataOutput out) throws Exception {
-        byte leading=0;
-
-        if(dest_addr != null)
-            leading=Util.setFlag(leading, DEST_SET);
-
-        if(src_addr != null)
-            leading=Util.setFlag(leading, SRC_SET);
-
-        if(obj != null)
-            leading=Util.setFlag(leading, BUF_SET);
-
-        // 1. write the leading byte first
-        out.write(leading);
-
-        // 2. the flags (e.g. OOB, LOW_PRIO), skip the transient flags
-        out.writeShort(flags);
-
-        // 3. dest_addr
-        if(dest_addr != null)
-            Util.writeAddress(dest_addr, out);
-
-        // 4. src_addr
-        if(src_addr != null)
-            Util.writeAddress(src_addr, out);
-
-        // 5. headers
-        Header[] hdrs=this.headers;
-        int size=Headers.size(hdrs);
-        out.writeShort(size);
-        if(size > 0) {
-            for(Header hdr : hdrs) {
-                if(hdr == null)
-                    break;
-                out.writeShort(hdr.getProtId());
-                writeHeader(hdr, out);
-            }
-        }
-
-        // 6. buf
+        super.writeTo(out);
         if(obj != null) {
             if(serialized_obj == null)
                 swizzle();
             out.writeInt(serialized_obj.length);
             out.write(serialized_obj, 0, serialized_obj.length);
         }
+        else
+            out.writeInt(-1);
     }
 
    /**
     * Writes the message to the output stream, but excludes the dest and src addresses unless the
     * src address given as argument is different from the message's src address
-    *
-    * @param src
-    * @param out
     * @param excluded_headers Don't marshal headers that are part of excluded_headers
-    * @throws Exception
     */
     public void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception {
-        byte leading=0;
-
-        boolean write_src_addr=src == null || src_addr != null && !src_addr.equals(src);
-
-        if(write_src_addr)
-            leading=Util.setFlag(leading, SRC_SET);
-
-        if(obj != null)
-            leading=Util.setFlag(leading, BUF_SET);
-
-        // 1. write the leading byte first
-        out.write(leading);
-
-        // 2. the flags (e.g. OOB, LOW_PRIO)
-        out.writeShort(flags);
-
-        // 4. src_addr
-        if(write_src_addr)
-            Util.writeAddress(src_addr, out);
-
-        // 5. headers
-        Header[] hdrs=this.headers;
-        int size=Headers.size(hdrs, excluded_headers);
-        out.writeShort(size);
-        if(size > 0) {
-            for(Header hdr : hdrs) {
-                if(hdr == null)
-                    break;
-                short id=hdr.getProtId();
-                if(excluded_headers != null && Util.containsId(id, excluded_headers))
-                    continue;
-                out.writeShort(id);
-                writeHeader(hdr, out);
-            }
-        }
-
-        // 6. buf
+        super.writeToNoAddrs(src, out, excluded_headers);
         if(obj != null) {
             if(serialized_obj == null)
                 swizzle();
             out.writeInt(serialized_obj.length);
             out.write(serialized_obj, 0, serialized_obj.length);
         }
+        else
+            out.writeInt(-1);
     }
 
 
     public void readFrom(DataInput in) throws Exception {
-
-        // 1. read the leading byte first
-        byte leading=in.readByte();
-
-        // 2. the flags
-        flags=in.readShort();
-
-        // 3. dest_addr
-        if(Util.isFlagSet(leading, DEST_SET))
-            dest_addr=Util.readAddress(in);
-
-        // 4. src_addr
-        if(Util.isFlagSet(leading, SRC_SET))
-            src_addr=Util.readAddress(in);
-
-        // 5. headers
-        int len=in.readShort();
-        this.headers=createHeaders(len);
-        for(int i=0; i < len; i++) {
-            short id=in.readShort();
-            Header hdr=readHeader(in).setProtId(id);
-            this.headers[i]=hdr;
-        }
-
-        // 6. buf
-        if(Util.isFlagSet(leading, BUF_SET)) {
-            len=in.readInt();
-            serialized_obj=new byte[len];
-            in.readFully(serialized_obj, 0, len);
-            obj=Util.objectFromByteBuffer(serialized_obj);
-        }
+        super.readFrom(in);
+        int len=in.readInt();
+        if(len == -1)
+            return;
+        serialized_obj=new byte[len];
+        in.readFully(serialized_obj, 0, len);
+        obj=Util.objectFromByteBuffer(serialized_obj);
     }
 
 
-    /** Reads the message's contents from an input stream, but skips the buffer and instead returns the
-     * position (offset) at which the buffer starts */
-    public int readFromSkipPayload(ByteArrayDataInputStream in) throws Exception {
-
-        // 1. read the leading byte first
-        byte leading=in.readByte();
-
-        // 2. the flags
-        flags=in.readShort();
-
-        // 3. dest_addr
-        if(Util.isFlagSet(leading, DEST_SET))
-            dest_addr=Util.readAddress(in);
-
-        // 4. src_addr
-        if(Util.isFlagSet(leading, SRC_SET))
-            src_addr=Util.readAddress(in);
-
-        // 5. headers
-        int len=in.readShort();
-        headers=createHeaders(len);
-        for(int i=0; i < len; i++) {
-            short id=in.readShort();
-            Header hdr=readHeader(in).setProtId(id);
-            this.headers[i]=hdr;
-        }
-
-        // 6. buf
-        if(!Util.isFlagSet(leading, BUF_SET))
-            return -1;
-
-        in.readInt();
-        return in.position();
-    }
 
     /* --------------------------------- End of Interface Streamable ----------------------------- */
 
