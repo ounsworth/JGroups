@@ -1568,6 +1568,16 @@ public class Util {
         return retval;
     }
 
+    public static int size(SizeStreamable s) {
+        int retval=Global.BYTE_SIZE;
+        if(s == null)
+            return retval;
+        retval+=Global.SHORT_SIZE; // magic number
+        short magic_number=ClassConfigurator.getMagicNumber(s.getClass());
+        if(magic_number == -1)
+            retval+=Bits.sizeUTF(s.getClass().getName());
+        return retval + s.serializedSize();
+    }
 
     public static void writeGenericStreamable(Streamable obj, DataOutput out) throws Exception {
         short magic_number;

@@ -109,63 +109,29 @@ public abstract class BaseMessage implements Message {
     }
 
 
-    public Address getDest()                 {return dest_addr;}
-    public Address dest()                    {return dest_addr;}
-
-    public <T extends Message> T setDest(Address new_dest) {
-        dest_addr=new_dest; return (T)this;
-    }
-
-    // public Msg setDest(Address new_dest) {dest_addr=new_dest; return this;}
-
-
-    public Message dest(Address new_dest)    {dest_addr=new_dest; return this;}
-    public Address getSrc()                  {return src_addr;}
-    public Address src()                     {return src_addr;}
-    public Message setSrc(Address new_src)   {src_addr=new_src; return this;}
-    public Message src(Address new_src)      {src_addr=new_src; return this;}
-    public abstract int     getOffset();
-    public abstract int     offset();
-    public abstract int     getLength();
-    public abstract int     length();
-
-
-    /**
-     * Returns a <em>reference</em> to the payload (byte buffer). Note that this buffer should not be
-     * modified as we do not copy the buffer on copy() or clone(): the buffer of the copied message
-     * is simply a reference to the old buffer.<br/>
-     * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
-     */
-    public abstract byte[]  getRawBuffer();
-    public abstract byte[]  rawBuffer();
-    public abstract byte[]  buffer();
-    public abstract Buffer  buffer2();
-    public abstract Message buffer(byte[] b);
-    public abstract Message buffer(Buffer b);
-    public int     getNumHeaders()           {return Headers.size(this.headers);}
-    public int     numHeaders()              {return Headers.size(this.headers);}
-
-
-
-
-   /**
-    * Returns a reference to the headers hashmap, which is <em>immutable</em>. Any attempt to modify
-    * the returned map will cause a runtime exception
-    */
-    public Map<Short,Header> getHeaders() {
-        return Headers.getHeaders(this.headers);
-    }
-
-    public String printHeaders() {
-        return Headers.printHeaders(this.headers);
-    }
-
-
-
-
-    public <T extends Object> T getObject() {
-        return getObject(null);
-    }
+    public Address               getDest()                 {return dest_addr;}
+    public Address               dest()                    {return dest_addr;}
+    public <T extends Message> T setDest(Address new_dest) {dest_addr=new_dest; return (T)this;}
+    public Message               dest(Address new_dest)    {return setDest(new_dest);}
+    public Address               getSrc()                  {return src_addr;}
+    public Address               src()                     {return src_addr;}
+    public Message               setSrc(Address new_src)   {src_addr=new_src; return this;}
+    public Message               src(Address new_src)      {src_addr=new_src; return this;}
+    public abstract int          getOffset();
+    public abstract int          offset();
+    public abstract int          getLength();
+    public abstract int          length();
+    public abstract byte[]       getRawBuffer();
+    public abstract byte[]       rawBuffer();
+    public abstract byte[]       buffer();
+    public abstract Buffer       buffer2();
+    public abstract Message      buffer(byte[] b);
+    public abstract Message      buffer(Buffer b);
+    public int                   getNumHeaders()           {return Headers.size(this.headers);}
+    public int                   numHeaders()              {return Headers.size(this.headers);}
+    public Map<Short,Header>     getHeaders()              {return Headers.getHeaders(this.headers);}
+    public String                printHeaders()            {return Headers.printHeaders(this.headers);}
+    public <T extends Object> T  getObject()               {return getObject(null);}
 
 
     /**
@@ -403,16 +369,6 @@ public abstract class BaseMessage implements Message {
 
 
 
-    /**
-     * Returns the exact size of the marshalled message. Uses method size() of each header to compute
-     * the size, so if a Header subclass doesn't implement size() we will use an approximation.
-     * However, most relevant header subclasses have size() implemented correctly. (See
-     * org.jgroups.tests.SizeTest).<p/>
-     * The return type is a long as this is the length of the payload ({@link #getLength()}) plus metadata (e.g. flags,
-     * headers, source and dest addresses etc). Since the largest payload can be Integer.MAX_VALUE, adding the metadata
-     * might lead to an int overflow, that's why we use a long.
-     * @return The number of bytes for the marshalled message
-     */
     public long size() {
         long retval=(long)Global.BYTE_SIZE   // leading byte
                 + Global.SHORT_SIZE;   // flags

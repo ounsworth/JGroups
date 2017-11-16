@@ -90,6 +90,12 @@ public interface Message extends Streamable, Constructable<Message> {
 
     int     length();
 
+    /**
+     * Returns a <em>reference</em> to the payload (byte buffer). Note that this buffer should not be
+     * modified as we do not copy the buffer on copy() or clone(): the buffer of the copied message
+     * is simply a reference to the old buffer.<br/>
+     * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
+     */
     byte[]  getRawBuffer();
 
     byte[]  rawBuffer();
@@ -106,16 +112,30 @@ public interface Message extends Streamable, Constructable<Message> {
 
     int     numHeaders();
 
+    /**
+     * Returns a copy of the buffer if offset and length are used, otherwise a reference.
+     * @return byte array with a copy of the buffer.
+     */
     byte[] getBuffer();
 
     Buffer getBuffer2();
 
+    /**
+     * Sets the buffer.<p/>
+     * Note that the byte[] buffer passed as argument must not be modified. Reason: if we retransmit the
+     * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
+     * retransmit a changed byte[] buffer !
+     */
     Message setBuffer(byte[] b);
 
     Message setBuffer(byte[] b, int offset, int length);
 
     Message setBuffer(Buffer buf);
 
+    /**
+     * Returns a reference to the headers hashmap, which is <em>immutable</em>. Any attempt to modify
+     * the returned map will cause a runtime exception
+     */
     Map<Short,Header> getHeaders();
 
     String printHeaders();
@@ -176,6 +196,16 @@ public interface Message extends Streamable, Constructable<Message> {
 
     void readFrom(DataInput in) throws Exception;
 
+    /**
+     * Returns the exact size of the marshalled message. Uses method size() of each header to compute
+     * the size, so if a Header subclass doesn't implement size() we will use an approximation.
+     * However, most relevant header subclasses have size() implemented correctly. (See
+     * org.jgroups.tests.SizeTest).<p/>
+     * The return type is a long as this is the length of the payload ({@link #getLength()}) plus metadata (e.g. flags,
+     * headers, source and dest addresses etc). Since the largest payload can be Integer.MAX_VALUE, adding the metadata
+     * might lead to an int overflow, that's why we use a long.
+     * @return The number of bytes for the marshalled message
+     */
     long size();
 
     // =============================== Flags ====================================

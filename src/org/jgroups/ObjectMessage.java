@@ -20,9 +20,7 @@ import java.util.function.Supplier;
  * @author Bela Ban
  */
 public class ObjectMessage extends BaseMessage {
-
     protected Object obj;
-
     protected byte[] serialized_obj;
 
 
@@ -65,14 +63,13 @@ public class ObjectMessage extends BaseMessage {
         return ObjectMessage::new;
     }
 
-    public byte getType() {
-        return Message.OBJ_MSG;
-    }
+    public byte    getType()       {return Message.OBJ_MSG;}
+    public boolean hasArray()      {return false;}
+    public int     getOffset()     {return 0;}
+    public int     offset()        {return 0;}
+    public int     length()        {return getLength();}
 
-    public boolean hasArray()                {return false;}
-    public int     getOffset()               {return 0;}
-    public int     offset()                  {return 0;}
-    public int     getLength()               {
+    public int     getLength()     {
         if(obj == null)
             return 0;
         if(obj instanceof SizeStreamable)
@@ -80,15 +77,8 @@ public class ObjectMessage extends BaseMessage {
         swizzle();
         return serialized_obj.length;
     }
-    public int     length()                  {return getLength();}
 
 
-    /**
-     * Returns a <em>reference</em> to the payload (byte buffer). Note that this buffer should not be
-     * modified as we do not copy the buffer on copy() or clone(): the buffer of the copied message
-     * is simply a reference to the old buffer.<br/>
-     * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
-     */
     public byte[]  getRawBuffer()            {swizzle(); return serialized_obj;}
     public byte[]  rawBuffer()               {swizzle(); return serialized_obj;}
     public byte[]  buffer()                  {return getBuffer();}
@@ -97,10 +87,6 @@ public class ObjectMessage extends BaseMessage {
     public Message buffer(Buffer b)          {return setBuffer(b);}
 
 
-   /**
-    * Returns a copy of the buffer if offset and length are used, otherwise a reference.
-    * @return byte array with a copy of the buffer.
-    */
     public byte[] getBuffer() {
         swizzle();
         return serialized_obj;
@@ -113,12 +99,7 @@ public class ObjectMessage extends BaseMessage {
         return new Buffer(serialized_obj, 0, serialized_obj.length);
     }
 
-    /**
-     * Sets the buffer.<p/>
-     * Note that the byte[] buffer passed as argument must not be modified. Reason: if we retransmit the
-     * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
-     * retransmit a changed byte[] buffer !
-     */
+
     public Message setBuffer(byte[] b) {
         throw new UnsupportedOperationException();
     }
@@ -237,17 +218,27 @@ public class ObjectMessage extends BaseMessage {
 
     /* ----------------------------------- Interface Streamable  ------------------------------- */
 
+    public long size() {
+        long retval=super.size() + Global.BYTE_SIZE; // streamable
+
+        if(obj instanceof SizeStreamable)
+            return retval + Util.size((SizeStreamable)obj);
+
+        retval+=Global.INT_SIZE; // length (integer)
+        if(obj == null)
+            return retval;
+
+        if(serialized_obj == null)
+            swizzle();
+        return retval + serialized_obj.length; // number of bytes in the buffer
+    }
+
+
+
     /** Streams all members (dest and src addresses, buffer and headers) to the output stream */
     public void writeTo(DataOutput out) throws Exception {
         super.writeTo(out);
-        if(obj != null) {
-            if(serialized_obj == null)
-                swizzle();
-            out.writeInt(serialized_obj.length);
-            out.write(serialized_obj, 0, serialized_obj.length);
-        }
-        else
-            out.writeInt(-1);
+        write(out);
     }
 
    /**
@@ -257,6 +248,32 @@ public class ObjectMessage extends BaseMessage {
     */
     public void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception {
         super.writeToNoAddrs(src, out, excluded_headers);
+        write(out);
+    }
+
+
+    public void readFrom(DataInput in) throws Exception {
+        super.readFrom(in);
+        boolean streamable=in.readBoolean();
+        if(streamable)
+            obj=Util.readGenericStreamable(in);
+        else {
+            int len=in.readInt();
+            if(len == -1)
+                return;
+            serialized_obj=new byte[len];
+            in.readFully(serialized_obj, 0, len);
+            obj=Util.objectFromByteBuffer(serialized_obj);
+        }
+    }
+
+
+    protected void write(DataOutput out) throws Exception {
+        out.writeBoolean(obj instanceof SizeStreamable);
+        if(obj instanceof SizeStreamable) {
+            Util.writeGenericStreamable((Streamable)obj, out);
+            return;
+        }
         if(obj != null) {
             if(serialized_obj == null)
                 swizzle();
@@ -268,42 +285,7 @@ public class ObjectMessage extends BaseMessage {
     }
 
 
-    public void readFrom(DataInput in) throws Exception {
-        super.readFrom(in);
-        int len=in.readInt();
-        if(len == -1)
-            return;
-        serialized_obj=new byte[len];
-        in.readFully(serialized_obj, 0, len);
-        obj=Util.objectFromByteBuffer(serialized_obj);
-    }
-
-
-
     /* --------------------------------- End of Interface Streamable ----------------------------- */
-
-    /**
-     * Returns the exact size of the marshalled message. Uses method size() of each header to compute
-     * the size, so if a Header subclass doesn't implement size() we will use an approximation.
-     * However, most relevant header subclasses have size() implemented correctly. (See
-     * org.jgroups.tests.SizeTest).<p/>
-     * The return type is a long as this is the length of the payload ({@link #getLength()}) plus metadata (e.g. flags,
-     * headers, source and dest addresses etc). Since the largest payload can be Integer.MAX_VALUE, adding the metadata
-     * might lead to an int overflow, that's why we use a long.
-     * @return The number of bytes for the marshalled message
-     */
-    public long size() {
-        long retval=super.size();
-        if(obj == null)
-            return retval;
-        if(obj instanceof SizeStreamable)
-            return retval + Global.INT_SIZE + ((SizeStreamable)obj).serializedSize();
-
-        if(serialized_obj == null)
-            swizzle();
-        return retval + Global.INT_SIZE // length (integer)
-          + serialized_obj.length;       // number of bytes in the buffer
-    }
 
 
     public String toString() {
