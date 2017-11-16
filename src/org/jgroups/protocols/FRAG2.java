@@ -251,14 +251,10 @@ public class FRAG2 extends Protocol {
                 Range r=fragments.get(i);
                 // don't copy the buffer, only src, dest and headers. Only copy the headers one time !
                 Message frag_msg=null;
-
-
-                if(serialize) {
+                if(serialize)
                     frag_msg=new BytesMessage(msg.getDest());
-                }
-                else {
+                else
                     frag_msg=msg.copy(false, i == 0);
-                }
 
                 frag_msg.setBuffer(buffer, (int)r.low, (int)r.high);
                 FragHeader hdr=new FragHeader(frag_id, i, num_frags).needsDeserialization(serialize);

@@ -6,9 +6,10 @@ import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.Property;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.*;
+import org.jgroups.util.Buffer;
+import org.jgroups.util.MessageBatch;
+import org.jgroups.util.Util;
 
-import java.io.DataInput;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,9 +50,10 @@ public class FRAG extends Protocol {
 
     
     /** Contains a frag table per sender, this way it becomes easier to clean up if a sender leaves or crashes */
-    private final FragmentationList  fragment_list=new FragmentationList();
-    private final AtomicInteger      curr_id=new AtomicInteger(1);
-    private final List<Address>      members=new ArrayList<>(11);
+    protected final FragmentationList  fragment_list=new FragmentationList();
+    protected final AtomicInteger      curr_id=new AtomicInteger(1);
+    protected final List<Address>      members=new ArrayList<>(11);
+    protected MessageFactory           msg_factory;
     
     
  
@@ -76,6 +78,7 @@ public class FRAG extends Protocol {
 
     public void init() throws Exception {
         super.init();
+        msg_factory=getTransport().getMessageFactory();
         Map<String,Object> info=new HashMap<>(1);
         info.put("frag_size", frag_size);
         down_prot.down(new Event(Event.CONFIG, info));
@@ -109,7 +112,7 @@ public class FRAG extends Protocol {
                 sb.append(size).append(", will fragment (frag_size=").append(frag_size).append(')');
                 log.trace(sb.toString());
             }
-            fragment(msg, size);  // Fragment and pass down
+            fragment(msg);  // Fragment and pass down
             return null;
         }
         return down_prot.down(msg);
@@ -186,17 +189,16 @@ public class FRAG extends Protocol {
      * [2344,3,2]{dst,src,buf3}
      * </pre>
      */
-    private void fragment(Message msg, long size) {
+    private void fragment(Message msg) {
         Address            dest=msg.getDest(), src=msg.getSrc();
         long               frag_id=curr_id.getAndIncrement(); // used as seqnos
         int                num_frags;
 
         try {
             // write message into a byte buffer and fragment it
-            ByteArrayDataOutputStream dos=new ByteArrayDataOutputStream((int)(size + 50));
-            msg.writeTo(dos);
-            byte[] buffer=dos.buffer();
-            byte[][] fragments=Util.fragmentBuffer(buffer, frag_size, dos.position());
+            Buffer tmp=Util.messageToBuffer(msg);
+            byte[] buffer=tmp.getBuf();
+            byte[][] fragments=Util.fragmentBuffer(buffer, frag_size, tmp.getLength());
             num_frags=fragments.length;
             num_sent_frags+=num_frags;
 
@@ -246,9 +248,7 @@ public class FRAG extends Protocol {
             return null;
 
         try {
-            DataInput in=new ByteArrayDataInputStream(buf);
-            Message assembled_msg=new BytesMessage(false);
-            assembled_msg.readFrom(in);
+            Message assembled_msg=Util.messageFromBuffer(buf, 0, buf.length, msg_factory);
             assembled_msg.setSrc(sender); // needed ? YES, because fragments have a null src !!
             if(log.isTraceEnabled()) log.trace("assembled_msg is " + assembled_msg);
             num_received_msgs++;
