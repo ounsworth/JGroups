@@ -996,6 +996,10 @@ public class Util {
     }
 
 
+    public static Message messageFromBuffer(byte[] buf, MessageFactory mf) {
+        return messageFromBuffer(buf, 0, buf.length, mf);
+    }
+
     public static Message messageFromBuffer(byte[] buf, int offset, int length, MessageFactory mf) {
         ByteArrayDataInputStream in=new ByteArrayDataInputStream(buf, offset, length);
         try {
