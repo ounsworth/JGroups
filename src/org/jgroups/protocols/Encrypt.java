@@ -76,6 +76,9 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
     // map to hold previous keys so we can decrypt some earlier messages if we need to
     protected Map<AsciiString,Cipher>       key_map;
 
+    protected MessageFactory                msg_factory;
+
+
     /**
      * Sets the key store entry used to configure this protocol.
      * @param entry a key store entry
@@ -100,7 +103,9 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
     public <T extends Encrypt<E>> T signMessages(boolean flag)      {this.sign_msgs=flag; return (T)this;}
     public boolean                  adler()                         {return use_adler;}
     public <T extends Encrypt<E>> T adler(boolean flag)             {this.use_adler=flag; return (T)this;}
+    public <T extends Encrypt<E>> T msgFactory(MessageFactory f)    {this.msg_factory=f; return (T)this;}
     @ManagedAttribute public String version()                       {return Util.byteArrayToHexString(sym_version);}
+
 
     public void init() throws Exception {
         int tmp=Util.getNextHigherPowerOfTwo(cipher_pool_size);
@@ -112,6 +117,9 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         encoding_ciphers=new ArrayBlockingQueue<>(cipher_pool_size);
         decoding_ciphers=new ArrayBlockingQueue<>(cipher_pool_size);
         initSymCiphers(sym_algorithm, secret_key);
+        TP transport=getTransport();
+        if(transport != null)
+            msg_factory=transport.getMessageFactory();
     }
 
 
@@ -315,11 +323,13 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             decrypted_msg=cipher.doFinal(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
 
         if(!encrypt_entire_message) {
-            msg.setBuffer(decrypted_msg);
+            if(hdr.needsDeserialization())
+                msg=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
+            else
+                msg.setBuffer(decrypted_msg);
             return msg;
         }
-
-        Message ret=Util.streamableFromBuffer(BytesMessage.class, decrypted_msg, 0, decrypted_msg.length);
+        Message ret=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
         if(ret.getDest() == null)
             ret.setDest(msg.getDest());
         if(ret.getSrc() == null)
@@ -334,7 +344,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             if(msg.getSrc() == null)
                 msg.setSrc(local_addr);
 
-            Buffer serialized_msg=Util.streamableToBuffer(msg);
+            Buffer serialized_msg=Util.messageToBuffer(msg);
             byte[] encrypted_msg=code(serialized_msg.getBuf(),serialized_msg.getOffset(),serialized_msg.getLength(),false);
 
             if(sign_msgs) {
@@ -344,19 +354,27 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             }
 
             // exclude existing headers, they will be seen again when we decrypt and unmarshal the msg at the receiver
-            Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id, hdr);
+            // Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id, hdr);
+            Message tmp=new BytesMessage(msg.getDest()).setBuffer(encrypted_msg).putHeader(this.id, hdr.needsDeserialization(true));
             down_prot.down(tmp);
             return;
         }
 
+        boolean serialize=!msg.hasArray();
+        Buffer tmp=null;
+        byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
+        int offset=serialize? tmp.getOffset() : msg.getOffset();
+        int length=serialize? tmp.getLength() : msg.getLength();
+
         // copy neeeded because same message (object) may be retransmitted -> prevent double encryption
-        Message msgEncrypted=msg.copy(false).putHeader(this.id, hdr);
+        Message msgEncrypted=serialize? new BytesMessage(msg.getDest()) : msg.copy(false);
+        msgEncrypted.putHeader(this.id, hdr.needsDeserialization(serialize));
+
         if(msg.getLength() > 0)
-            msgEncrypted.setBuffer(code(msg.getRawBuffer(),msg.getOffset(),msg.getLength(),false));
+            msgEncrypted.setBuffer(code(buffer, offset, length,false));
         else { // length is 0
-            byte[] payload=msg.getRawBuffer();
-            if(payload != null) // we don't encrypt empty buffers (https://issues.jboss.org/browse/JGRP-2153)
-                msgEncrypted.setBuffer(payload, msg.getOffset(), msg.getLength());
+            if(buffer != null) // we don't encrypt empty buffers (https://issues.jboss.org/browse/JGRP-2153)
+                msgEncrypted.setBuffer(buffer, offset, length);
         }
         down_prot.down(msgEncrypted);
     }

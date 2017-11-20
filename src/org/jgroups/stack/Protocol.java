@@ -181,7 +181,7 @@ public abstract class Protocol {
         while(retval != null && retval.down_prot != null) {
             retval=retval.down_prot;
         }
-        return (TP)retval;
+        return retval instanceof TP? (TP)retval : null;
     }
 
     /** Supposed to be overwritten by subclasses. Usually the transport returns a valid non-null thread factory, but

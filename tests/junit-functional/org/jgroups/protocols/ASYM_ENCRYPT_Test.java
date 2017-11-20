@@ -3,10 +3,8 @@ package org.jgroups.protocols;
 import org.jgroups.*;
 import org.jgroups.auth.MD5Token;
 import org.jgroups.conf.ClassConfigurator;
-import org.jgroups.protocols.pbcast.DeltaView;
-import org.jgroups.protocols.pbcast.GMS;
-import org.jgroups.protocols.pbcast.JoinRsp;
-import org.jgroups.protocols.pbcast.NAKACK2;
+import org.jgroups.protocols.pbcast.*;
+import org.jgroups.stack.Protocol;
 import org.jgroups.stack.ProtocolStack;
 import org.jgroups.util.Buffer;
 import org.jgroups.util.ByteArrayDataOutputStream;
@@ -320,14 +318,19 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
     }
 
     protected JChannel create(String name) throws Exception {
-        JChannel ch=new JChannel(Util.getTestStack()).name(name);
-        ProtocolStack stack=ch.getProtocolStack();
-        Encrypt encrypt=createENCRYPT();
-        stack.insertProtocol(encrypt, ProtocolStack.Position.BELOW, NAKACK2.class);
-        AUTH auth=new AUTH().setAuthCoord(true).setAuthToken(new MD5Token("mysecret")); // .setAuthCoord(false);
-        stack.insertProtocol(auth, ProtocolStack.Position.BELOW, GMS.class);
-        stack.findProtocol(GMS.class).setValue("join_timeout", 2000); // .setValue("view_ack_collection_timeout", 10);
-        return ch;
+        Protocol[] protocols={
+          new SHARED_LOOPBACK(),
+          new SHARED_LOOPBACK_PING(),
+          createENCRYPT(),
+          new NAKACK2(),
+          new UNICAST3(),
+          new STABLE(),
+          new AUTH().setAuthCoord(true).setAuthToken(new MD5Token("mysecret")),
+          new GMS().joinTimeout(1000),
+          new FRAG2().fragSize(8000)
+        };
+
+        return new JChannel(protocols).name(name);
     }
 
     protected void printSymVersion(JChannel ... channels) {
@@ -344,6 +347,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
     protected ASYM_ENCRYPT createENCRYPT() throws Exception {
         ASYM_ENCRYPT encrypt=new ASYM_ENCRYPT().encryptEntireMessage(true).signMessages(true);
         encrypt.init();
+        encrypt.msgFactory(new DefaultMessageFactory());
         return encrypt;
     }
 

@@ -173,6 +173,7 @@ public abstract class EncryptTest {
         secretKey.setAccessible(true);
         Util.setField(secretKey, encrypt, secret_key);
         encrypt.init();
+        encrypt.msgFactory(new DefaultMessageFactory());
 
         short encrypt_id=ClassConfigurator.getProtocolId(SYM_ENCRYPT.class);
         EncryptHeader hdr=new EncryptHeader(EncryptHeader.ENCRYPT, encrypt.symVersion());

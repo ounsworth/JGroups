@@ -19,9 +19,10 @@ public class EncryptHeader extends Header {
     public static final byte NEW_KEYSERVER     = 1 << 3;
     public static final byte NEW_KEYSERVER_ACK = 1 << 4;
 
-    protected byte   type;
-    protected byte[] version;
-    protected byte[] signature; // the encrypted checksum
+    protected byte    type;
+    protected byte[]  version;
+    protected byte[]  signature; // the encrypted checksum
+    protected boolean needs_deserialization; // true if byte[] array of a fragment needs to be de-serialized into a payload
 
 
     public EncryptHeader() {}
@@ -32,32 +33,40 @@ public class EncryptHeader extends Header {
         this.version=version;
     }
 
-    public byte          type()              {return type;}
-    public byte[]        version()           {return version;}
-    public byte[]        signature()         {return signature;}
-    public EncryptHeader signature(byte[] s) {this.signature=s; return this;}
-    public short getMagicId() {return 88;}
+    public byte          type()                             {return type;}
+    public byte[]        version()                          {return version;}
+    public byte[]        signature()                        {return signature;}
+    public EncryptHeader signature(byte[] s)                {this.signature=s; return this;}
+    public boolean       needsDeserialization()             {return needs_deserialization;}
+    public EncryptHeader needsDeserialization(boolean flag) {needs_deserialization=flag; return this;}
+    public short         getMagicId() {return 88;}
     public Supplier<? extends Header> create() {
         return EncryptHeader::new;
+    }
+
+    public int serializedSize() {
+        return Global.BYTE_SIZE + Util.size(version) + Util.size(signature) + Global.BYTE_SIZE;
     }
 
     public void writeTo(DataOutput out) throws Exception {
         out.writeByte(type);
         Util.writeByteBuffer(version, 0, version != null? version.length : 0, out);
         Util.writeByteBuffer(signature, 0, signature != null? signature.length : 0, out);
+        out.writeBoolean(needs_deserialization);
     }
 
     public void readFrom(DataInput in) throws Exception {
         type=in.readByte();
         version=Util.readByteBuffer(in);
         signature=Util.readByteBuffer(in);
+        needs_deserialization=in.readBoolean();
     }
 
     public String toString() {
         return String.format("%s [version=%s]", typeToString(type), (version != null? Util.byteArrayToHexString(version) : "null"));
     }
 
-    public int serializedSize() {return Global.BYTE_SIZE + Util.size(version) + Util.size(signature) /*+ Util.size(payload) */;}
+
 
     protected static String typeToString(byte type) {
         switch(type) {
