@@ -369,9 +369,9 @@ public abstract class BaseMessage implements Message {
 
 
 
-    public long size() {
-        long retval=(long)Global.BYTE_SIZE   // leading byte
-                + Global.SHORT_SIZE;   // flags
+    public int size() {
+        int retval=Global.BYTE_SIZE // leading byte
+          + Global.SHORT_SIZE;      // flags
         if(dest_addr != null)
             retval+=Util.size(dest_addr);
         if(src_addr != null)

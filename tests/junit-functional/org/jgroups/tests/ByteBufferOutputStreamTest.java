@@ -24,7 +24,7 @@ public class ByteBufferOutputStreamTest {
         Address dest=Util.createRandomAddress("A");
         Message msg=new BytesMessage(dest, "hello world")
           .setFlag(Message.Flag.DONT_BUNDLE, Message.Flag.OOB).putHeader((short)22, NakAckHeader2.createMessageHeader(322649));
-        int size=(int)(msg.size());
+        int size=msg.size();
         ByteBuffer buf=ByteBuffer.allocate(size);
         ByteBufferOutputStream out=new ByteBufferOutputStream(buf);
         msg.writeTo(out);

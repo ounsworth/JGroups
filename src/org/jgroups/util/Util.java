@@ -983,7 +983,7 @@ public class Util {
     }
 
     public static Buffer messageToBuffer(Message msg) {
-        int expected_size=(int)(msg.size() +1);
+        int expected_size=msg.size() +1;
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(expected_size);
         try {
             out.write(msg.getType());
@@ -1799,7 +1799,7 @@ public class Util {
 
 
     public static Buffer messageToByteBuffer(Message msg) throws Exception {
-        ByteArrayDataOutputStream out=new ByteArrayDataOutputStream((int)msg.size()+1);
+        ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(msg.size() +1);
 
         out.writeBoolean(msg != null);
         if(msg != null)

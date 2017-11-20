@@ -218,8 +218,8 @@ public class ObjectMessage extends BaseMessage {
 
     /* ----------------------------------- Interface Streamable  ------------------------------- */
 
-    public long size() {
-        long retval=super.size() + Global.BYTE_SIZE; // streamable
+    public int size() {
+        int retval=super.size() + Global.BYTE_SIZE; // streamable
 
         if(obj instanceof SizeStreamable)
             return retval + Util.size((SizeStreamable)obj);

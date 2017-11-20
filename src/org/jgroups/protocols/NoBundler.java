@@ -29,7 +29,7 @@ public class NoBundler implements Bundler {
     public void stop()  {}
 
     public void send(Message msg) throws Exception {
-        ByteArrayDataOutputStream out=new ByteArrayDataOutputStream((int)(msg.size() + 10));
+        ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(msg.size() + 10);
         sendSingleMessage(msg, out);
     }
 

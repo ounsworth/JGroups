@@ -454,7 +454,7 @@ public class MessageBatchTest {
         int total_size=batch.stream().map(Message::getLength).reduce(0, (l, r) -> l+r);
         assert total_size == 0;
 
-        List<Long> msg_sizes=batch.stream().map(Message::size).collect(Collectors.toList());
+        List<Integer> msg_sizes=batch.stream().map(Message::size).collect(Collectors.toList());
         System.out.println("msg_sizes = " + msg_sizes);
         assert msg_sizes.size() == batch.stream().count();
     }

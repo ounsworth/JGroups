@@ -94,7 +94,7 @@ public class RingBufferBundlerLockless2 extends BaseBundler {
     }
 
 
-    protected void unparkIfNeeded(long size) {
+    protected void unparkIfNeeded(int size) {
         long acc_bytes=size > 0? accumulated_bytes.addAndGet(size) : accumulated_bytes.get();
         boolean size_exceeded=acc_bytes >= transport.getMaxBundleSize() && accumulated_bytes.compareAndSet(acc_bytes, 0);
         boolean no_other_threads=num_threads.decrementAndGet() == 0;
@@ -204,7 +204,7 @@ public class RingBufferBundlerLockless2 extends BaseBundler {
         for(int i=start_index; i != end_index; i=increment(i)) {
             Message msg=buf[i];
             if(msg != null && msg != NULL_MSG && Objects.equals(dest, msg.dest())) {
-                long msg_size=msg.size();
+                int msg_size=msg.size();
                 if(bytes + msg_size > max_bundle_size)
                     break;
                 bytes+=msg_size;

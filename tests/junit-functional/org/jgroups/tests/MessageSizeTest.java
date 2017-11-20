@@ -85,7 +85,7 @@ public class MessageSizeTest {
     }
 
     private static Buffer marshal(Message msg) throws Exception {
-        ByteArrayDataOutputStream dos=new ByteArrayDataOutputStream((int)(msg.size() + 50));
+        ByteArrayDataOutputStream dos=new ByteArrayDataOutputStream(msg.size() + 50);
         Address dest=msg.getDest();
         boolean multicast=dest == null;
         writeMessage(msg, dos, multicast);

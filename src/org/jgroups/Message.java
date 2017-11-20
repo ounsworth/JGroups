@@ -9,15 +9,16 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
+ * Interface for all message types.
  * @author Bela Ban
- * @since x.y
+ * @since  5.0
  */
 public interface Message extends Streamable, Constructable<Message> {
 
     // The type of the message. Cannot be an enum, as users can register additional types
     byte BYTES_MSG=1, OBJ_MSG=2;
 
-    /** Returns the type of the message */
+    /** Returns the type of the message, e.g. BYTES_MSG, OBJ_MSG etc */
     byte getType();
 
     static boolean isFlagSet(short flags, Flag flag) {
@@ -206,7 +207,7 @@ public interface Message extends Streamable, Constructable<Message> {
      * might lead to an int overflow, that's why we use a long.
      * @return The number of bytes for the marshalled message
      */
-    long size();
+    int size();
 
     // =============================== Flags ====================================
     enum Flag {

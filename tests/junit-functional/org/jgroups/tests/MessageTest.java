@@ -414,7 +414,7 @@ public class MessageTest {
 
 
     private static void _testSize(Message msg) throws Exception {
-        long size=msg.size();
+        int size=msg.size();
         byte[] serialized_form=Util.streamableToByteBuffer(msg);
         System.out.println("size=" + size + ", serialized size=" + serialized_form.length);
         Assert.assertEquals(size, serialized_form.length);

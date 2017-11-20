@@ -104,7 +104,7 @@ public class FRAG extends Protocol {
     }
 
     public Object down(Message msg) {
-        long size=msg.size();
+        int size=msg.size();
         num_sent_msgs++;
         if(size > frag_size) {
             if(log.isTraceEnabled()) {

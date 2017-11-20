@@ -318,8 +318,8 @@ public class BytesMessage extends BaseMessage {
      * might lead to an int overflow, that's why we use a long.
      * @return The number of bytes for the marshalled message
      */
-    public long size() {
-        long retval=super.size() + Global.INT_SIZE; // length
+    public int size() {
+        int retval=super.size() + Global.INT_SIZE; // length
         if(buf != null)
             retval+=length;       // number of bytes in the buffer
         return retval;
