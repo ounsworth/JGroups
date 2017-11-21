@@ -118,9 +118,7 @@ public class BytesMessage extends BaseMessage {
 
     public boolean hasArray()                {return true;}
     public int     getOffset()               {return offset;}
-    public int     offset()                  {return offset;}
     public int     getLength()               {return length;}
-    public int     length()                  {return length;}
 
 
     /**

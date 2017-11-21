@@ -82,7 +82,7 @@ public class UFC_NB extends UFC {
         if(cred == null)
             return down_prot.down(msg);
 
-        int length=msg.length();
+        int length=msg.getLength();
         if(running) {
             if(cred.decrementIfEnoughCredits(msg, length, 0)) // timeout is ignored
                 return down_prot.down(msg);

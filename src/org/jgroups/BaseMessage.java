@@ -114,9 +114,7 @@ public abstract class BaseMessage implements Message {
     public Address getSrc()                  {return src_addr;}
     public <T extends Message> T setSrc(Address new_src)   {src_addr=new_src; return (T)this;}
     public abstract int          getOffset();
-    public abstract int          offset();
     public abstract int          getLength();
-    public abstract int          length();
     public abstract byte[]       getRawBuffer();
     public abstract byte[]       rawBuffer();
     public abstract byte[]       buffer();
@@ -162,10 +160,10 @@ public abstract class BaseMessage implements Message {
     }
 
 
-    public Message setFlag(short flag, boolean is_transient) {
-        short tmp=is_transient? this.transient_flags : this.flags;
+    public Message setFlag(short flag, boolean transient_flags) {
+        short tmp=transient_flags? this.transient_flags : this.flags;
         tmp|=flag;
-        if(is_transient)
+        if(transient_flags)
             this.transient_flags=(byte)tmp;
         else
             this.flags=tmp;
@@ -178,7 +176,7 @@ public abstract class BaseMessage implements Message {
      * This is only used by unit test code
      * @return
      */
-    public short getFlags(boolean is_transient) {return is_transient? transient_flags : flags;}
+    public short getFlags(boolean transient_flags) {return transient_flags? this.transient_flags : flags;}
 
     /**
      * Clears a number of flags in a message
@@ -282,16 +280,6 @@ public abstract class BaseMessage implements Message {
 
 
 
-   /**
-    * Doesn't copy any headers except for those with ID >= copy_headers_above
-    *
-    * @param copy_buffer
-    * @param starting_id
-    * @return A message with headers whose ID are >= starting_id
-    */
-    public Message copy(boolean copy_buffer, short starting_id) {
-        return copy(copy_buffer, starting_id, (short[])null);
-    }
 
     /**
      * Copies a message. Copies only headers with IDs >= starting_id or IDs which are in the copy_only_ids list

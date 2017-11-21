@@ -157,7 +157,7 @@ public class FRAG3 extends Protocol {
             if(assembled_msg != null) {
                 assembled_msg.setSrc(msg.getSrc()); // needed ? YES, because fragments have a null src !!
                 up_prot.up(assembled_msg);
-                avg_size_up.add(assembled_msg.length());
+                avg_size_up.add(assembled_msg.getLength());
             }
             return null;
         }
@@ -173,7 +173,7 @@ public class FRAG3 extends Protocol {
                     // the reassembled msg has to be add in the right place (https://issues.jboss.org/browse/JGRP-1648),
                     // and canot be added to the tail of the batch !
                     batch.replace(msg, assembled_msg);
-                    avg_size_up.add(assembled_msg.length());
+                    avg_size_up.add(assembled_msg.getLength());
                 }
                 else
                     batch.remove(msg);

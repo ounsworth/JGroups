@@ -48,7 +48,7 @@ public class NonBlockingCredit extends Credit {
     /**
      * Decrements the sender's credits by the size of the message.
      * @param msg The message
-     * @param credits The number of bytes to decrement the credits. Is {@link BaseMessage#length()}.
+     * @param credits The number of bytes to decrement the credits. Is {@link BaseMessage#getLength()}.
      * @param timeout Ignored
      * @return True if the message was sent, false if it was queued
      */

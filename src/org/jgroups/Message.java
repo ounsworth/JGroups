@@ -55,9 +55,9 @@ public interface Message extends Streamable, Constructable<Message> {
 
     /** Sets the flags as a short; this way, multiple flags can be set in one operation
      * @param flag The flag to be set (as a short)
-     * @param is_transient True if the flag is transient, false otherwise
+     * @param transient_flags True if the flag is transient, false otherwise
      */
-    <T extends Message> T       setFlag(short flag, boolean is_transient);
+    <T extends Message> T       setFlag(short flag, boolean transient_flags);
 
     /** Sets one or more transient flags. Transient flags are not marshalled */
     <T extends Message> T       setFlag(TransientFlag... flags);
@@ -66,9 +66,9 @@ public interface Message extends Streamable, Constructable<Message> {
     boolean                     setFlagIfAbsent(TransientFlag flag);
 
     /** Returns the flags as an or-ed short
-     * @param is_transient Returns transient flags if true, else regular flags
+     * @param transient_flags Returns transient flags if true, else regular flags
      */
-    short                       getFlags(boolean is_transient);
+    short                       getFlags(boolean transient_flags);
 
     /** Removes a number of flags from the message. No-op for a flag if it is not set */
     <T extends Message> T       clearFlag(Flag... flags);
@@ -76,23 +76,31 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Removes a number of transient flags from the message. No-op for a flag if it is not set */
     <T extends Message> T       clearFlag(TransientFlag... flags);
 
+    /** Returns true if a flag is set, false otherwise */
     boolean                     isFlagSet(Flag flag);
 
+    /** Returns true if a transient flag is set, false otherwise */
     boolean                     isFlagSet(TransientFlag flag);
 
 
+    <T extends Message> T copy();
 
+    <T extends Message> T copy(boolean copy_buffer);
 
+    <T extends Message> T copy(boolean copy_buffer, boolean copy_headers);
 
-    boolean hasArray();
+    <T extends Message> T copy(boolean copy_buffer, short starting_id, short... copy_only_ids);
+
+    <T extends Message> T makeReply();
+
+    /** Returns true if this message has a byte[] array as payload, false otherwise.  */
+    boolean               hasArray();
+
 
     int     getOffset();
 
-    int     offset();
-
     int     getLength();
 
-    int     length();
 
     /**
      * Returns a <em>reference</em> to the payload (byte buffer). Note that this buffer should not be
@@ -144,36 +152,17 @@ public interface Message extends Streamable, Constructable<Message> {
 
 
 
-    <T extends Message> T copy();
-
-    <T extends Message> T copy(boolean copy_buffer);
-
-    <T extends Message> T copy(boolean copy_buffer, boolean copy_headers);
-
-    <T extends Message> T copy(boolean copy_buffer, short starting_id);
-
-    <T extends Message> T copy(boolean copy_buffer, short starting_id, short... copy_only_ids);
-
-    <T extends Message> T makeReply();
-
-    String toString();
-
-
-
-    void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception;
-
 
     /**
-     * Returns the exact size of the marshalled message. Uses method size() of each header to compute
-     * the size, so if a Header subclass doesn't implement size() we will use an approximation.
-     * However, most relevant header subclasses have size() implemented correctly. (See
-     * org.jgroups.tests.SizeTest).<p/>
-     * The return type is a long as this is the length of the payload ({@link #getLength()}) plus metadata (e.g. flags,
-     * headers, source and dest addresses etc). Since the largest payload can be Integer.MAX_VALUE, adding the metadata
-     * might lead to an int overflow, that's why we use a long.
+     * Returns the exact size of the marshalled message
      * @return The number of bytes for the marshalled message
      */
     int size();
+
+    /** Writes the message to an output stream excluding the address and possible a number of headers */
+    void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception;
+
+
 
     // =============================== Flags ====================================
     enum Flag {

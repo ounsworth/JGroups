@@ -66,10 +66,8 @@ public class ObjectMessage extends BaseMessage {
     public byte    getType()       {return Message.OBJ_MSG;}
     public boolean hasArray()      {return false;}
     public int     getOffset()     {return 0;}
-    public int     offset()        {return 0;}
-    public int     length()        {return getLength();}
 
-    public int     getLength()     {
+    public int     getLength() {
         if(obj == null)
             return 0;
         if(obj instanceof SizeStreamable)

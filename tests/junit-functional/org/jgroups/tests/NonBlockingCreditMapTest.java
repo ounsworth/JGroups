@@ -36,16 +36,16 @@ public class NonBlockingCreditMapTest {
 
     public void testDecrement() {
         Message msg=new BytesMessage(null, new byte[8000]);
-        boolean rc=map.decrement(msg, msg.length(), 0); // timeout will be ignored
+        boolean rc=map.decrement(msg, msg.getLength(), 0); // timeout will be ignored
         assert rc && map.getMinCredits() == 2000;
         assert !map.isQueuing();
         msg=new BytesMessage(null, new byte[2000]);
-        rc=map.decrement(msg, msg.length(), 0);
+        rc=map.decrement(msg, msg.getLength(), 0);
         assert rc && !map.isQueuing();
 
         for(int i=0; i < 5; i++) {
             msg=new BytesMessage(null, new byte[1000]);
-            rc=map.decrement(msg, msg.length(), 0);
+            rc=map.decrement(msg, msg.getLength(), 0);
             assert !rc && map.isQueuing();
         }
         assert map.getQueuedMessages() == 5 && map.getQueuedMessageSize() == 5000;
@@ -63,7 +63,7 @@ public class NonBlockingCreditMapTest {
         addAll();
 
         Message msg=new BytesMessage(null, new byte[8000]);
-        boolean rc=map.decrement(msg, msg.length(), 0);
+        boolean rc=map.decrement(msg, msg.getLength(), 0);
         assert rc && !map.isQueuing();
 
         new Thread(() -> {
@@ -75,7 +75,7 @@ public class NonBlockingCreditMapTest {
         for(int i=1; i <= 5; i++) {
             msg=new BytesMessage(null, new byte[1000]);
             System.out.printf("-- adding msg %d: ", i);
-            rc=map.decrement(msg, msg.length(), 0); // message 5 should block, but replenish() should unblock it
+            rc=map.decrement(msg, msg.getLength(), 0); // message 5 should block, but replenish() should unblock it
             System.out.printf("rc=%b\n", rc);
             assert rc == i < 3;
         }

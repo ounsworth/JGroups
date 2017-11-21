@@ -81,7 +81,7 @@ public class MFC_NB extends MFC {
         if(dest != null) // 2nd line of defense, not really needed
             return down_prot.down(msg);
 
-        int length=msg.length();
+        int length=msg.getLength();
         if(running) {
             if(credits.decrement(msg, length, 0)) // timeout is ignored
                 return down_prot.down(msg);

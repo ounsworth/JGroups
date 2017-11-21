@@ -256,7 +256,7 @@ public class MessageTest {
         }
         System.out.println("Headers for m1: " + m1.printHeaders());
 
-        Message m2=m1.copy(true, Global.BLOCKS_START_ID);
+        Message m2=m1.copy(true, Global.BLOCKS_START_ID, (short[])null);
         System.out.println("Headers for m2: " + m2.printHeaders());
         Map<Short,Header> hdrs=m2.getHeaders();
         assert hdrs.size() == 2;

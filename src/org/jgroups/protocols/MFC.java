@@ -108,7 +108,7 @@ public class MFC extends FlowControl {
         if(dest != null) // 2nd line of defense, not really needed
             return down_prot.down(msg);
 
-        int length=msg.length();
+        int length=msg.getLength();
         long block_time=max_block_times != null? getMaxBlockTime(length) : max_block_time;
         while(running) {
             boolean rc=credits.decrement(msg, length, block_time);

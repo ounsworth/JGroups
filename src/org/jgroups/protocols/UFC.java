@@ -112,7 +112,7 @@ public class UFC extends FlowControl {
         if(cred == null)
             return down_prot.down(msg);
 
-        int length=msg.length();
+        int length=msg.getLength();
         long block_time=max_block_times != null? getMaxBlockTime(length) : max_block_time;
         
         while(running && sent.containsKey(dest)) {

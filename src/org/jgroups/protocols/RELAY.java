@@ -193,7 +193,7 @@ public class RELAY extends Protocol {
             return handleUpEvent(msg, hdr);
 
         if(is_coord && relay && dest == null && !msg.isFlagSet(Message.Flag.NO_RELAY)) {
-            Message tmp=msg.copy(true, Global.BLOCKS_START_ID); // we only copy headers from building blocks
+            Message tmp=msg.copy(true, Global.BLOCKS_START_ID, (short[])null); // we only copy headers from building blocks
             try {
                 byte[] buf=Util.streamableToByteBuffer(tmp);
                 forward(buf, 0, buf.length);
@@ -221,7 +221,7 @@ public class RELAY extends Protocol {
 
             // Leave the messages in the batch: they're going to be forwarded, but we also need to deliver them locally
             if(is_coord && relay && msg.getDest() == null && !msg.isFlagSet(Message.Flag.NO_RELAY)) {
-                Message tmp=msg.copy(true, Global.BLOCKS_START_ID); // we only copy headers from building blocks
+                Message tmp=msg.copy(true, Global.BLOCKS_START_ID, (short[])null); // we only copy headers from building blocks
                 try {
                     byte[] buf=Util.streamableToByteBuffer(tmp);
                     forward(buf, 0, buf.length);
@@ -333,7 +333,7 @@ public class RELAY extends Protocol {
 
     /** Wraps the message annd sends it to the current coordinator */
     protected void forwardToCoord(Message msg) {
-        Message tmp=msg.copy(true, Global.BLOCKS_START_ID); // // we only copy headers from building blocks
+        Message tmp=msg.copy(true, Global.BLOCKS_START_ID, (short[])null); // // we only copy headers from building blocks
         if(tmp.getSrc() == null)
             tmp.setSrc(local_addr);
         
