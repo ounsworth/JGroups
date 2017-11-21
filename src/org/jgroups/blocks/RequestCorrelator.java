@@ -435,9 +435,16 @@ public class RequestCorrelator {
                 return;
             }
         }
-        Message rsp=req.makeReply().setFlag(req.getFlags(false), false).setBuffer(rsp_buf)
+        Message rsp=makeReply(req).setFlag(req.getFlags(false), false).setBuffer(rsp_buf)
           .clearFlag(Message.Flag.RSVP, Message.Flag.INTERNAL); // JGRP-1940
         sendResponse(rsp, req_id, is_exception);
+    }
+
+    protected static Message makeReply(Message msg) {
+        Message reply=msg.create().get().setDest(msg.getSrc());
+        if(msg.getDest() != null)
+            reply.setSrc(msg.getDest());
+        return reply;
     }
 
     protected void sendResponse(Message rsp, long req_id, boolean is_exception) {

@@ -400,7 +400,7 @@ public class FRAG2 extends Protocol {
             if(needs_deserialization)
                 retval=Util.messageFromBuffer(combined_buffer, 0, combined_buffer.length, msg_factory);
             else
-                retval.setBuffer(combined_buffer);
+                retval.setBuffer(combined_buffer, 0, combined_buffer.length);
             return retval;
         }
 

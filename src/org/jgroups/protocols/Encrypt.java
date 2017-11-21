@@ -326,7 +326,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             if(hdr.needsDeserialization())
                 msg=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
             else
-                msg.setBuffer(decrypted_msg);
+                msg.setBuffer(decrypted_msg, 0, decrypted_msg.length);
             return msg;
         }
         Message ret=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
@@ -355,7 +355,8 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
             // exclude existing headers, they will be seen again when we decrypt and unmarshal the msg at the receiver
             // Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id, hdr);
-            Message tmp=new BytesMessage(msg.getDest()).setBuffer(encrypted_msg).putHeader(this.id, hdr.needsDeserialization(true));
+            Message tmp=new BytesMessage(msg.getDest()).setBuffer(encrypted_msg, 0, encrypted_msg.length)
+              .putHeader(this.id, hdr.needsDeserialization(true));
             down_prot.down(tmp);
             return;
         }
@@ -370,8 +371,10 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         Message msgEncrypted=serialize? new BytesMessage(msg.getDest()) : msg.copy(false);
         msgEncrypted.putHeader(this.id, hdr.needsDeserialization(serialize));
 
-        if(msg.getLength() > 0)
-            msgEncrypted.setBuffer(code(buffer, offset, length,false));
+        if(msg.getLength() > 0) {
+            byte[] b=code(buffer, offset, length, false);
+            msgEncrypted.setBuffer(b, 0, b.length);
+        }
         else { // length is 0
             if(buffer != null) // we don't encrypt empty buffers (https://issues.jboss.org/browse/JGRP-2153)
                 msgEncrypted.setBuffer(buffer, offset, length);

@@ -128,14 +128,9 @@ public class BytesMessage extends BaseMessage {
      * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
      */
     public byte[]  getRawBuffer()            {return buf;}
-    public byte[]  rawBuffer()               {return buf;}
-    public byte[]  buffer()                  {return getBuffer();}
-    public Buffer  buffer2()                 {return getBuffer2();}
-    public Message buffer(byte[] b)          {return setBuffer(b);}
-    public Message buffer(Buffer b)          {return setBuffer(b);}
 
 
-   /**
+    /**
     * Returns a copy of the buffer if offset and length are used, otherwise a reference.
     * @return byte array with a copy of the buffer.
     */
@@ -149,12 +144,6 @@ public class BytesMessage extends BaseMessage {
             System.arraycopy(buf, offset, retval, 0, length);
             return retval;
         }
-    }
-
-    public Buffer getBuffer2() {
-        if(buf == null)
-            return null;
-        return new Buffer(buf, offset, length);
     }
 
     /**
@@ -226,7 +215,7 @@ public class BytesMessage extends BaseMessage {
     public Message setObject(Object obj) {
         if(obj == null) return this;
         if(obj instanceof byte[])
-            return setBuffer((byte[])obj);
+            return setBuffer((byte[])obj, 0, ((byte[])obj).length);
         if(obj instanceof Buffer)
             return setBuffer((Buffer)obj);
         try {

@@ -111,16 +111,9 @@ public abstract class BaseMessage implements Message {
 
     public Address               getDest()                 {return dest_addr;}
     public <T extends Message> T setDest(Address new_dest) {dest_addr=new_dest; return (T)this;}
-    public Address getSrc()                  {return src_addr;}
+    public Address               getSrc()                  {return src_addr;}
     public <T extends Message> T setSrc(Address new_src)   {src_addr=new_src; return (T)this;}
-    public abstract int          getOffset();
-    public abstract int          getLength();
-    public abstract byte[]       getRawBuffer();
-    public abstract byte[]       rawBuffer();
-    public abstract byte[]       buffer();
-    public abstract Buffer       buffer2();
-    public abstract Message      buffer(byte[] b);
-    public abstract Message      buffer(Buffer b);
+
     public int                   getNumHeaders()           {return Headers.size(this.headers);}
     public Map<Short,Header>     getHeaders()              {return Headers.getHeaders(this.headers);}
     public String                printHeaders()            {return Headers.printHeaders(this.headers);}

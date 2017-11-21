@@ -78,23 +78,11 @@ public class ObjectMessage extends BaseMessage {
 
 
     public byte[]  getRawBuffer()            {swizzle(); return serialized_obj;}
-    public byte[]  rawBuffer()               {swizzle(); return serialized_obj;}
-    public byte[]  buffer()                  {return getBuffer();}
-    public Buffer  buffer2()                 {return getBuffer2();}
-    public Message buffer(byte[] b)          {return setBuffer(b);}
-    public Message buffer(Buffer b)          {return setBuffer(b);}
 
 
     public byte[] getBuffer() {
         swizzle();
         return serialized_obj;
-    }
-
-    public Buffer getBuffer2() {
-        swizzle();
-        if(serialized_obj == null)
-            return null;
-        return new Buffer(serialized_obj, 0, serialized_obj.length);
     }
 
 

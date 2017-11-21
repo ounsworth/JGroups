@@ -146,7 +146,7 @@ public class STATE extends StreamingStateTransfer {
             byte[] data=new byte[len];
             System.arraycopy(b, off, data, 0, len);
             // m.setBuffer(b, off, len);
-            m.setBuffer(data);
+            m.setBuffer(data, 0, data.length);
 
             bytesWrittenCounter+=len;
             if(Thread.interrupted())

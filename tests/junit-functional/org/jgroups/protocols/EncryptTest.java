@@ -88,9 +88,9 @@ public abstract class EncryptTest {
 
     /** Same as above, but all message payloads are empty (0-length String) */
     public void testRegularMessageReceptionWithEmptyMessages() throws Exception {
-        a.send(new BytesMessage(null).setBuffer(new byte[0]));
-        b.send(new BytesMessage(null).setBuffer(new byte[0]));
-        c.send(new BytesMessage(null).setBuffer(new byte[0]));
+        a.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
+        b.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
+        c.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
         for(int i=0; i < 10; i++) {
             if(ra.size() == 3 && rb.size() == 3 && rc.size() == 3)
                 break;
@@ -181,7 +181,7 @@ public abstract class EncryptTest {
 
         byte[] buf="hello from rogue".getBytes();
         byte[] encrypted_buf=encrypt.code(buf, 0, buf.length, false);
-        msg.setBuffer(encrypted_buf);
+        msg.setBuffer(encrypted_buf, 0, encrypted_buf.length);
         long checksum=encrypt.computeChecksum(encrypted_buf, 0, encrypted_buf.length);
         byte[] tmp=encrypt.encryptChecksum(checksum);
         hdr.signature(tmp);

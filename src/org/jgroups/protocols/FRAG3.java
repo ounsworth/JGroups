@@ -377,7 +377,7 @@ public class FRAG3 extends Protocol {
          */
         protected Message assembleMessage() {
             return needs_deserialization? Util.messageFromBuffer(buffer, 0, buffer.length, msg_factory)
-              : msg.setBuffer(buffer);
+              : msg.setBuffer(buffer, 0, buffer.length);
         }
 
         public String toString() {

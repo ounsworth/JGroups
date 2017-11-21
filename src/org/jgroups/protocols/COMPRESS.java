@@ -171,7 +171,7 @@ public class COMPRESS extends Protocol {
                         return Util.messageFromBuffer(uncompressed_payload, 0, uncompressed_payload.length, msg_factory);
                     }
                     else
-                        return msg.copy(false).setBuffer(uncompressed_payload);
+                        return msg.copy(false).setBuffer(uncompressed_payload, 0, uncompressed_payload.length);
                 }
                 catch(DataFormatException e) {
                     log.error(Util.getMessage("CompressionFailure"), e);

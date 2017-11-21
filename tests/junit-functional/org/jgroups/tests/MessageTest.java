@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -137,7 +138,7 @@ public class MessageTest {
         assert m1.getBuffer() != null;
         Assert.assertEquals(m1.getBuffer().length, m1.getLength());
         byte[] new_buf={'m', 'i', 'c', 'h', 'e', 'l', 'l', 'e'};
-        m1.setBuffer(new_buf);
+        m1.setBuffer(new_buf, 0, new_buf.length);
         assert m1.getRawBuffer() != null;
         assert m1.getBuffer() != null;
         Assert.assertEquals(new_buf.length, m1.getLength());
@@ -402,6 +403,16 @@ public class MessageTest {
         _testSize(msg);
     }
 
+    public void testMakeReply() {
+        Address dest=Util.createRandomAddress("A"), src=Util.createRandomAddress("B");
+        Message msg=new BytesMessage(dest, "Bela".getBytes()).setSrc(src);
+
+        Message reply=makeReply(msg);
+        System.out.println("reply = " + reply);
+        assert Objects.equals(reply.getSrc(), msg.getDest());
+        assert Objects.equals(reply.getDest(), msg.getSrc());
+    }
+
 
     protected static void addHeaders(Message msg) {
         TpHeader tp_hdr=new TpHeader("DemoChannel2");
@@ -412,6 +423,12 @@ public class MessageTest {
         msg.putHeader(NAKACK_ID, nak_hdr);
     }
 
+    protected static Message makeReply(Message msg) {
+        Message reply=msg.create().get().setDest(msg.getSrc());
+        if(msg.getDest() != null)
+            reply.setSrc(msg.getDest());
+        return reply;
+    }
 
     private static void _testSize(Message msg) throws Exception {
         int size=msg.size();

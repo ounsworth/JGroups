@@ -83,23 +83,23 @@ public interface Message extends Streamable, Constructable<Message> {
     boolean                     isFlagSet(TransientFlag flag);
 
 
-    <T extends Message> T copy();
+    <T extends Message> T       copy();
 
-    <T extends Message> T copy(boolean copy_buffer);
+    <T extends Message> T       copy(boolean copy_buffer);
 
-    <T extends Message> T copy(boolean copy_buffer, boolean copy_headers);
+    <T extends Message> T       copy(boolean copy_buffer, boolean copy_headers);
 
-    <T extends Message> T copy(boolean copy_buffer, short starting_id, short... copy_only_ids);
+    <T extends Message> T       copy(boolean copy_buffer, short starting_id, short... copy_only_ids);
 
-    <T extends Message> T makeReply();
+
 
     /** Returns true if this message has a byte[] array as payload, false otherwise.  */
-    boolean               hasArray();
+    boolean                     hasArray();
 
 
-    int     getOffset();
+    int                         getOffset();
 
-    int     getLength();
+    int                         getLength();
 
 
     /**
@@ -108,45 +108,24 @@ public interface Message extends Streamable, Constructable<Message> {
      * is simply a reference to the old buffer.<br/>
      * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
      */
-    byte[]  getRawBuffer();
-
-    byte[]  rawBuffer();
-
-    byte[]  buffer();
-
-    Buffer buffer2();
-
-    <T extends Message> T buffer(byte[] b);
-
-    <T extends Message> T buffer(Buffer b);
-
+    byte[]                      getRawBuffer();
 
 
     /**
      * Returns a copy of the buffer if offset and length are used, otherwise a reference.
      * @return byte array with a copy of the buffer.
      */
-    byte[] getBuffer();
+    byte[]                      getBuffer();
 
-    Buffer getBuffer2();
+    <T extends Message> T       setBuffer(byte[] b, int offset, int length);
 
-    /**
-     * Sets the buffer.<p/>
-     * Note that the byte[] buffer passed as argument must not be modified. Reason: if we retransmit the
-     * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
-     * retransmit a changed byte[] buffer !
-     */
-    <T extends Message> T setBuffer(byte[] b);
+    <T extends Message> T       setBuffer(Buffer buf);
 
-    <T extends Message> T setBuffer(byte[] b, int offset, int length);
+    <T extends Message> T       setObject(Object obj);
 
-    <T extends Message> T setBuffer(Buffer buf);
+    <T extends Object> T        getObject();
 
-    <T extends Message> T setObject(Object obj);
-
-    <T extends Object> T getObject();
-
-    <T extends Object> T getObject(ClassLoader loader);
+    <T extends Object> T        getObject(ClassLoader loader);
 
 
 
@@ -157,10 +136,10 @@ public interface Message extends Streamable, Constructable<Message> {
      * Returns the exact size of the marshalled message
      * @return The number of bytes for the marshalled message
      */
-    int size();
+    int                         size();
 
-    /** Writes the message to an output stream excluding the address and possible a number of headers */
-    void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception;
+    /** Writes the message to an output stream excluding the destination (and possibly source) address, plus a number of headers */
+    void                        writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception;
 
 
 
