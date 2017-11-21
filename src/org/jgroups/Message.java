@@ -53,33 +53,32 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Sets one or more flags */
     <T extends Message> T       setFlag(Flag... flags);
 
-    /** Sets the flags as a short; this way, multiple flags can be set in one operation */
-    <T extends Message> T       setFlag(short flag);
+    /** Sets the flags as a short; this way, multiple flags can be set in one operation
+     * @param flag The flag to be set (as a short)
+     * @param is_transient True if the flag is transient, false otherwise
+     */
+    <T extends Message> T       setFlag(short flag, boolean is_transient);
 
     /** Sets one or more transient flags. Transient flags are not marshalled */
     <T extends Message> T       setFlag(TransientFlag... flags);
 
-    /** Sets the transient flags as a short; this way, multiple transient flags can be set in one operation */
-    <T extends Message> T       setTransientFlag(short flag);
-
     /** Atomically sets a transient flag if not set. Returns true if the flags was set, else false (already set) */
-    boolean                     setTransientFlagIfAbsent(TransientFlag flag);
+    boolean                     setFlagIfAbsent(TransientFlag flag);
 
-    /** Returns the flags as an or-ed short */
-    short                       getFlags();
-
-    /** Returns the transient flags as an or-ed short */
-    short                       getTransientFlags();
+    /** Returns the flags as an or-ed short
+     * @param is_transient Returns transient flags if true, else regular flags
+     */
+    short                       getFlags(boolean is_transient);
 
     /** Removes a number of flags from the message. No-op for a flag if it is not set */
     <T extends Message> T       clearFlag(Flag... flags);
 
     /** Removes a number of transient flags from the message. No-op for a flag if it is not set */
-    <T extends Message> T       clearTransientFlag(TransientFlag... flags);
+    <T extends Message> T       clearFlag(TransientFlag... flags);
 
     boolean                     isFlagSet(Flag flag);
 
-    boolean                     isTransientFlagSet(TransientFlag flag);
+    boolean                     isFlagSet(TransientFlag flag);
 
 
 

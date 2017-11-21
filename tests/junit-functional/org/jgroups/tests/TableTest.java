@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 @Test(groups=Global.FUNCTIONAL)
 public class TableTest {
 
-    protected static final Predicate<Message> dont_loopback_filter=msg -> msg != null && msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK);
+    protected static final Predicate<Message> dont_loopback_filter=msg -> msg != null && msg.isFlagSet(Message.TransientFlag.DONT_LOOPBACK);
 
 
     public static void testCreation() {

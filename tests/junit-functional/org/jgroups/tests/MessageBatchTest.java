@@ -75,13 +75,13 @@ public class MessageBatchTest {
             msgs.add(msg);
         }
 
-        Predicate<Message> filter=msg -> msg != null && (!msg.isFlagSet(Message.Flag.OOB) || msg.setTransientFlagIfAbsent(Message.TransientFlag.OOB_DELIVERED));
+        Predicate<Message> filter=msg -> msg != null && (!msg.isFlagSet(Message.Flag.OOB) || msg.setFlagIfAbsent(Message.TransientFlag.OOB_DELIVERED));
         MessageBatch batch=new MessageBatch(null, null, null, true, msgs, filter);
         System.out.println("batch = " + batch.map(print_numbers));
         assert batch.size() == 15;
         for(Message msg: batch) {
             int num=msg.getObject();
-            assert num > 10 || msg.isTransientFlagSet(Message.TransientFlag.OOB_DELIVERED);
+            assert num > 10 || msg.isFlagSet(Message.TransientFlag.OOB_DELIVERED);
         }
     }
 
@@ -225,7 +225,7 @@ public class MessageBatchTest {
     }
 
     public void testRemoveWithFilter() {
-        Predicate<Message> filter=msg -> msg != null && msg.isTransientFlagSet(Message.TransientFlag.OOB_DELIVERED);
+        Predicate<Message> filter=msg -> msg != null && msg.isFlagSet(Message.TransientFlag.OOB_DELIVERED);
         MessageBatch batch=new MessageBatch(10);
         for(int i=1; i <= 10; i++) {
             Message msg=new BytesMessage(null, i);

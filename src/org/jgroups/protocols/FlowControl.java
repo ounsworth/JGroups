@@ -320,7 +320,7 @@ public abstract class FlowControl extends Protocol {
 
         // if the message is DONT_LOOPBACK, we will not receive it, therefore the credit
         // check needs to be done now
-        if(msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK)) {
+        if(msg.isFlagSet(Message.TransientFlag.DONT_LOOPBACK)) {
             long new_credits=adjustCredit(received, local_addr, length);
             if(new_credits > 0)
                 sendCredit(local_addr, new_credits);

@@ -161,23 +161,14 @@ public abstract class BaseMessage implements Message {
         return this;
     }
 
-    /**
-     * Sets the flags from a short. <em>Not recommended</em> (use {@link #setFlag(Message.Flag...)} instead),
-     * as the internal representation of flags might change anytime.
-     * @param flag
-     * @return
-     */
-    public Message setFlag(short flag) {
-        short tmp=this.flags;
-        tmp|=flag;
-        this.flags=tmp;
-        return this;
-    }
 
-    public Message setTransientFlag(short flag) {
-        short tmp=this.transient_flags;
+    public Message setFlag(short flag, boolean is_transient) {
+        short tmp=is_transient? this.transient_flags : this.flags;
         tmp|=flag;
-        this.transient_flags=(byte)tmp;
+        if(is_transient)
+            this.transient_flags=(byte)tmp;
+        else
+            this.flags=tmp;
         return this;
     }
 
@@ -187,8 +178,7 @@ public abstract class BaseMessage implements Message {
      * This is only used by unit test code
      * @return
      */
-    public short getFlags()          {return flags;}
-    public short getTransientFlags() {return transient_flags;}
+    public short getFlags(boolean is_transient) {return is_transient? transient_flags : flags;}
 
     /**
      * Clears a number of flags in a message
@@ -206,7 +196,7 @@ public abstract class BaseMessage implements Message {
         return this;
     }
 
-    public Message clearTransientFlag(TransientFlag... flags) {
+    public Message clearFlag(TransientFlag... flags) {
         if(flags != null) {
             short tmp=this.transient_flags;
             for(TransientFlag flag : flags)
@@ -226,7 +216,7 @@ public abstract class BaseMessage implements Message {
         return Util.isFlagSet(flags, flag);
     }
 
-    public boolean isTransientFlagSet(TransientFlag flag) {
+    public boolean isFlagSet(TransientFlag flag) {
         return Util.isTransientFlagSet(transient_flags, flag);
     }
 
@@ -238,8 +228,8 @@ public abstract class BaseMessage implements Message {
     * @param flag
     * @return True if the flag could be set, false if not (was already set)
     */
-    public synchronized boolean setTransientFlagIfAbsent(TransientFlag flag) {
-        if(isTransientFlagSet(flag))
+    public synchronized boolean setFlagIfAbsent(TransientFlag flag) {
+        if(isFlagSet(flag))
             return false;
         setFlag(flag);
         return true;

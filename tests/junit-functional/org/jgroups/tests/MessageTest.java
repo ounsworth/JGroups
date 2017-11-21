@@ -27,22 +27,22 @@ public class MessageTest {
     static final short NAKACK_ID=103;
 
 
-    public static void testFlags() {
+    public void testFlags() {
         Message m1=new BytesMessage();
         assert !m1.isFlagSet(Message.Flag.OOB);
-        assert m1.getFlags() == 0;
+        assert m1.getFlags(false) == 0;
 
         m1.setFlag((Message.Flag[])null);
 
         assert !m1.isFlagSet(Message.Flag.OOB);
-        assert !m1.isFlagSet(null);
+        assert !m1.isFlagSet(Message.Flag.NO_RELIABILITY);
     }
 
 
     public void testSettingMultipleFlags() {
         Message msg=new BytesMessage();
         msg.setFlag((Message.Flag[])null);
-        assert msg.getFlags() == 0;
+        assert msg.getFlags(false) == 0;
 
         msg.setFlag(Message.Flag.OOB, Message.Flag.NO_FC, null, Message.Flag.DONT_BUNDLE);
         assert msg.isFlagSet(Message.Flag.OOB);
@@ -55,9 +55,9 @@ public class MessageTest {
         Message m1=new BytesMessage();
         m1.setFlag(Message.Flag.OOB);
         assert m1.isFlagSet(Message.Flag.OOB);
-        assert Util.isFlagSet(m1.getFlags(), Message.Flag.OOB);
+        assert Util.isFlagSet(m1.getFlags(false), Message.Flag.OOB);
         assert !(m1.isFlagSet(Message.Flag.DONT_BUNDLE));
-        assert !Util.isFlagSet(m1.getFlags(), Message.Flag.DONT_BUNDLE);
+        assert !Util.isFlagSet(m1.getFlags(false), Message.Flag.DONT_BUNDLE);
     }
 
     public static void testFlags3() {
@@ -102,7 +102,7 @@ public class MessageTest {
         assert !msg.isFlagSet(Message.Flag.NO_FC);
         msg.clearFlag(Message.Flag.DONT_BUNDLE);
         msg.clearFlag(Message.Flag.OOB);
-        assert msg.getFlags() == 0;
+        assert msg.getFlags(false) == 0;
         assert !msg.isFlagSet(Message.Flag.OOB);
         assert !msg.isFlagSet(Message.Flag.DONT_BUNDLE);
         assert !msg.isFlagSet(Message.Flag.NO_FC);
@@ -121,13 +121,13 @@ public class MessageTest {
 
         msg.setDest(DEST);
 
-        msg.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+        msg.clearFlag(Message.TransientFlag.DONT_LOOPBACK)
           .setDest(DEST) // OK
           .setFlag(Message.TransientFlag.DONT_LOOPBACK)
-          .setTransientFlagIfAbsent(Message.TransientFlag.DONT_LOOPBACK);
+          .setFlagIfAbsent(Message.TransientFlag.DONT_LOOPBACK);
 
         short flags=(short)(Message.TransientFlag.DONT_LOOPBACK.value() + Message.TransientFlag.OOB_DELIVERED.value());
-        msg.setTransientFlag(flags);
+        msg.setFlag(flags, true);
     }
 
 
@@ -226,7 +226,7 @@ public class MessageTest {
         Assert.assertEquals(m1.getOffset(), m2.getOffset());
         Assert.assertEquals(m1.getLength(), m2.getLength());
         assert m2.isFlagSet(Message.Flag.OOB);
-        assert m2.isTransientFlagSet(Message.TransientFlag.OOB_DELIVERED);
+        assert m2.isFlagSet(Message.TransientFlag.OOB_DELIVERED);
     }
 
 

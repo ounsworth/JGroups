@@ -1080,7 +1080,7 @@ public abstract class TP extends Protocol implements DiagnosticsHandler.ProbeHan
         // Don't send if dest is local address. Instead, send it up the stack. If multicast message, loop back directly
         // to us (but still multicast). Once we receive this, we discard our own multicast message
         boolean multicast=dest == null, do_send=multicast || !dest.equals(sender),
-          loop_back=(multicast || dest.equals(sender)) && !msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK);
+          loop_back=(multicast || dest.equals(sender)) && !msg.isFlagSet(Message.TransientFlag.DONT_LOOPBACK);
 
         if(dest instanceof PhysicalAddress && dest.equals(local_physical_addr)) {
             loop_back=true;

@@ -130,7 +130,7 @@ public class RequestCorrelator {
           : new Header(Header.REQ, 0, this.corr_id);
 
         Message msg=new BytesMessage(null, data).putHeader(this.corr_id, hdr)
-          .setFlag(opts.flags()).setTransientFlag(opts.transientFlags());
+          .setFlag(opts.flags(), false).setFlag(opts.transientFlags(), true);
 
         if(req != null) { // sync
             long req_id=REQUEST_ID.getAndIncrement();
@@ -160,8 +160,8 @@ public class RequestCorrelator {
                 for(Address mbr: dest_mbrs) {
                     Message copy=(first? msg : msg.copy(true)).setDest(mbr);
                     first=false;
-                    if(!mbr.equals(local_addr) && copy.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK))
-                        copy.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+                    if(!mbr.equals(local_addr) && copy.isFlagSet(Message.TransientFlag.DONT_LOOPBACK))
+                        copy.clearFlag(Message.TransientFlag.DONT_LOOPBACK);
                     transport.down(copy);
                 }
             }
@@ -179,7 +179,7 @@ public class RequestCorrelator {
 
         Header hdr=new Header(Header.REQ, 0, this.corr_id);
         Message msg=new BytesMessage(dest, data).putHeader(this.corr_id, hdr)
-          .setFlag(opts.flags()).setTransientFlag(opts.transientFlags());
+          .setFlag(opts.flags(), false).setFlag(opts.transientFlags(), true);
 
         if(req != null) { // sync RPC
             long req_id=REQUEST_ID.getAndIncrement();
@@ -435,7 +435,7 @@ public class RequestCorrelator {
                 return;
             }
         }
-        Message rsp=req.makeReply().setFlag(req.getFlags()).setBuffer(rsp_buf)
+        Message rsp=req.makeReply().setFlag(req.getFlags(false), false).setBuffer(rsp_buf)
           .clearFlag(Message.Flag.RSVP, Message.Flag.INTERNAL); // JGRP-1940
         sendResponse(rsp, req_id, is_exception);
     }
