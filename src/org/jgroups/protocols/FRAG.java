@@ -211,7 +211,7 @@ public class FRAG extends Protocol {
             }
 
             for(int i=0; i < num_frags; i++) {
-                Message frag_msg=new BytesMessage(dest, fragments[i]).src(src);
+                Message frag_msg=new BytesMessage(dest, fragments[i]).setSrc(src);
                 FragHeader hdr=new FragHeader(frag_id, i, num_frags);
                 frag_msg.putHeader(this.id, hdr);
                 down_prot.down(frag_msg);

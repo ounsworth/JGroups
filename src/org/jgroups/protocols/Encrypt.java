@@ -141,7 +141,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         try {
             if(secret_key == null) {
                 log.trace("%s: discarded %s message to %s as secret key is null, hdrs: %s",
-                          local_addr, msg.dest() == null? "mcast" : "unicast", msg.dest(), msg.printHeaders());
+                          local_addr, msg.getDest() == null? "mcast" : "unicast", msg.getDest(), msg.printHeaders());
                 return null;
             }
             encryptAndSend(msg);
@@ -233,7 +233,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
     protected Object handleUpMessage(Message msg) throws Exception {
         EncryptHeader hdr=msg.getHeader(this.id);
         if(hdr == null) {
-            log.error("%s: received message without encrypt header from %s; dropping it", local_addr, msg.src());
+            log.error("%s: received message without encrypt header from %s; dropping it", local_addr, msg.getSrc());
             return null;
         }
         switch(hdr.type()) {
@@ -254,7 +254,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         Message tmpMsg=decryptMessage(null, msg.copy()); // need to copy for possible xmits
         if(tmpMsg != null)
             return up_prot.up(tmpMsg);
-        log.warn("%s: unrecognized cipher; discarding message from %s", local_addr, msg.src());
+        log.warn("%s: unrecognized cipher; discarding message from %s", local_addr, msg.getSrc());
         return null;
     }
 
@@ -289,7 +289,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
                 handleUnknownVersion(hdr.version);
                 return null;
             }
-            log.trace("%s: decrypting msg from %s using previous cipher version", local_addr, msg.src());
+            log.trace("%s: decrypting msg from %s using previous cipher version", local_addr, msg.getSrc());
             return _decrypt(cipher, msg, hdr);
         }
         return _decrypt(cipher, msg, hdr);
@@ -304,7 +304,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         if(encrypt_entire_message && sign_msgs) {
             byte[] signature=hdr.signature();
             if(signature == null) {
-                log.error("%s: dropped message from %s as the header did not have a checksum", local_addr, msg.src());
+                log.error("%s: dropped message from %s as the header did not have a checksum", local_addr, msg.getSrc());
                 return null;
             }
 
@@ -312,7 +312,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             long actual_checksum=computeChecksum(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
             if(actual_checksum != msg_checksum) {
                 log.error("%s: dropped message from %s as the message's checksum (%d) did not match the computed checksum (%d)",
-                          local_addr, msg.src(), msg_checksum, actual_checksum);
+                          local_addr, msg.getSrc(), msg_checksum, actual_checksum);
                 return null;
             }
         }

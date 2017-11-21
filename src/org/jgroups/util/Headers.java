@@ -146,24 +146,12 @@ public final class Headers {
         return new_hdrs;
     }
 
-     public static Header[] copy(final Header[] headers) {
-         if(headers == null)
-             return new Header[0];
-         Header[] retval=new Header[headers.length];
-         System.arraycopy(headers, 0, retval, 0, headers.length);
-         return retval;
-     }
-
-    public static String printObjectHeaders(final Header[] hdrs) {
-        if(hdrs == null)
-            return "";
-        StringBuilder sb=new StringBuilder();
-        for(Header hdr: hdrs) {
-            if(hdr == null)
-                break;
-            sb.append(hdr.getProtId()).append(": ").append(hdr).append('\n');
-        }
-        return sb.toString();
+    public static Header[] copy(final Header[] headers) {
+        if(headers == null)
+            return new Header[0];
+        Header[] retval=new Header[headers.length];
+        System.arraycopy(headers, 0, retval, 0, headers.length);
+        return retval;
     }
 
     public static int marshalledSize(final Header[] hdrs) {

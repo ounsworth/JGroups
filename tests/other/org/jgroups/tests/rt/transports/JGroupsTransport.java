@@ -106,7 +106,7 @@ public class JGroupsTransport extends ReceiverAdapter implements RtTransport {
             return;
         for(Message msg: batch) {
             try {
-                receiver.receive(msg.src(), msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                receiver.receive(msg.getSrc(), msg.getRawBuffer(), msg.getOffset(), msg.getLength());
             }
             catch(Throwable t) {
                 log.error("failed delivering message from batch", t);
@@ -118,7 +118,7 @@ public class JGroupsTransport extends ReceiverAdapter implements RtTransport {
         if(receiver == null)
             return;
         try {
-            receiver.receive(msg.src(), msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            receiver.receive(msg.getSrc(), msg.getRawBuffer(), msg.getOffset(), msg.getLength());
         }
         catch(Throwable t) {
             log.error("failed delivering message", t);

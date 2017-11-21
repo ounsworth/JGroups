@@ -57,7 +57,7 @@ public class ABP extends Protocol {
 
     public Object down(Message msg) {
         Address dest;
-        if((dest=msg.dest()) == null) // we only handle unicast messages
+        if((dest=msg.getDest()) == null) // we only handle unicast messages
             return down_prot.down(msg);
         Entry entry=getEntry(send_map, dest);
         entry.send(msg);
@@ -65,7 +65,7 @@ public class ABP extends Protocol {
     }
 
     public Object up(Message msg) {
-        Address dest=msg.dest(), sender=msg.src();
+        Address dest=msg.getDest(), sender=msg.getSrc();
         if(dest == null) // we don't handle multicast messages
             return up_prot.up(msg);
 
@@ -162,7 +162,7 @@ public class ABP extends Protocol {
 
                     copy=msg.copy().putHeader(id, new ABPHeader(Type.data, bit));
                 }
-                log.trace("%s: --> %s.msg(%d). Msg: %s", local_addr, copy.dest(), bit, copy.printHeaders());
+                log.trace("%s: --> %s.msg(%d). Msg: %s", local_addr, copy.getDest(), bit, copy.printHeaders());
                 down_prot.down(copy);
             }
         }

@@ -215,7 +215,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                         sendKeyRequest(key_server);
                 }
                 catch(Throwable t) {
-                    log.error("failed passing up message from %s: %s, ex=%s", msg.src(), msg.printHeaders(), t);
+                    log.error("failed passing up message from %s: %s, ex=%s", msg.getSrc(), msg.printHeaders(), t);
                 }
             }
             EncryptHeader hdr=msg.getHeader(this.id);
@@ -296,10 +296,10 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                 break;
             case EncryptHeader.SECRET_KEY_RSP:
                 handleSecretKeyResponse(msg, hdr.version());
-                sendNewKeyserverAck(msg.src());
+                sendNewKeyserverAck(msg.getSrc());
                 break;
             case EncryptHeader.NEW_KEYSERVER:
-                Address sender=msg.src();
+                Address sender=msg.getSrc();
                 if(!Objects.equals(key_server_addr, sender))
                     key_server_addr=sender;
 
@@ -310,7 +310,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                 break;
             case EncryptHeader.NEW_KEYSERVER_ACK:
                 if(key_requesters != null)
-                    key_requesters.add(msg.src(), true);
+                    key_requesters.add(msg.getSrc(), true);
                 break;
         }
         return null;
@@ -319,7 +319,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
     @Override protected boolean process(Message msg) {
         if(enqueue(msg)) {
             log.trace("%s: queuing %s message from %s as secret key hasn't been retrieved from keyserver %s yet, hdrs: %s",
-                      local_addr, msg.dest() == null? "mcast" : "unicast", msg.src(), key_server_addr, msg.printHeaders());
+                      local_addr, msg.getDest() == null? "mcast" : "unicast", msg.getSrc(), key_server_addr, msg.printHeaders());
             sendKeyRequest(key_server_addr);
             return false;
         }
@@ -327,7 +327,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
     }
 
     protected void handleSecretKeyRequest(final Message msg) {
-        if(!inView(msg.src(), "key requester %s is not in current view %s; ignoring key request"))
+        if(!inView(msg.getSrc(), "key requester %s is not in current view %s; ignoring key request"))
             return;
         log.debug("%s: received secret key request from %s", local_addr, msg.getSrc());
         try {
@@ -341,7 +341,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
 
     protected void handleSecretKeyResponse(final Message msg, final byte[] key_version) {
-        if(!inView(msg.src(), "ignoring secret key sent by %s which is not in current view %s"))
+        if(!inView(msg.getSrc(), "ignoring secret key sent by %s which is not in current view %s"))
             return;
 
         if(Arrays.equals(sym_version, key_version)) {
@@ -487,7 +487,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
     protected void sendSecretKey(Key secret_key, PublicKey public_key, Address source) throws Exception {
         byte[] encryptedKey=encryptSecretKey(secret_key, public_key);
-        Message newMsg=new BytesMessage(source, encryptedKey).src(local_addr)
+        Message newMsg=new BytesMessage(source, encryptedKey).setSrc(local_addr)
           .putHeader(this.id, new EncryptHeader(EncryptHeader.SECRET_KEY_RSP, symVersion()));
         log.debug("%s: sending secret key response to %s (version: %s)", local_addr, source, Util.byteArrayToHexString(sym_version));
         down_prot.down(newMsg);
@@ -524,7 +524,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
         log.debug("%s: asking %s for the secret key (my version: %s)",
                   local_addr, key_server, Util.byteArrayToHexString(sym_version));
-        Message newMsg=new BytesMessage(key_server, key_pair.getPublic().getEncoded()).src(local_addr)
+        Message newMsg=new BytesMessage(key_server, key_pair.getPublic().getEncoded()).setSrc(local_addr)
           .putHeader(this.id,new EncryptHeader(EncryptHeader.SECRET_KEY_REQ, null));
         down_prot.down(newMsg);
     }
@@ -599,7 +599,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                     up_prot.up(decrypted_msg);
             }
             catch(Exception ex) {
-                log.error("failed decrypting message from %s: %s", queued_msg.src(), ex);
+                log.error("failed decrypting message from %s: %s", queued_msg.getSrc(), ex);
             }
         }
     }

@@ -98,10 +98,10 @@ public class RingBufferBundler extends BaseBundler {
                 continue;
             }
 
-            Address dest=msg.dest();
+            Address dest=msg.getDest();
             try {
                 output.position(0);
-                Util.writeMessageListHeader(dest, msg.src(), cluster_name, 1, output, dest == null);
+                Util.writeMessageListHeader(dest, msg.getSrc(), cluster_name, 1, output, dest == null);
 
                 // remember the position at which the number of messages (an int) was written, so we can later set the
                 // correct value (when we know the correct number of messages)
@@ -133,14 +133,14 @@ public class RingBufferBundler extends BaseBundler {
         int num_msgs=0, bytes=0;
         for(;;) {
             Message msg=buf[start_index];
-            if(msg != null && Objects.equals(dest, msg.dest())) {
+            if(msg != null && Objects.equals(dest, msg.getDest())) {
                 int size=msg.size();
                 if(bytes + size > max_bundle_size)
                     break;
                 bytes+=size;
                 num_msgs++;
                 buf[start_index]=null;
-                msg.writeToNoAddrs(msg.src(), output, transport.getId());
+                msg.writeToNoAddrs(msg.getSrc(), output, transport.getId());
             }
             if(start_index == end_index)
                 break;

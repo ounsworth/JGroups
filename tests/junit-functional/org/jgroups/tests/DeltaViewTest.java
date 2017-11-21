@@ -132,7 +132,7 @@ public class DeltaViewTest {
             for(Message msg: join_rsps) {
                 try {
                     JoinRsp join_rsp=Util.streamableFromBuffer(JoinRsp.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
-                    System.out.printf("join-rsp #%d to %s: %s\n", count++, msg.dest(), join_rsp.getView());
+                    System.out.printf("join-rsp #%d to %s: %s\n", count++, msg.getDest(), join_rsp.getView());
                 }
                 catch(Throwable t) {
                     log.error("failed unmarshalling JOIN-RSP", t);

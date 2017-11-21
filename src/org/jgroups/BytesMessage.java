@@ -165,7 +165,7 @@ public class BytesMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public Message setBuffer(byte[] b) {
+    public <T extends Message> T setBuffer(byte[] b) {
         buf=b;
         if(buf != null) {
             offset=0;
@@ -173,7 +173,7 @@ public class BytesMessage extends BaseMessage {
         }
         else
             offset=length=0;
-        return this;
+        return (T)this;
     }
 
     /**
@@ -308,16 +308,6 @@ public class BytesMessage extends BaseMessage {
 
     /* ----------------------------------- Interface Streamable  ------------------------------- */
 
-    /**
-     * Returns the exact size of the marshalled message. Uses method size() of each header to compute
-     * the size, so if a Header subclass doesn't implement size() we will use an approximation.
-     * However, most relevant header subclasses have size() implemented correctly. (See
-     * org.jgroups.tests.SizeTest).<p/>
-     * The return type is a long as this is the length of the payload ({@link #getLength()}) plus metadata (e.g. flags,
-     * headers, source and dest addresses etc). Since the largest payload can be Integer.MAX_VALUE, adding the metadata
-     * might lead to an int overflow, that's why we use a long.
-     * @return The number of bytes for the marshalled message
-     */
     public int size() {
         int retval=super.size() + Global.INT_SIZE; // length
         if(buf != null)
@@ -326,9 +316,6 @@ public class BytesMessage extends BaseMessage {
     }
 
 
-    /**
-     * Streams all members (dest and src addresses, buffer and headers) to the output stream.
-     */
     @Override public void writeTo(DataOutput out) throws Exception {
         super.writeTo(out);
         out.writeInt(buf != null? length : -1);
@@ -359,11 +346,7 @@ public class BytesMessage extends BaseMessage {
         }
     }
 
-
-
     /* --------------------------------- End of Interface Streamable ----------------------------- */
-
-
 
 
 

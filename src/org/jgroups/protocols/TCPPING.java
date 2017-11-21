@@ -186,7 +186,7 @@ public class TCPPING extends Discovery {
             down_prot.down(req);
         }
         catch(Throwable t) {
-            log.trace("sending discovery request to %s failed: %s", req.dest(), t);
+            log.trace("sending discovery request to %s failed: %s", req.getDest(), t);
         }
     }
 }

@@ -106,14 +106,14 @@ public class StreamableTest {
 
 
     public static void testNonNullAddress() throws Exception {
-        stream(new BytesMessage(null, "Hello world".getBytes()).src(UUID.randomUUID()));
+        stream(new BytesMessage(null, "Hello world".getBytes()).setSrc(UUID.randomUUID()));
     }
 
 
     public static void testHeaders() throws Exception {
         Address dest=UUID.randomUUID();
         Address src=UUID.randomUUID();
-        Message msg=new BytesMessage(dest, "Hello world".getBytes()).src(src);
+        Message msg=new BytesMessage(dest, "Hello world".getBytes()).setSrc(src);
         PingHeader hdr=new PingHeader(PingHeader.GET_MBRS_REQ);
         msg.putHeader(PING_ID, hdr);
         TpHeader udp_hdr=new TpHeader("bla");

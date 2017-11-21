@@ -486,9 +486,9 @@ public class UtilTest {
     public static void testMessageToByteBuffer() throws Exception {
         _testMessage(new BytesMessage());
         _testMessage(new BytesMessage(null, "hello world"));
-        _testMessage(new BytesMessage(null).src(Util.createRandomAddress()));
-        _testMessage(new BytesMessage(null).src(Util.createRandomAddress()));
-        _testMessage(new BytesMessage(null, "bela").src(Util.createRandomAddress()));
+        _testMessage(new BytesMessage(null).setSrc(Util.createRandomAddress()));
+        _testMessage(new BytesMessage(null).setSrc(Util.createRandomAddress()));
+        _testMessage(new BytesMessage(null, "bela").setSrc(Util.createRandomAddress()));
     }
 
     private static void _testMessage(Message msg) throws Exception {
@@ -785,7 +785,7 @@ public class UtilTest {
         Message[] msgs={
           new BytesMessage(null, "hello world").setFlag(Message.Flag.OOB, Message.Flag.NO_RELIABILITY),
           new BytesMessage(Util.createRandomAddress("dest"), "bela ban"),
-          new BytesMessage(Util.createRandomAddress("dest"), "hello world again").src(Util.createRandomAddress("src"))
+          new BytesMessage(Util.createRandomAddress("dest"), "hello world again").setSrc(Util.createRandomAddress("src"))
             .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
         };
 
@@ -795,10 +795,10 @@ public class UtilTest {
         ByteArrayDataInputStream in=new ByteArrayDataInputStream(out.buffer(), 0, out.position());
         Message[] tmp=Util.read(BytesMessage.class, in);
         for(int i=0; i < msgs.length; i++) {
-            if(msgs[i].dest() == null)
-                assert tmp[i].dest() == null;
+            if(msgs[i].getDest() == null)
+                assert tmp[i].getDest() == null;
             else
-                assert(msgs[i].dest().equals(tmp[i].dest()));
+                assert(msgs[i].getDest().equals(tmp[i].getDest()));
             assert msgs[i].getLength() == tmp[i].getLength();
             assert msgs[i].getObject().equals(tmp[i].getObject());
         }

@@ -72,7 +72,7 @@ public class UFC_NB extends UFC {
     }
 
     @Override protected Object handleDownMessage(Message msg) {
-        Address dest=msg.dest();
+        Address dest=msg.getDest();
         if(dest == null) { // 2nd line of defense, not really needed
             log.error("%s doesn't handle multicast messages; passing message down", getClass().getSimpleName());
             return down_prot.down(msg);

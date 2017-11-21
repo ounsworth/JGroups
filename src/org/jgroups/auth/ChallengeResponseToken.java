@@ -103,7 +103,7 @@ public class ChallengeResponseToken extends AuthToken implements AUTH.UpHandler 
                 long hash=hash(encrypt(hdr.payload));
                 Message response=new BytesMessage(msg.getSrc()).setFlag(Message.Flag.OOB)
                   .putHeader(ID, new ChallengeResponseHeader(hash));
-                log.trace("%s: received CHALLENGE from %s; sending RESPONSE (hash=%d)", auth.getAddress(), msg.src(), hash);
+                log.trace("%s: received CHALLENGE from %s; sending RESPONSE (hash=%d)", auth.getAddress(), msg.getSrc(), hash);
                 auth.getDownProtocol().down(response);
                 break;
             case ChallengeResponseHeader.RESPONSE:

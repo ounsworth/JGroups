@@ -166,10 +166,10 @@ public class RingBufferBundlerLockless2 extends BaseBundler {
             if(msg == null)
                 break;
 
-            Address dest=msg.dest();
+            Address dest=msg.getDest();
             try {
                 output.position(0);
-                Util.writeMessageListHeader(dest, msg.src(), cluster_name, 1, output, dest == null);
+                Util.writeMessageListHeader(dest, msg.getSrc(), cluster_name, 1, output, dest == null);
 
                 // remember the position at which the number of messages (an int) was written, so we can later set the
                 // correct value (when we know the correct number of messages)
@@ -203,14 +203,14 @@ public class RingBufferBundlerLockless2 extends BaseBundler {
         int num_msgs=0, bytes=0;
         for(int i=start_index; i != end_index; i=increment(i)) {
             Message msg=buf[i];
-            if(msg != null && msg != NULL_MSG && Objects.equals(dest, msg.dest())) {
+            if(msg != null && msg != NULL_MSG && Objects.equals(dest, msg.getDest())) {
                 int msg_size=msg.size();
                 if(bytes + msg_size > max_bundle_size)
                     break;
                 bytes+=msg_size;
                 num_msgs++;
                 buf[i]=NULL_MSG;
-                msg.writeToNoAddrs(msg.src(), output, transport.getId());
+                msg.writeToNoAddrs(msg.getSrc(), output, transport.getId());
             }
         }
         return num_msgs;

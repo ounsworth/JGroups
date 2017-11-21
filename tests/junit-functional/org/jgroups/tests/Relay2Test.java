@@ -440,7 +440,7 @@ public class Relay2Test {
 
         public void receive(Message msg) {
             list.add(msg.getObject());
-            System.out.printf("<-- %s from %s\n", msg.getObject(), msg.src());
+            System.out.printf("<-- %s from %s\n", msg.getObject(), msg.getSrc());
         }
     }
 

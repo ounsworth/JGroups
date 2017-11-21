@@ -134,8 +134,8 @@ public class AUTH extends Protocol {
         if(gms_hdr != null && needsAuthentication(gms_hdr)) {
             AuthHeader auth_hdr=msg.getHeader(id);
             if(auth_hdr == null) {
-                sendRejectionMessage(gms_hdr.getType(), msg.src(), "no AUTH header found in message");
-                throw new IllegalStateException(String.format("found %s from %s but no AUTH header", gms_hdr, msg.src()));
+                sendRejectionMessage(gms_hdr.getType(), msg.getSrc(), "no AUTH header found in message");
+                throw new IllegalStateException(String.format("found %s from %s but no AUTH header", gms_hdr, msg.getSrc()));
             }
             if(!handleAuthHeader(gms_hdr, auth_hdr, msg)) // authentication failed
                 return null;    // don't pass up
@@ -219,7 +219,7 @@ public class AUTH extends Protocol {
             else {
                 log.warn("%s: failed to validate AuthHeader (token: %s) from %s; dropping message and sending " +
                            "rejection message",
-                         local_addr, auth_token.getClass().getSimpleName(), msg.src());
+                         local_addr, auth_token.getClass().getSimpleName(), msg.getSrc());
                 sendRejectionMessage(gms_hdr.getType(), msg.getSrc(), "authentication failed");
                 return false;
             }

@@ -22,7 +22,7 @@ public class MessageBeforeConnectedTestHelper extends Helper {
      * Sends a unicast message up UNICAST2
      */
     public void sendUnicast(JChannel ch) throws Exception {
-        final Message msg=new BytesMessage(ch.getAddress(), "hello-1").src(ch.getAddress());
+        final Message msg=new BytesMessage(ch.getAddress(), "hello-1").setSrc(ch.getAddress());
 
         // Add a UNICAST2 header
         final UNICAST3 unicast=ch.getProtocolStack().findProtocol(UNICAST3.class);

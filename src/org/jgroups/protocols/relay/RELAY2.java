@@ -498,7 +498,7 @@ public class RELAY2 extends Protocol {
             handleMessage(header, message);
         }
         else {
-            Message copy=copy(msg).dest(null).src(null).putHeader(id, hdr);
+            Message copy=copy(msg).setDest(null).setSrc(null).putHeader(id, hdr);
             down_prot.down(copy); // multicast locally
 
             // Don't forward: https://issues.jboss.org/browse/JGRP-1519
@@ -587,7 +587,7 @@ public class RELAY2 extends Protocol {
      */
     protected void sendSiteUnreachableTo(Address dest, String target_site) {
         Message msg=new BytesMessage(dest).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
-          .src(new SiteUUID((UUID)local_addr, NameCache.get(local_addr), site))
+          .setSrc(new SiteUUID((UUID)local_addr, NameCache.get(local_addr), site))
           .putHeader(id,new Relay2Header(Relay2Header.SITE_UNREACHABLE,new SiteMaster(target_site),null));
         down_prot.down(msg);
     }
@@ -597,7 +597,7 @@ public class RELAY2 extends Protocol {
         if(log.isTraceEnabled())
             log.trace(local_addr + ": forwarding message to final destination " + final_dest + " to " +
                         (forward_to_current_coord? " the current coordinator" : next_dest));
-        Message copy=copy(msg).dest(next_dest).src(null);
+        Message copy=copy(msg).setDest(next_dest).setSrc(null);
         Relay2Header hdr=new Relay2Header(Relay2Header.DATA, final_dest, original_sender);
         copy.putHeader(id,hdr);
         if(forward_to_current_coord && forwarding_protocol_present)
@@ -638,7 +638,7 @@ public class RELAY2 extends Protocol {
 
     protected void deliver(Address dest, Address sender, final Message msg) {
         try {
-            Message copy=copy(msg).dest(dest).src(sender);
+            Message copy=copy(msg).setDest(dest).setSrc(sender);
             if(log.isTraceEnabled())
                 log.trace(local_addr + ": delivering message from " + sender);
             long start=stats? System.nanoTime() : 0;

@@ -129,7 +129,7 @@ public class DH_KEY_EXCHANGE extends KeyExchange {
     public Object up(Message msg) {
         DhHeader hdr=msg.getHeader(id);
         if(hdr != null) {
-            handle(hdr, msg.src());
+            handle(hdr, msg.getSrc());
             return null;
         }
         return up_prot.up(msg);
@@ -142,7 +142,7 @@ public class DH_KEY_EXCHANGE extends KeyExchange {
             DhHeader hdr=msg.getHeader(id);
             if(hdr != null) {
                 batch.remove(msg);
-                handle(hdr, msg.src());
+                handle(hdr, msg.getSrc());
             }
         }
         if(!batch.isEmpty())

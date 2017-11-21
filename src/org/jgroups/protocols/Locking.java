@@ -227,7 +227,7 @@ abstract public class Locking extends Protocol {
             return up_prot.up(msg);
 
         if (null != view && !view.containsMember(msg.getSrc())) {
-            log.error("Received locking event from '%s' but member is not present in the current view - ignoring request", msg.src());
+            log.error("Received locking event from '%s' but member is not present in the current view - ignoring request", msg.getSrc());
             return null;
         }
 

@@ -153,12 +153,12 @@ public class RequestCorrelator {
 
         if(opts.anycasting()) {
             if(opts.useAnycastAddresses()) {
-                transport.down(msg.dest(new AnycastAddress(dest_mbrs)));
+                transport.down((Message)msg.setDest(new AnycastAddress(dest_mbrs)));
             }
             else {
                 boolean first=true;
                 for(Address mbr: dest_mbrs) {
-                    Message copy=(first? msg : msg.copy(true)).dest(mbr);
+                    Message copy=(first? msg : msg.copy(true)).setDest(mbr);
                     first=false;
                     if(!mbr.equals(local_addr) && copy.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK))
                         copy.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
@@ -186,7 +186,7 @@ public class RequestCorrelator {
             req.requestId(req_id);
             hdr.requestId(req_id); // set the request-id only for *synchronous RPCs*
             if(log.isTraceEnabled())
-                log.trace("%s: invoking unicast RPC [req-id=%d] on %s", local_addr, req_id, msg.dest());
+                log.trace("%s: invoking unicast RPC [req-id=%d] on %s", local_addr, req_id, msg.getDest());
             requests.putIfAbsent(req_id, req);
             // make sure no view is received before we add ourself as a view handler (https://issues.jboss.org/browse/JGRP-1428)
             req.viewChange(view);
@@ -300,7 +300,7 @@ public class RequestCorrelator {
             // if we are part of the exclusion list, then we discard the request (addressed to different members)
             Address[] exclusion_list=((MultiDestinationHeader)hdr).exclusion_list;
             if(exclusion_list != null && local_addr != null && Util.contains(local_addr, exclusion_list)) {
-                log.trace("%s: dropped req from %s as we are in the exclusion list, hdr=%s", local_addr, msg.src(), hdr);
+                log.trace("%s: dropped req from %s as we are in the exclusion list, hdr=%s", local_addr, msg.getSrc(), hdr);
                 return true; // don't pass this message further up
             }
         }
@@ -318,7 +318,7 @@ public class RequestCorrelator {
                 // if we are part of the exclusion list, then we discard the request (addressed to different members)
                 Address[] exclusion_list=((MultiDestinationHeader)hdr).exclusion_list;
                 if(exclusion_list != null && local_addr != null && Util.contains(local_addr, exclusion_list)) {
-                    log.trace("%s: dropped req from %s as we are in the exclusion list, hdr=%s", local_addr, msg.src(), hdr);
+                    log.trace("%s: dropped req from %s as we are in the exclusion list, hdr=%s", local_addr, msg.getSrc(), hdr);
                     batch.remove(msg);
                     continue; // don't pass this message further up
                 }
@@ -360,7 +360,7 @@ public class RequestCorrelator {
             case Header.EXC_RSP:
                 Request req=requests.get(hdr.req_id);
                 if(req != null)
-                    handleResponse(req, msg.src(), msg.getRawBuffer(), msg.getOffset(), msg.getLength(), hdr.type == Header.EXC_RSP);
+                    handleResponse(req, msg.getSrc(), msg.getRawBuffer(), msg.getOffset(), msg.getLength(), hdr.type == Header.EXC_RSP);
                 break;
 
             default:

@@ -137,7 +137,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
     protected final Predicate<Message>     drop_oob_and_dont_loopback_msgs_filter=msg ->
       msg != null && msg != DUMMY_OOB_MSG
         && (!msg.isFlagSet(Message.Flag.OOB) || msg.setTransientFlagIfAbsent(Message.TransientFlag.OOB_DELIVERED))
-        && !(msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK) && local_addr != null && local_addr.equals(msg.src()));
+        && !(msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK) && local_addr != null && local_addr.equals(msg.getSrc()));
 
     protected static final Predicate<Message> dont_loopback_filter=
       msg -> msg != null && msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK);
@@ -576,8 +576,8 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
             return null;
         }
 
-        if(msg.src() == null)
-            msg.src(local_addr); // this needs to be done so we can check whether the message sender is the local_addr
+        if(msg.getSrc() == null)
+            msg.setSrc(local_addr); // this needs to be done so we can check whether the message sender is the local_addr
 
         SenderEntry entry=getSenderEntry(dst);
 

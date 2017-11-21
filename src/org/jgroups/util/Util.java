@@ -462,6 +462,49 @@ public class Util {
         return bits&=~flag;
     }
 
+    public static String flagsToString(short flags) {
+        StringBuilder sb=new StringBuilder();
+        boolean first=true;
+
+        Message.Flag[] all_flags=Message.Flag.values();
+        for(Message.Flag flag: all_flags) {
+            if(isFlagSet(flags, flag)) {
+                if(first)
+                    first=false;
+                else
+                    sb.append("|");
+                sb.append(flag);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String transientFlagsToString(short flags) {
+        StringBuilder sb=new StringBuilder();
+        boolean first=true;
+
+        Message.TransientFlag[] all_flags=Message.TransientFlag.values();
+        for(Message.TransientFlag flag: all_flags) {
+            if(isTransientFlagSet(flags, flag)) {
+                if(first)
+                    first=false;
+                else
+                    sb.append("|");
+                sb.append(flag);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static boolean isFlagSet(short flags, Message.Flag flag) {
+        return flag != null && ((flags & flag.value()) == flag.value());
+    }
+
+    public static boolean isTransientFlagSet(short flags, Message.TransientFlag flag) {
+        return flag != null && (flags & flag.value()) == flag.value();
+    }
+
+
 
     /**
      * Creates an object from a byte buffer
@@ -1296,7 +1339,7 @@ public class Util {
         List<Message> msgs=parse(new ByteArrayInputStream(buf, offset, length));
         if(msgs != null)
             for(Message msg: msgs)
-                sb.append(String.format("dst=%s src=%s (%d bytes): hdrs= %s\n", msg.dest(), msg.src(), msg.getLength(), msg.printHeaders()));
+                sb.append(String.format("dst=%s src=%s (%d bytes): hdrs= %s\n", msg.getDest(), msg.getSrc(), msg.getLength(), msg.printHeaders()));
         return sb.toString();
     }
 

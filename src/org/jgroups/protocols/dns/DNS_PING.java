@@ -168,7 +168,7 @@ public class DNS_PING extends Discovery {
             log.debug("%s: sending discovery request to %s", local_addr, req.getDest());
             down_prot.down(req);
         } catch (Throwable t) {
-            log.debug("sending discovery request to %s failed: %s", req.dest(), t);
+            log.debug("sending discovery request to %s failed: %s", req.getDest(), t);
         }
     }
 }

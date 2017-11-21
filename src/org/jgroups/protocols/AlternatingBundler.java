@@ -53,7 +53,7 @@ public class AlternatingBundler extends TransferQueueBundler implements Diagnost
                 }
 
                 for(;;) {
-                    Address dest=msg.dest();
+                    Address dest=msg.getDest();
                     if(!Util.match(dest, target_dest) || count + size >= transport.getMaxBundleSize())
                         _sendBundledMessages();
                     _addMessage(msg, size);
@@ -111,7 +111,7 @@ public class AlternatingBundler extends TransferQueueBundler implements Diagnost
     }
 
     protected void _addMessage(Message msg, long size) {
-        target_dest=msg.dest();
+        target_dest=msg.getDest();
         target_list.add(msg);
         count+=size;
     }

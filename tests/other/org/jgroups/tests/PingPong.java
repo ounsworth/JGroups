@@ -68,7 +68,7 @@ public class PingPong extends ReceiverAdapter {
             case PONG:
                 long rtt=System.nanoTime() - start;
                 double ms=rtt / 1000.0 / 1000.0;
-                System.out.printf("RTT for %s: %.2f ms\n", msg.src(), ms);
+                System.out.printf("RTT for %s: %.2f ms\n", msg.getSrc(), ms);
                 break;
         }
     }

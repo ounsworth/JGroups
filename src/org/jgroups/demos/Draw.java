@@ -251,7 +251,7 @@ public class Draw extends ReceiverAdapter implements ActionListener, ChannelList
     public void receive(Message msg) {
         byte[] buf=msg.getRawBuffer();
         if(buf == null) {
-            System.err.printf("%s: received null buffer from %s, headers: %s\n", channel.getAddress(), msg.src(), msg.printHeaders());
+            System.err.printf("%s: received null buffer from %s, headers: %s\n", channel.getAddress(), msg.getSrc(), msg.printHeaders());
             return;
         }
 

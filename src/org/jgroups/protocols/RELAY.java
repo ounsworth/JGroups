@@ -220,7 +220,7 @@ public class RELAY extends Protocol {
             }
 
             // Leave the messages in the batch: they're going to be forwarded, but we also need to deliver them locally
-            if(is_coord && relay && msg.dest() == null && !msg.isFlagSet(Message.Flag.NO_RELAY)) {
+            if(is_coord && relay && msg.getDest() == null && !msg.isFlagSet(Message.Flag.NO_RELAY)) {
                 Message tmp=msg.copy(true, Global.BLOCKS_START_ID); // we only copy headers from building blocks
                 try {
                     byte[] buf=Util.streamableToByteBuffer(tmp);

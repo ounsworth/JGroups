@@ -136,7 +136,7 @@ public class UnicastUnitTest {
     protected void send(JChannel ch, Message... msgs) throws Exception {
         int cnt=1;
         for(Message msg: msgs) {
-            assert msg.dest() != null;
+            assert msg.getDest() != null;
             msg.setObject(cnt++);
             ch.send(msg);
         }

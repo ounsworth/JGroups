@@ -326,7 +326,7 @@ public class GossipRouter extends ReceiverAdapter implements ConnectionListener 
         List<Message> messages=Util.parse(data.buffer, data.offset, data.length);
         if(messages != null)
             for(Message msg : messages)
-                System.out.printf("dst=%s src=%s (%d bytes): hdrs= %s\n", msg.dest(), msg.src(), msg.getLength(), msg.printHeaders());
+                System.out.printf("dst=%s src=%s (%d bytes): hdrs= %s\n", msg.getDest(), msg.getSrc(), msg.getLength(), msg.printHeaders());
     }
 
     @Override

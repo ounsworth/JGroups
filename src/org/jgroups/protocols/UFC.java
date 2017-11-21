@@ -102,7 +102,7 @@ public class UFC extends FlowControl {
 
     @Override
     protected Object handleDownMessage(final Message msg) {
-        Address dest=msg.dest();
+        Address dest=msg.getDest();
         if(dest == null) { // 2nd line of defense, not really needed
             log.error("%s doesn't handle multicast messages; passing message down", getClass().getSimpleName());
             return down_prot.down(msg);

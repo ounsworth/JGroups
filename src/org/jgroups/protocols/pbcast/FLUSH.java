@@ -584,7 +584,7 @@ public class FLUSH extends Protocol {
         for (Address flushMember : participants) {
             if(flushMember == null)
                 continue;
-            Message reject = new BytesMessage(flushMember).src(localAddress).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
+            Message reject = new BytesMessage(flushMember).setSrc(localAddress).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
               .putHeader(this.id, new FlushHeader(FlushHeader.ABORT_FLUSH, viewId))
               .setBuffer(marshal(participants, null));
             down_prot.down(reject);
@@ -697,7 +697,7 @@ public class FLUSH extends Protocol {
          flushMembers.addAll(participantsInFlush);
          flushMembers.removeAll(suspected);
          
-          msg = new BytesMessage(null).src(localAddress).setBuffer(marshal(participantsInFlush, null))
+          msg = new BytesMessage(null).setSrc(localAddress).setBuffer(marshal(participantsInFlush, null))
             .putHeader(this.id, new FlushHeader(FlushHeader.START_FLUSH, currentViewId()));
 
       }
@@ -720,7 +720,7 @@ public class FLUSH extends Protocol {
             isParticipant = flushMembers.contains(localAddress) || (members != null && members.contains(localAddress));
         }
         if (members == null || members.isEmpty()) {
-            Message msg = new BytesMessage(null).src(localAddress);
+            Message msg = new BytesMessage(null).setSrc(localAddress);
             // Cannot be OOB since START_FLUSH is not OOB
             // we have to FIFO order two subsequent flushes
             if (log.isDebugEnabled())
@@ -729,7 +729,7 @@ public class FLUSH extends Protocol {
             down_prot.down(msg);
         } else {
             for (Address address : members) {
-                Message msg = new BytesMessage(address).src(localAddress);
+                Message msg = new BytesMessage(address).setSrc(localAddress);
                 // Cannot be OOB since START_FLUSH is not OOB
                 // we have to FIFO order two subsequent flushes
                 if (log.isDebugEnabled())
@@ -914,7 +914,7 @@ public class FLUSH extends Protocol {
             viewID = currentViewId();
             flushOkCompleted = !flushCompletedMap.isEmpty() && flushCompletedMap.keySet().containsAll(flushMembers);
             if (flushOkCompleted) {
-                m = new BytesMessage(flushCoordinator).src(localAddress);
+                m = new BytesMessage(flushCoordinator).setSrc(localAddress);
             }
             log.debug(localAddress + ": suspects: " + addresses + ", completed " + flushOkCompleted
                         + ", flushOkSet " + flushCompletedMap + ", flushMembers " + flushMembers);

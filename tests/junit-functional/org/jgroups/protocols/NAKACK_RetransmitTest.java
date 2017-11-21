@@ -170,7 +170,7 @@ public class NAKACK_RetransmitTest {
         protected boolean discard=false;
 
         public Object down(Message msg) {
-            if(msg.dest() == null) {
+            if(msg.getDest() == null) {
                 discard=!discard;
                 if(discard)
                     return null;

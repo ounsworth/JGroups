@@ -110,13 +110,9 @@ public abstract class BaseMessage implements Message {
 
 
     public Address               getDest()                 {return dest_addr;}
-    public Address               dest()                    {return dest_addr;}
     public <T extends Message> T setDest(Address new_dest) {dest_addr=new_dest; return (T)this;}
-    public Message               dest(Address new_dest)    {return setDest(new_dest);}
-    public Address               getSrc()                  {return src_addr;}
-    public Address               src()                     {return src_addr;}
-    public Message               setSrc(Address new_src)   {src_addr=new_src; return this;}
-    public Message               src(Address new_src)      {src_addr=new_src; return this;}
+    public Address getSrc()                  {return src_addr;}
+    public <T extends Message> T setSrc(Address new_src)   {src_addr=new_src; return (T)this;}
     public abstract int          getOffset();
     public abstract int          offset();
     public abstract int          getLength();
@@ -128,7 +124,6 @@ public abstract class BaseMessage implements Message {
     public abstract Message      buffer(byte[] b);
     public abstract Message      buffer(Buffer b);
     public int                   getNumHeaders()           {return Headers.size(this.headers);}
-    public int                   numHeaders()              {return Headers.size(this.headers);}
     public Map<Short,Header>     getHeaders()              {return Headers.getHeaders(this.headers);}
     public String                printHeaders()            {return Headers.printHeaders(this.headers);}
     public <T extends Object> T  getObject()               {return getObject(null);}
@@ -139,7 +134,7 @@ public abstract class BaseMessage implements Message {
      * @param flags The flag or flags
      * @return A reference to the message
      */
-    public Message setFlag(Flag... flags) {
+    public <T extends Message> T setFlag(Flag... flags) {
         if(flags != null) {
             short tmp=this.flags;
             for(Flag flag : flags) {
@@ -148,7 +143,7 @@ public abstract class BaseMessage implements Message {
             }
             this.flags=tmp;
         }
-        return this;
+        return (T)this;
     }
 
     /**
@@ -228,11 +223,11 @@ public abstract class BaseMessage implements Message {
      * @return Whether or not the flag is currently set
      */
     public boolean isFlagSet(Flag flag) {
-        return Message.isFlagSet(flags, flag);
+        return Util.isFlagSet(flags, flag);
     }
 
     public boolean isTransientFlagSet(TransientFlag flag) {
-        return Message.isTransientFlagSet(transient_flags, flag);
+        return Util.isTransientFlagSet(transient_flags, flag);
     }
 
     /**
@@ -254,7 +249,7 @@ public abstract class BaseMessage implements Message {
     /*---------------------- Used by protocol layers ----------------------*/
 
     /** Puts a header given an ID into the hashmap. Overwrites potential existing entry. */
-    public Message putHeader(short id, Header hdr) {
+    public <T extends Message> T putHeader(short id, Header hdr) {
         if(id < 0)
             throw new IllegalArgumentException("An ID of " + id + " is invalid");
         if(hdr != null)
@@ -264,7 +259,7 @@ public abstract class BaseMessage implements Message {
             if(resized_array != null)
                 this.headers=resized_array;
         }
-        return this;
+        return (T)this;
     }
 
 
@@ -276,12 +271,6 @@ public abstract class BaseMessage implements Message {
         return Headers.getHeader(this.headers, id);
     }
 
-    /** Returns a header for a range of IDs, or null if not found */
-    public <T extends Header> T getHeader(short... ids) {
-        if(ids == null || ids.length == 0)
-            return null;
-        return Headers.getHeader(this.headers, ids);
-    }
     /*---------------------------------------------------------------------*/
 
 
@@ -352,17 +341,11 @@ public abstract class BaseMessage implements Message {
 
         ret.append(", size=").append(getLength()).append(" bytes");
         if(flags > 0)
-            ret.append(", flags=").append(Message.flagsToString(flags));
+            ret.append(", flags=").append(Util.flagsToString(flags));
         if(transient_flags > 0)
-            ret.append(", transient_flags=" + Message.transientFlagsToString(transient_flags));
+            ret.append(", transient_flags=" + Util.transientFlagsToString(transient_flags));
         ret.append(']');
         return ret.toString();
-    }
-
-
-
-    public String printObjectHeaders() {
-        return Headers.printObjectHeaders(this.headers);
     }
 
 

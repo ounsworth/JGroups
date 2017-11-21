@@ -51,13 +51,13 @@ public class MessageTest {
     }
 
 
-    public static void testFlags2() {
+    public void testFlags2() {
         Message m1=new BytesMessage();
         m1.setFlag(Message.Flag.OOB);
         assert m1.isFlagSet(Message.Flag.OOB);
-        assert Message.isFlagSet(m1.getFlags(), Message.Flag.OOB);
+        assert Util.isFlagSet(m1.getFlags(), Message.Flag.OOB);
         assert !(m1.isFlagSet(Message.Flag.DONT_BUNDLE));
-        assert !Message.isFlagSet(m1.getFlags(), Message.Flag.DONT_BUNDLE);
+        assert !Util.isFlagSet(m1.getFlags(), Message.Flag.DONT_BUNDLE);
     }
 
     public static void testFlags3() {
@@ -116,15 +116,15 @@ public class MessageTest {
         final Address DEST=Util.createRandomAddress("A");
         Message msg=new BytesMessage(null).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
 
-        msg.dest(null); // OK
+        msg.setDest(null); // OK
         msg.setDest(null);
 
-        msg.dest(DEST);
+        msg.setDest(DEST);
 
-        msg.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
-        msg.dest(DEST); // OK
-        msg.setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
-        msg.setTransientFlagIfAbsent(Message.TransientFlag.DONT_LOOPBACK);
+        msg.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+          .setDest(DEST) // OK
+          .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+          .setTransientFlagIfAbsent(Message.TransientFlag.DONT_LOOPBACK);
 
         short flags=(short)(Message.TransientFlag.DONT_LOOPBACK.value() + Message.TransientFlag.OOB_DELIVERED.value());
         msg.setTransientFlag(flags);
@@ -358,20 +358,20 @@ public class MessageTest {
 
 
     public static void testSizeMessageWithSrc() throws Exception {
-        Message msg=new BytesMessage(null).src(UUID.randomUUID());
+        Message msg=new BytesMessage(null).setSrc(UUID.randomUUID());
         _testSize(msg);
     }
 
 
     public static void testSizeMessageWithDestAndSrc() throws Exception {
-        Message msg=new BytesMessage(UUID.randomUUID()).src(UUID.randomUUID());
+        Message msg=new BytesMessage(UUID.randomUUID()).setSrc(UUID.randomUUID());
         _testSize(msg);
     }
 
 
 
     public static void testSizeMessageWithDestAndSrcAndFlags() throws Exception {
-        Message msg=new BytesMessage(UUID.randomUUID()).src(UUID.randomUUID());
+        Message msg=new BytesMessage(UUID.randomUUID()).setSrc(UUID.randomUUID());
         msg.setFlag(Message.Flag.OOB);
         msg.setFlag(Message.Flag.DONT_BUNDLE);
         _testSize(msg);
@@ -397,7 +397,7 @@ public class MessageTest {
 
 
     public void testSizeMessageWithDestAndSrcAndHeaders() throws Exception {
-        Message msg=new BytesMessage(UUID.randomUUID(), "bela".getBytes()).src(UUID.randomUUID());
+        Message msg=new BytesMessage(UUID.randomUUID(), "bela".getBytes()).setSrc(UUID.randomUUID());
         addHeaders(msg);
         _testSize(msg);
     }

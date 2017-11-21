@@ -903,8 +903,8 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                     catch(Throwable t) {
                         if(view != null)
                             log.warn("%s: failed to create view from delta-view; dropping view: %s", local_addr, t.toString());
-                        log.trace("%s: sending request for full view to %s", local_addr, msg.src());
-                        Message full_view_req=new BytesMessage(msg.src())
+                        log.trace("%s: sending request for full view to %s", local_addr, msg.getSrc());
+                        Message full_view_req=new BytesMessage(msg.getSrc())
                           .putHeader(id, new GmsHeader(GmsHeader.GET_CURRENT_VIEW)).setFlag(OOB, INTERNAL);
                         down_prot.down(full_view_req);
                         return null;
@@ -1010,7 +1010,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                         return null; // my view-id doesn't differ from sender's view-id; no need to send view
                 }
                 // either my view-id differs from sender's view-id, or sender's view-id is null: send view
-                log.trace("%s: received request for full view from %s, sending view %s", local_addr, msg.src(), view);
+                log.trace("%s: received request for full view from %s, sending view %s", local_addr, msg.getSrc(), view);
                 Message view_msg=new BytesMessage(msg.getSrc()).putHeader(id, new GmsHeader(GmsHeader.VIEW))
                   .setBuffer(marshal(view, null)).setFlag(OOB, Message.Flag.INTERNAL);
                 down_prot.down(view_msg);

@@ -626,7 +626,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
                 return null;
 
             case NakAckHeader2.HIGHEST_SEQNO:
-                handleHighestSeqno(msg.src(), hdr.seqno);
+                handleHighestSeqno(msg.getSrc(), hdr.seqno);
                 return null;
 
             default:
@@ -762,8 +762,8 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
         if(buf == null) // discard message if there is no entry for local_addr
             return;
 
-        if(msg.src() == null)
-            msg.src(local_addr); // this needs to be done so we can check whether the message sender is the local_addr
+        if(msg.getSrc() == null)
+            msg.setSrc(local_addr); // this needs to be done so we can check whether the message sender is the local_addr
 
         boolean dont_loopback_set=msg.isTransientFlagSet(Message.TransientFlag.DONT_LOOPBACK);
         msg_id=seqno.incrementAndGet();
@@ -1025,7 +1025,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
             return;
         }
 
-        Message xmit_msg=msg.copy(true, true).dest(dest); // copy payload and headers
+        Message xmit_msg=msg.copy(true, true).setDest(dest); // copy payload and headers
         NakAckHeader2 hdr=xmit_msg.getHeader(id);
         NakAckHeader2 newhdr=hdr.copy();
         newhdr.type=NakAckHeader2.XMIT_RSP; // change the type in the copy from MSG --> XMIT_RSP

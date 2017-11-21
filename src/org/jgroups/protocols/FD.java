@@ -231,7 +231,7 @@ public class FD extends Protocol {
                 for(Address mbr: hdr.mbrs) {
                     if(local_addr != null && mbr.equals(local_addr)) {
                         log.warn("%s: I was suspected by %s; ignoring the SUSPECT message and sending back a HEARTBEAT_ACK",
-                                 local_addr, msg.src());
+                                 local_addr, msg.getSrc());
                         sendHeartbeatResponse(msg.getSrc());
                         continue;
                     }

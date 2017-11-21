@@ -132,7 +132,7 @@ public class ENCRYPTKeystoreTest {
         SYM_ENCRYPT encrypt=create("defaultStore.keystore");
         MockProtocol observer=new MockProtocol();
         encrypt.setUpProtocol(observer);
-        encrypt.up(new BytesMessage().putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, "bla".getBytes())));
+        encrypt.up((Message)new BytesMessage().putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, "bla".getBytes())));
         assert observer.getUpMessages().isEmpty();
     }
 

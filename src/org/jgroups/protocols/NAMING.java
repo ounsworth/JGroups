@@ -62,7 +62,7 @@ public class NAMING extends Protocol {
     protected Object handleMessage(Message msg, Header hdr) {
         switch(hdr.type) {
             case CACHE_REQ:
-                handleCacheRequest(msg.src());
+                handleCacheRequest(msg.getSrc());
                 break;
             case CACHE_RSP:
                 handleCacheResponse(msg);
@@ -102,7 +102,7 @@ public class NAMING extends Protocol {
         Header hdr=msg.getHeader(id);
         if(hdr != null && hdr.addr != null && hdr.name != null) {
             if(log.isTraceEnabled())
-                log.trace("%s: received %s from %s", local_addr, hdr, msg.src());
+                log.trace("%s: received %s from %s", local_addr, hdr, msg.getSrc());
             NameCache.add(hdr.addr, hdr.name);
         }
     }

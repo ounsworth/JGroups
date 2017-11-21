@@ -92,7 +92,7 @@ public class HeadersResizeTest {
         protected int num_msgs, num_transport_headers;
 
         public void receive(Message msg) {
-            System.out.printf("received message from %s: %s\n", msg.src(), msg.getObject());
+            System.out.printf("received message from %s: %s\n", msg.getSrc(), msg.getObject());
             num_msgs++;
             Header hdr=msg.getHeader(transport_id);
             if(hdr != null)
