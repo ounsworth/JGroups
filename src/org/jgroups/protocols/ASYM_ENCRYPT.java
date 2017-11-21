@@ -428,7 +428,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                 if(!targets.isEmpty()) {  // https://issues.jboss.org/browse/JGRP-2203
                     key_requesters=new ResponseCollectorTask<Boolean>(targets)
                       .setPeriodicTask(c -> {
-                          Message msg=new BytesMessage(null).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+                          Message msg=new BytesMessage(null).setFlag(Message.TransientFlag.DONT_LOOPBACK)
                             .putHeader(id, new EncryptHeader(EncryptHeader.NEW_KEYSERVER, sym_version));
                           down_prot.down(msg);
                       })

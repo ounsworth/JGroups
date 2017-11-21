@@ -1532,7 +1532,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
                 num_resends++;
             Message msg=new BytesMessage(null).putHeader(id, NakAckHeader2.createHighestSeqnoHeader(seqno))
               .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
-              .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK); // we don't need to receive our own broadcast
+              .setFlag(Message.TransientFlag.DONT_LOOPBACK); // we don't need to receive our own broadcast
             down_prot.down(msg);
         }
     }

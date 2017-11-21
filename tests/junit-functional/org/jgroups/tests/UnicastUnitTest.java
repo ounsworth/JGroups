@@ -56,7 +56,7 @@ public class UnicastUnitTest {
           msg(dest), // reg
           msg(dest),
           msg(dest).setFlag(Message.Flag.OOB),
-          msg(dest).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest)
         };
 
@@ -85,10 +85,10 @@ public class UnicastUnitTest {
           msg(dest),
           msg(dest),
           msg(dest).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL),
-          msg(dest).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest),
-          msg(dest).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg(dest).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest),
           msg(dest)
         };
@@ -113,17 +113,17 @@ public class UnicastUnitTest {
         connect();
         Address dest=a.getAddress();
         Message[] msgs={
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest).setFlag(Message.Flag.OOB),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest).setFlag(Message.Flag.OOB),
           msg(dest).setFlag(Message.Flag.OOB),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg(dest),
-          msg(dest).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg(dest).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
         };
 
         MyReceiver receiver=new MyReceiver();

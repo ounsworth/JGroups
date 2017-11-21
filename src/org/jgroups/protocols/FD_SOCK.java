@@ -717,7 +717,7 @@ public class FD_SOCK extends Protocol implements Runnable {
      it will be unicast back to the requester
      */
     protected void sendIHaveSockMessage(Address dst, Address mbr, IpAddress addr) {
-        Message msg=new BytesMessage(dst).setFlag(Message.Flag.INTERNAL).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+        Message msg=new BytesMessage(dst).setFlag(Message.Flag.INTERNAL).setFlag(Message.TransientFlag.DONT_LOOPBACK);
         FdHeader hdr=new FdHeader(FdHeader.I_HAVE_SOCK, mbr);
         hdr.sock_addr=addr;
         msg.putHeader(this.id, hdr);

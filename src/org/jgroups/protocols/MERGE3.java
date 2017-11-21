@@ -384,7 +384,7 @@ public class MERGE3 extends Protocol {
             // addInfo(local_addr, hdr.view_id, hdr.logical_name, hdr.physical_addr);
             if(transport_supports_multicasting) { // mcast the discovery request to all but self
                 Message msg=new BytesMessage().setFlag(Message.Flag.INTERNAL).putHeader(getId(), hdr)
-                  .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+                  .setFlag(Message.TransientFlag.DONT_LOOPBACK);
                 down_prot.down(msg);
                 return;
             }

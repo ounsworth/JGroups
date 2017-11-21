@@ -1455,7 +1455,7 @@ public class TableTest {
     protected Message msg(int num, boolean set_dont_loopback) {
         Message msg=msg(num);
         if(set_dont_loopback)
-            msg.setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+            msg.setFlag(Message.TransientFlag.DONT_LOOPBACK);
         return msg;
     }
 

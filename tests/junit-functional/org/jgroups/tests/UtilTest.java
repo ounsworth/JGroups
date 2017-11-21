@@ -786,7 +786,7 @@ public class UtilTest {
           new BytesMessage(null, "hello world").setFlag(Message.Flag.OOB, Message.Flag.NO_RELIABILITY),
           new BytesMessage(Util.createRandomAddress("dest"), "bela ban"),
           new BytesMessage(Util.createRandomAddress("dest"), "hello world again").setSrc(Util.createRandomAddress("src"))
-            .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+            .setFlag(Message.TransientFlag.DONT_LOOPBACK)
         };
 
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(256);

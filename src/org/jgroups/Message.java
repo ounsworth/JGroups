@@ -57,7 +57,7 @@ public interface Message extends Streamable, Constructable<Message> {
     <T extends Message> T       setFlag(short flag);
 
     /** Sets one or more transient flags. Transient flags are not marshalled */
-    <T extends Message> T       setTransientFlag(TransientFlag... flags);
+    <T extends Message> T       setFlag(TransientFlag... flags);
 
     /** Sets the transient flags as a short; this way, multiple transient flags can be set in one operation */
     <T extends Message> T       setTransientFlag(short flag);

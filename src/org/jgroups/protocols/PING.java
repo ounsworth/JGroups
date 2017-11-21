@@ -55,7 +55,7 @@ public class PING extends Discovery {
         PingHeader hdr=new PingHeader(PingHeader.GET_MBRS_REQ).clusterName(cluster_name).initialDiscovery(initial_discovery);
         Message msg=new BytesMessage(null).putHeader(getId(), hdr)
           .setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
-          .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+          .setFlag(Message.TransientFlag.DONT_LOOPBACK);
         if(data != null)
             msg.setBuffer(marshal(data));
         sendMcastDiscoveryRequest(msg);

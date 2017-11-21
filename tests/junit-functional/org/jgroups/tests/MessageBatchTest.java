@@ -70,7 +70,7 @@ public class MessageBatchTest {
             if(i <= 10) {
                 msg.setFlag(Message.Flag.OOB);
                 if(i % 2 == 0)
-                    msg.setTransientFlag(Message.TransientFlag.OOB_DELIVERED);
+                    msg.setFlag(Message.TransientFlag.OOB_DELIVERED);
             }
             msgs.add(msg);
         }
@@ -230,7 +230,7 @@ public class MessageBatchTest {
         for(int i=1; i <= 10; i++) {
             Message msg=new BytesMessage(null, i);
             if(i % 2 == 0)
-                msg.setTransientFlag(Message.TransientFlag.OOB_DELIVERED);
+                msg.setFlag(Message.TransientFlag.OOB_DELIVERED);
             batch.add(msg);
         }
         System.out.println("batch = " + batch);
@@ -240,7 +240,7 @@ public class MessageBatchTest {
         assert batch.size() == 5;
 
         for(int i=0; i < 5; i++)
-            batch.add(new BytesMessage(null, i).setTransientFlag(Message.TransientFlag.OOB_DELIVERED));
+            batch.add(new BytesMessage(null, i).setFlag(Message.TransientFlag.OOB_DELIVERED));
         System.out.println("batch = " + batch);
         batch.replace(filter, null, false);
         assert batch.size() == 9;

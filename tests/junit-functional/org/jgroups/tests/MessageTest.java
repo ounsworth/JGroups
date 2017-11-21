@@ -114,7 +114,7 @@ public class MessageTest {
 
     public void testDontLoopback() {
         final Address DEST=Util.createRandomAddress("A");
-        Message msg=new BytesMessage(null).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK);
+        Message msg=new BytesMessage(null).setFlag(Message.TransientFlag.DONT_LOOPBACK);
 
         msg.setDest(null); // OK
         msg.setDest(null);
@@ -123,7 +123,7 @@ public class MessageTest {
 
         msg.clearTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
           .setDest(DEST) // OK
-          .setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+          .setFlag(Message.TransientFlag.DONT_LOOPBACK)
           .setTransientFlagIfAbsent(Message.TransientFlag.DONT_LOOPBACK);
 
         short flags=(short)(Message.TransientFlag.DONT_LOOPBACK.value() + Message.TransientFlag.OOB_DELIVERED.value());
@@ -221,7 +221,7 @@ public class MessageTest {
     public static void testCopy() {
         Message m1=new BytesMessage(null, "Bela Ban");
         m1.setFlag(Message.Flag.OOB);
-        m1.setTransientFlag(Message.TransientFlag.OOB_DELIVERED);
+        m1.setFlag(Message.TransientFlag.OOB_DELIVERED);
         Message m2=m1.copy();
         Assert.assertEquals(m1.getOffset(), m2.getOffset());
         Assert.assertEquals(m1.getLength(), m2.getLength());

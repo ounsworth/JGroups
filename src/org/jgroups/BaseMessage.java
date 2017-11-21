@@ -150,7 +150,7 @@ public abstract class BaseMessage implements Message {
      * Same as {@link #setFlag(Flag...)} except that transient flags are not marshalled
      * @param flags The flag
      */
-    public Message setTransientFlag(TransientFlag... flags) {
+    public Message setFlag(TransientFlag... flags) {
         if(flags != null) {
             short tmp=this.transient_flags;
             for(TransientFlag flag : flags)
@@ -241,7 +241,7 @@ public abstract class BaseMessage implements Message {
     public synchronized boolean setTransientFlagIfAbsent(TransientFlag flag) {
         if(isTransientFlagSet(flag))
             return false;
-        setTransientFlag(flag);
+        setFlag(flag);
         return true;
     }
 

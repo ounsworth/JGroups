@@ -46,14 +46,14 @@ public class NakackUnitTest {
           msg(),
           msg().setFlag(Message.Flag.OOB),
           msg().setFlag(Message.Flag.OOB),
-          msg().setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg().setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg().setFlag(Message.Flag.OOB),
           msg().setFlag(Message.Flag.OOB),
-          msg().setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg().setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg().setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
-          msg().setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
+          msg().setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK),
           msg().setFlag(Message.Flag.OOB)
         };
 

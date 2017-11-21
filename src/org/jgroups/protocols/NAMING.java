@@ -141,7 +141,7 @@ public class NAMING extends Protocol {
     protected void multicastOwnMapping() {
         String logical_name=NameCache.get(local_addr);
         if(logical_name != null) {
-            Message msg=new BytesMessage(null).setFlag(Message.Flag.OOB).setTransientFlag(Message.TransientFlag.DONT_LOOPBACK)
+            Message msg=new BytesMessage(null).setFlag(Message.Flag.OOB).setFlag(Message.TransientFlag.DONT_LOOPBACK)
               .putHeader(id, new Header(Type.CACHE_RSP, local_addr, logical_name));
             down_prot.down(msg);
         }
