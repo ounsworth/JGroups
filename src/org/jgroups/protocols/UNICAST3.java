@@ -963,7 +963,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
             // We need to copy the UnicastHeader and put it back into the message because Message.copy() doesn't copy
             // the headers and therefore we'd modify the original message in the sender retransmission window
             // (https://jira.jboss.org/jira/browse/JGRP-965)
-            Message copy=rsp.copy();
+            Message copy=rsp.copy(true, true);
             UnicastHeader3 hdr=copy.getHeader(this.id);
             UnicastHeader3 newhdr=hdr.copy();
             newhdr.first=true;

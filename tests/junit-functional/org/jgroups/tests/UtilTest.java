@@ -673,7 +673,7 @@ public class UtilTest {
         DataInputStream dis=new DataInputStream(instream);
         Message m2=Util.readGenericStreamable(dis);
         ViewId v3=Util.readGenericStreamable(dis);
-        assert m2.getBuffer() != null;
+        assert m2.getRawBuffer() != null;
         Assert.assertEquals(m.getLength(), m2.getLength());
         assert v3 != null;
     }

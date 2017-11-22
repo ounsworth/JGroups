@@ -243,7 +243,7 @@ public class FRAG extends Protocol {
             }
         }
         num_received_frags++;
-        byte[] buf=frag_table.add(hdr.id, hdr.frag_id, hdr.num_frags, msg.getBuffer());
+        byte[] buf=frag_table.add(hdr.id, hdr.frag_id, hdr.num_frags, msg.getRawBuffer());
         if(buf == null)
             return null;
 

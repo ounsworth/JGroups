@@ -202,7 +202,7 @@ public class ForwardQueue {
         Message forward_msg;
 
         while(flushing && running && !forward_table.isEmpty()) {
-            forward_msg=val.copy();
+            forward_msg=val.copy(true, true);
             forward_msg.setDest(target);
             forward_msg.setFlag(Message.Flag.DONT_BUNDLE);
             if(log.isTraceEnabled())
@@ -218,7 +218,7 @@ public class ForwardQueue {
             key=entry.getKey();
             val=entry.getValue();
             if(flushing && running) {
-                forward_msg=val.copy();
+                forward_msg=val.copy(true, true);
                 forward_msg.setDest(target);
                 forward_msg.setFlag(Message.Flag.DONT_BUNDLE);
                 if(log.isTraceEnabled())

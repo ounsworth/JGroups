@@ -160,7 +160,7 @@ public class ABP extends Protocol {
                         return;
                     }
 
-                    copy=msg.copy().putHeader(id, new ABPHeader(Type.data, bit));
+                    copy=msg.copy(true, true).putHeader(id, new ABPHeader(Type.data, bit));
                 }
                 log.trace("%s: --> %s.msg(%d). Msg: %s", local_addr, copy.getDest(), bit, copy.printHeaders());
                 down_prot.down(copy);

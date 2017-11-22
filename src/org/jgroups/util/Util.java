@@ -504,6 +504,22 @@ public class Util {
         return flag != null && (flags & flag.value()) == flag.value();
     }
 
+    /**
+     * Copies a message. Copies only headers with IDs >= starting_id or IDs which are in the copy_only_ids list
+     * @param copy_buffer
+     * @param starting_id
+     * @param copy_only_ids
+     * @return
+     */
+    public static <T extends Message> T copy(T msg, boolean copy_buffer, short starting_id, short... copy_only_ids) {
+        T retval=msg.copy(copy_buffer, false);
+        for(Map.Entry<Short,Header> entry: msg.getHeaders().entrySet()) {
+            short id=entry.getKey();
+            if(id >= starting_id || Util.containsId(id, copy_only_ids))
+                retval.putHeader(id, entry.getValue());
+        }
+        return retval;
+    }
 
 
     /**

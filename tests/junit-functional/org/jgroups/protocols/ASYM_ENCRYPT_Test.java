@@ -382,7 +382,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
         protected Object handleUpEvent(Message msg, EncryptHeader hdr) {
             if(hdr.type() == EncryptHeader.SECRET_KEY_RSP) {
                 try {
-                    key=decodeKey(msg.getBuffer());
+                    key=decodeKey(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
                     System.out.printf("received secret key %s !\n", key);
                 }
                 catch(Exception e) {

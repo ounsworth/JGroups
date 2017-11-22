@@ -112,10 +112,7 @@ public class BytesMessage extends BaseMessage {
         return BytesMessage::new;
     }
 
-    public byte getType() {
-        return Message.BYTES_MSG;
-    }
-
+    public byte    getType()                 {return Message.BYTES_MSG;}
     public boolean hasArray()                {return true;}
     public int     getOffset()               {return offset;}
     public int     getLength()               {return length;}
@@ -130,38 +127,6 @@ public class BytesMessage extends BaseMessage {
     public byte[]  getRawBuffer()            {return buf;}
 
 
-    /**
-    * Returns a copy of the buffer if offset and length are used, otherwise a reference.
-    * @return byte array with a copy of the buffer.
-    */
-    public byte[] getBuffer() {
-        if(buf == null)
-            return null;
-        if(offset == 0 && length == buf.length)
-            return buf;
-        else {
-            byte[] retval=new byte[length];
-            System.arraycopy(buf, offset, retval, 0, length);
-            return retval;
-        }
-    }
-
-    /**
-     * Sets the buffer.<p/>
-     * Note that the byte[] buffer passed as argument must not be modified. Reason: if we retransmit the
-     * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
-     * retransmit a changed byte[] buffer !
-     */
-    public <T extends Message> T setBuffer(byte[] b) {
-        buf=b;
-        if(buf != null) {
-            offset=0;
-            length=buf.length;
-        }
-        else
-            offset=length=0;
-        return (T)this;
-    }
 
     /**
      * Sets the internal buffer to point to a subset of a given buffer.<p/>
@@ -175,7 +140,7 @@ public class BytesMessage extends BaseMessage {
      * @param offset The initial position
      * @param length The number of bytes
      */
-    public Message setBuffer(byte[] b, int offset, int length) {
+    public <T extends Message> T setBuffer(byte[] b, int offset, int length) {
         buf=b;
         if(buf != null) {
             if(offset < 0 || offset > buf.length)
@@ -187,7 +152,7 @@ public class BytesMessage extends BaseMessage {
         }
         else
             this.offset=this.length=0;
-        return this;
+        return (T)this;
     }
 
     /**
@@ -196,13 +161,13 @@ public class BytesMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public Message setBuffer(Buffer buf) {
+    public <T extends Message> T setBuffer(Buffer buf) {
         if(buf != null) {
             this.buf=buf.getBuf();
             this.offset=buf.getOffset();
             this.length=buf.getLength();
         }
-        return this;
+        return (T)this;
     }
 
 
@@ -212,14 +177,15 @@ public class BytesMessage extends BaseMessage {
      * message. Parameter 'obj' has to be serializable (e.g. implementing Serializable,
      * Externalizable or Streamable, or be a basic type (e.g. Integer, Short etc)).
      */
-    public Message setObject(Object obj) {
-        if(obj == null) return this;
+    public <T extends Message> T setObject(Object obj) {
+        if(obj == null) return (T)this;
         if(obj instanceof byte[])
             return setBuffer((byte[])obj, 0, ((byte[])obj).length);
         if(obj instanceof Buffer)
             return setBuffer((Buffer)obj);
         try {
-            return setBuffer(Util.objectToByteBuffer(obj));
+            byte[] tmp=Util.objectToByteBuffer(obj);
+            return setBuffer(tmp, 0, tmp.length);
         }
         catch(Exception ex) {
             throw new IllegalArgumentException(ex);
@@ -265,7 +231,7 @@ public class BytesMessage extends BaseMessage {
     *           Copy the headers
     * @return Message with specified data
     */
-    public Message copy(boolean copy_buffer, boolean copy_headers) {
+    public <T extends Message> T copy(boolean copy_buffer, boolean copy_headers) {
         BytesMessage retval=new BytesMessage(false);
         retval.dest_addr=dest_addr;
         retval.src_addr=src_addr;
@@ -279,17 +245,9 @@ public class BytesMessage extends BaseMessage {
 
         //noinspection NonAtomicOperationOnVolatileField
         retval.headers=copy_headers && headers != null? Headers.copy(this.headers) : createHeaders(Util.DEFAULT_HEADERS);
-        return retval;
+        return (T)retval;
     }
 
-
-
-    public Message makeReply() {
-        Message retval=new BytesMessage(src_addr);
-        if(dest_addr != null)
-            retval.setSrc(dest_addr);
-        return retval;
-    }
 
 
 

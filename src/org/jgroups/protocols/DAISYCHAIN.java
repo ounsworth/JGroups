@@ -93,7 +93,7 @@ public class DAISYCHAIN extends Protocol {
 
         // we need to copy the message, as we cannot do a msg.setSrc(next): the next retransmission
         // would use 'next' as destination  !
-        Message copy=msg.copy(true);
+        Message copy=msg.copy(true, true);
         short hdr_ttl=(short)(loopback? view_size -1 : view_size);
         DaisyHeader hdr=new DaisyHeader(hdr_ttl);
         copy.setDest(next);
@@ -122,7 +122,7 @@ public class DAISYCHAIN extends Protocol {
         if(log.isTraceEnabled())
             log.trace(local_addr + ": received message from " + msg.getSrc() + " with ttl=" + ttl);
         if(--ttl > 0) {
-            Message copy=msg.copy(true);
+            Message copy=msg.copy(true, false);
             copy.setDest(next);
             copy.putHeader(getId(), new DaisyHeader(ttl));
             msgs_forwarded++;
@@ -145,7 +145,7 @@ public class DAISYCHAIN extends Protocol {
                 if(log.isTraceEnabled())
                     log.trace(local_addr + ": received message from " + msg.getSrc() + " with ttl=" + ttl);
                 if(--ttl > 0) {
-                    Message copy=msg.copy(true);
+                    Message copy=msg.copy(true, true);
                     copy.setDest(next);
                     copy.putHeader(getId(), new DaisyHeader(ttl));
                     msgs_forwarded++;

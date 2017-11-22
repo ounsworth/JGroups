@@ -387,7 +387,7 @@ public class FRAG2 extends Protocol {
                 combined_length+=fragment.getLength();
 
             byte[] combined_buffer=new byte[combined_length];
-            Message retval=fragments[0].copy(false); // doesn't copy the payload, but copies the headers
+            Message retval=fragments[0].copy(false, true); // doesn't copy the payload, but copies the headers
 
             for(int i=0; i < fragments.length; i++) {
                 Message fragment=fragments[i];

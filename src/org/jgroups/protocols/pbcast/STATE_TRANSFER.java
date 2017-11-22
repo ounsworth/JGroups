@@ -132,7 +132,7 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
                 state_requesters.add(msg.getSrc());
                 break;
             case StateHeader.STATE_RSP:
-                handleStateRsp(hdr.getDigest(), msg.getSrc(), msg.getBuffer());
+                handleStateRsp(hdr.getDigest(), msg.getSrc(), msg.getRawBuffer());
                 break;
             case StateHeader.STATE_EX:
                 closeHoleFor(msg.getSrc());

@@ -82,15 +82,12 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Returns true if a transient flag is set, false otherwise */
     boolean                     isFlagSet(TransientFlag flag);
 
-
-    <T extends Message> T       copy();
-
-    <T extends Message> T       copy(boolean copy_buffer);
-
+    /**
+     * Copies a message
+     * @param copy_buffer If true, the payload is copied, else it is null in the copied message
+     * @param copy_headers If true, the headers are copied
+     */
     <T extends Message> T       copy(boolean copy_buffer, boolean copy_headers);
-
-    <T extends Message> T       copy(boolean copy_buffer, short starting_id, short... copy_only_ids);
-
 
 
     /** Returns true if this message has a byte[] array as payload, false otherwise.  */
@@ -109,13 +106,6 @@ public interface Message extends Streamable, Constructable<Message> {
      * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
      */
     byte[]                      getRawBuffer();
-
-
-    /**
-     * Returns a copy of the buffer if offset and length are used, otherwise a reference.
-     * @return byte array with a copy of the buffer.
-     */
-    byte[]                      getBuffer();
 
     <T extends Message> T       setBuffer(byte[] b, int offset, int length);
 

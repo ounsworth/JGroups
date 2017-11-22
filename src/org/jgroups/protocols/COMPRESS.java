@@ -96,7 +96,7 @@ public class COMPRESS extends Protocol {
                     if(serialize)
                         copy=new BytesMessage(msg.getDest());
                     else
-                        copy=msg.copy(false);
+                        copy=msg.copy(false, true);
                     copy.setBuffer(compressed_payload, 0, compressed_size)
                       .putHeader(this.id, new CompressHeader(length).needsDeserialization(serialize));
                     if(log.isTraceEnabled())
@@ -171,7 +171,7 @@ public class COMPRESS extends Protocol {
                         return Util.messageFromBuffer(uncompressed_payload, 0, uncompressed_payload.length, msg_factory);
                     }
                     else
-                        return msg.copy(false).setBuffer(uncompressed_payload, 0, uncompressed_payload.length);
+                        return msg.copy(false, true).setBuffer(uncompressed_payload, 0, uncompressed_payload.length);
                 }
                 catch(DataFormatException e) {
                     log.error(Util.getMessage("CompressionFailure"), e);

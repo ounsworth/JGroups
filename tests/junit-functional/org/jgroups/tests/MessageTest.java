@@ -132,17 +132,16 @@ public class MessageTest {
     }
 
 
-    public static void testBufferSize() throws Exception {
+    public void testBufferSize() throws Exception {
         Message m1=new BytesMessage(null, "bela");
         assert m1.getRawBuffer() != null;
-        assert m1.getBuffer() != null;
-        Assert.assertEquals(m1.getBuffer().length, m1.getLength());
+        assert m1.getRawBuffer() != null;
+        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
         byte[] new_buf={'m', 'i', 'c', 'h', 'e', 'l', 'l', 'e'};
         m1.setBuffer(new_buf, 0, new_buf.length);
         assert m1.getRawBuffer() != null;
-        assert m1.getBuffer() != null;
         Assert.assertEquals(new_buf.length, m1.getLength());
-        Assert.assertEquals(m1.getBuffer().length, m1.getLength());
+        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
     }
 
 
@@ -199,21 +198,19 @@ public class MessageTest {
         Message m2=new BytesMessage(null, buf, 4, 3);
 
         Assert.assertEquals(buf.length, m1.getRawBuffer().length);
-        Assert.assertEquals(4, m1.getBuffer().length);
         Assert.assertEquals(4, m1.getLength());
 
         Assert.assertEquals(buf.length, m2.getRawBuffer().length);
-        Assert.assertEquals(3, m2.getBuffer().length);
         Assert.assertEquals(3, m2.getLength());
     }
 
 
 
-    public static void testSetObject() {
+    public void testSetObject() {
         String s1="Bela Ban";
         Message m1=new BytesMessage(null, s1);
         Assert.assertEquals(0, m1.getOffset());
-        Assert.assertEquals(m1.getBuffer().length, m1.getLength());
+        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
         String s2=m1.getObject();
         Assert.assertEquals(s2, s1);
     }
@@ -223,41 +220,42 @@ public class MessageTest {
         Message m1=new BytesMessage(null, "Bela Ban");
         m1.setFlag(Message.Flag.OOB);
         m1.setFlag(Message.TransientFlag.OOB_DELIVERED);
-        Message m2=m1.copy();
+        Message m2=m1.copy(true, true);
         Assert.assertEquals(m1.getOffset(), m2.getOffset());
         Assert.assertEquals(m1.getLength(), m2.getLength());
         assert m2.isFlagSet(Message.Flag.OOB);
         assert m2.isFlagSet(Message.TransientFlag.OOB_DELIVERED);
     }
 
+    public void testCopy2() {
+        BytesMessage msg=new BytesMessage(null, "Bela".getBytes());
+        BytesMessage copy=msg.copy(true, true);
+        assert msg.getLength() == copy.getLength();
+    }
 
-
-    public static void testCopyWithOffset() {
+    public void testCopyWithOffset() {
         byte[] buf={'b', 'e', 'l', 'a', 'b', 'a', 'n'};
         Message m1=new BytesMessage(null, buf, 0, 4);
         Message m2=new BytesMessage(null, buf, 4, 3);
 
-        Message m3, m4;
-        m3=m1.copy();
-        m4=m2.copy();
+        Message m3=m1.copy(true, true);
+        Message m4=m2.copy(true, true);
 
         Assert.assertEquals(0, m3.getOffset());
         Assert.assertEquals(4, m3.getLength());
-        Assert.assertEquals(4, m3.getBuffer().length);
 
         Assert.assertEquals(4, m4.getOffset());
         Assert.assertEquals(3, m4.getLength());
-        Assert.assertEquals(3, m4.getBuffer().length);
     }
 
-    public static void testCopyHeaders() {
+    public void testCopyHeaders() {
         Message m1=new BytesMessage(null, "hello");
         for(short id: new short[]{1, 2, 10, Global.BLOCKS_START_ID, Global.BLOCKS_START_ID +10}) {
             m1.putHeader(id, new DummyHeader(id));
         }
         System.out.println("Headers for m1: " + m1.printHeaders());
 
-        Message m2=m1.copy(true, Global.BLOCKS_START_ID, (short[])null);
+        Message m2=Util.copy(m1, true, Global.BLOCKS_START_ID, (short[])null);
         System.out.println("Headers for m2: " + m2.printHeaders());
         Map<Short,Header> hdrs=m2.getHeaders();
         assert hdrs.size() == 2;

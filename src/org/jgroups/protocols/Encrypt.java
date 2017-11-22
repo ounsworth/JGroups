@@ -251,7 +251,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
         // try and decrypt the message - we need to copy msg as we modify its
         // buffer (http://jira.jboss.com/jira/browse/JGRP-538)
-        Message tmpMsg=decryptMessage(null, msg.copy()); // need to copy for possible xmits
+        Message tmpMsg=decryptMessage(null, msg.copy(true, true)); // need to copy for possible xmits
         if(tmpMsg != null)
             return up_prot.up(tmpMsg);
         log.warn("%s: unrecognized cipher; discarding message from %s", local_addr, msg.getSrc());
@@ -368,7 +368,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         int length=serialize? tmp.getLength() : msg.getLength();
 
         // copy neeeded because same message (object) may be retransmitted -> prevent double encryption
-        Message msgEncrypted=serialize? new BytesMessage(msg.getDest()) : msg.copy(false);
+        Message msgEncrypted=serialize? new BytesMessage(msg.getDest()) : msg.copy(false, true);
         msgEncrypted.putHeader(this.id, hdr.needsDeserialization(serialize));
 
         if(msg.getLength() > 0) {
@@ -451,7 +451,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
                         batch.remove(msg);
                         return;
                     }
-                    Message tmpMsg=decryptMessage(cipher, msg.copy()); // need to copy for possible xmits
+                    Message tmpMsg=decryptMessage(cipher, msg.copy(true, true)); // need to copy for possible xmits
                     if(tmpMsg != null)
                         batch.replace(msg, tmpMsg);
                     else

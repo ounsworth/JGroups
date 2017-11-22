@@ -16,6 +16,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -48,7 +49,6 @@ public class StreamableTest {
 
         Assert.assertEquals(4, m3.getLength());
         Assert.assertEquals(4, m3.getRawBuffer().length);
-        Assert.assertEquals(4, m3.getBuffer().length);
         Assert.assertEquals(0, m3.getOffset());
 
         output=new ByteArrayOutputStream();
@@ -69,7 +69,6 @@ public class StreamableTest {
 
 
         Assert.assertEquals(3, m4.getLength());
-        Assert.assertEquals(3, m4.getBuffer().length);
         Assert.assertEquals(3, m4.getRawBuffer().length);
         Assert.assertEquals(0, m4.getOffset());
     }
@@ -129,10 +128,10 @@ public class StreamableTest {
           d=Util.createRandomAddress("D"), e=Util.createRandomAddress("E"), f=Util.createRandomAddress("F");
 
         View v1=View.create(a,1,a,b,c);
-        View v2=new MergeView(d, 2, Arrays.asList(d), new ArrayList<>());
+        View v2=new MergeView(d, 2, Collections.singletonList(d), new ArrayList<>());
         View v3=View.create(e, 3, e,f);
-        View v4=new MergeView(e, 4, Arrays.asList(d), null);
-        View v5=new View(e, 5, Arrays.asList(d));
+        View v4=new MergeView(e, 4, Collections.singletonList(d), null);
+        View v5=new View(e, 5, Collections.singletonList(d));
         List<View> subgroups=Arrays.asList(v1,v2,v3,v4,v5);
 
 
@@ -149,7 +148,7 @@ public class StreamableTest {
         assert buf != null;
         assert buf.length > 0;
 
-        MergeView merge_view=(MergeView)Util.streamableFromByteBuffer(MergeView.class, buf);
+        MergeView merge_view=Util.streamableFromByteBuffer(MergeView.class, buf);
         assert merge_view != null;
         System.out.println("MergeView: " + merge_view);
         for(View v: merge_view.getSubgroups()) {
@@ -204,12 +203,8 @@ public class StreamableTest {
             return a2.equals(a1);
     }
 
-//    private int getRawBufLength(Message msg) {
-//        return msg.getRawBuffer() != null? msg.getRawBuffer().length : 0;
-//    }
-
     private static int getBufLength(Message msg) {
-        return msg.getBuffer() != null? msg.getBuffer().length : 0;
+        return msg.getLength();
     }
 
 

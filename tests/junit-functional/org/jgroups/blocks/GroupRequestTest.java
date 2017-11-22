@@ -413,7 +413,7 @@ public class GroupRequestTest {
                         Address sender=msg.getSrc();
                         Object retval=null;
                         try {
-                            retval=Util.objectFromByteBuffer(msg.getBuffer());
+                            retval=Util.objectFromByteBuffer(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
                         }
                         catch(Exception e) {
                             e.printStackTrace();

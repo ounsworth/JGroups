@@ -331,7 +331,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
             return;
         log.debug("%s: received secret key request from %s", local_addr, msg.getSrc());
         try {
-            PublicKey tmpKey=generatePubKey(msg.getBuffer());
+            PublicKey tmpKey=generatePubKey(msg.getRawBuffer());
             sendSecretKey(secret_key, tmpKey, msg.getSrc());
         }
         catch(Exception e) {
@@ -351,7 +351,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
             return;
         }
         try {
-            SecretKey tmp=decodeKey(msg.getBuffer());
+            SecretKey tmp=decodeKey(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
             if(tmp == null)
                 sendKeyRequest(key_server_addr); // unable to understand response, let's try again
             else {
@@ -535,11 +535,11 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
     }
 
 
-    protected SecretKeySpec decodeKey(byte[] encodedKey) throws Exception {
+    protected SecretKeySpec decodeKey(byte[] encodedKey, int offset, int length) throws Exception {
         byte[] keyBytes;
 
         synchronized(this) {
-            keyBytes=asym_cipher.doFinal(encodedKey);
+            keyBytes=asym_cipher.doFinal(encodedKey, offset, length);
         }
 
         try {
@@ -594,7 +594,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
 
         for(Message queued_msg: sink) {
             try {
-                Message decrypted_msg=decryptMessage(null, queued_msg.copy());
+                Message decrypted_msg=decryptMessage(null, queued_msg.copy(true, true));
                 if(decrypted_msg != null)
                     up_prot.up(decrypted_msg);
             }

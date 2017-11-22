@@ -80,15 +80,6 @@ public class ObjectMessage extends BaseMessage {
     public byte[]  getRawBuffer()            {swizzle(); return serialized_obj;}
 
 
-    public byte[] getBuffer() {
-        swizzle();
-        return serialized_obj;
-    }
-
-
-    public Message setBuffer(byte[] b) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Sets the internal buffer to point to a subset of a given buffer.<p/>
@@ -102,7 +93,7 @@ public class ObjectMessage extends BaseMessage {
      * @param offset The initial position
      * @param length The number of bytes
      */
-    public Message setBuffer(byte[] b, int offset, int length) {
+    public <T extends Message> T setBuffer(byte[] b, int offset, int length) {
         throw new UnsupportedOperationException();
     }
 
@@ -112,7 +103,7 @@ public class ObjectMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public Message setBuffer(Buffer buf) {
+    public <T extends Message> T setBuffer(Buffer buf) {
         throw new UnsupportedOperationException();
     }
 
@@ -123,10 +114,10 @@ public class ObjectMessage extends BaseMessage {
      * message. Parameter 'obj' has to be serializable (e.g. implementing Serializable,
      * Externalizable or Streamable, or be a basic type (e.g. Integer, Short etc)).
      */
-    public Message setObject(Object obj) {
-        if(obj == null) return this;
+    public <T extends Message> T setObject(Object obj) {
+        if(obj == null) return (T)this;
         this.obj=obj;
-        return this;
+        return (T)this;
     }
 
 
@@ -163,7 +154,7 @@ public class ObjectMessage extends BaseMessage {
     *           Copy the headers
     * @return Message with specified data
     */
-    public Message copy(boolean copy_buffer, boolean copy_headers) {
+    public <T extends Message> T copy(boolean copy_buffer, boolean copy_headers) {
         ObjectMessage retval=new ObjectMessage(false);
         retval.dest_addr=dest_addr;
         retval.src_addr=src_addr;
@@ -177,17 +168,9 @@ public class ObjectMessage extends BaseMessage {
 
         //noinspection NonAtomicOperationOnVolatileField
         retval.headers=copy_headers && headers != null? Headers.copy(this.headers) : createHeaders(Util.DEFAULT_HEADERS);
-        return retval;
+        return (T)retval;
     }
 
-
-
-    public Message makeReply() {
-        Message retval=new ObjectMessage(src_addr);
-        if(dest_addr != null)
-            retval.setSrc(dest_addr);
-        return retval;
-    }
 
 
     protected ObjectMessage swizzle() {

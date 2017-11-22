@@ -348,7 +348,7 @@ public class FRAG3 extends Protocol {
 
                 if(hdr.frag_id == 0 && !needs_deserialization) {
                     // the first fragment creates the message, copy the headers but not the buffer
-                    msg=frag_msg.copy(false);
+                    msg=frag_msg.copy(false, true);
                 }
 
                 if(received.set(hdr.frag_id)) {

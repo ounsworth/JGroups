@@ -381,7 +381,7 @@ public class MPerf extends ReceiverAdapter {
                 break;
 
             case MPerfHeader.NEW_CONFIG:
-                applyNewConfig(msg.getBuffer());
+                applyNewConfig(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
                 break;
 
             case MPerfHeader.ACK:
@@ -428,8 +428,8 @@ public class MPerf extends ReceiverAdapter {
         return retval;
     }
 
-    protected void applyNewConfig(byte[] buffer) {
-        final InputStream in=new ByteArrayInputStream(buffer);
+    protected void applyNewConfig(byte[] buffer, int offset, int length) {
+        final InputStream in=new ByteArrayInputStream(buffer, offset, length);
         Thread thread=new Thread(() -> {
             try {
                 JChannel ch=new JChannel(in);

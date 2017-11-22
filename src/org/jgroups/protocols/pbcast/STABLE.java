@@ -665,6 +665,7 @@ public class STABLE extends Protocol {
           .setBuffer(marshal(d));
         try {
             if(!send_in_background) {
+                num_stable_msgs_sent++;
                 down_prot.down(msg);
                 return;
             }

@@ -248,8 +248,7 @@ public class TOA extends Protocol implements DeliveryProtocol {
             if (!sendToMyself && address.equals(localAddress)) {
                 continue;
             }
-            Message cpy = msg.copy();
-            cpy.setDest(address);
+            Message cpy = msg.copy(true, true).setDest(address);
             down_prot.down(cpy);
         }
     }

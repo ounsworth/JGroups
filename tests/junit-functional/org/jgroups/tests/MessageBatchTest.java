@@ -240,7 +240,7 @@ public class MessageBatchTest {
         assert batch.size() == 5;
 
         for(int i=0; i < 5; i++)
-            batch.add(new BytesMessage(null, i).setFlag(Message.TransientFlag.OOB_DELIVERED));
+            batch.add((Message)new BytesMessage(null, i).setFlag(Message.TransientFlag.OOB_DELIVERED));
         System.out.println("batch = " + batch);
         batch.replace(filter, null, false);
         assert batch.size() == 9;

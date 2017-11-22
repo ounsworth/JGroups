@@ -113,7 +113,6 @@ public abstract class BaseMessage implements Message {
     public <T extends Message> T setDest(Address new_dest) {dest_addr=new_dest; return (T)this;}
     public Address               getSrc()                  {return src_addr;}
     public <T extends Message> T setSrc(Address new_src)   {src_addr=new_src; return (T)this;}
-
     public int                   getNumHeaders()           {return Headers.size(this.headers);}
     public Map<Short,Header>     getHeaders()              {return Headers.getHeaders(this.headers);}
     public String                printHeaders()            {return Headers.printHeaders(this.headers);}
@@ -141,7 +140,7 @@ public abstract class BaseMessage implements Message {
      * Same as {@link #setFlag(Flag...)} except that transient flags are not marshalled
      * @param flags The flag
      */
-    public Message setFlag(TransientFlag... flags) {
+    public <T extends Message> T setFlag(TransientFlag... flags) {
         if(flags != null) {
             short tmp=this.transient_flags;
             for(TransientFlag flag : flags)
@@ -149,18 +148,18 @@ public abstract class BaseMessage implements Message {
                     tmp|=flag.value();
             this.transient_flags=(byte)tmp;
         }
-        return this;
+        return (T)this;
     }
 
 
-    public Message setFlag(short flag, boolean transient_flags) {
+    public <T extends Message> T setFlag(short flag, boolean transient_flags) {
         short tmp=transient_flags? this.transient_flags : this.flags;
         tmp|=flag;
         if(transient_flags)
             this.transient_flags=(byte)tmp;
         else
             this.flags=tmp;
-        return this;
+        return (T)this;
     }
 
 
@@ -176,7 +175,7 @@ public abstract class BaseMessage implements Message {
      * @param flags The flags
      * @return A reference to the message
      */
-    public Message clearFlag(Flag... flags) {
+    public <T extends Message> T clearFlag(Flag... flags) {
         if(flags != null) {
             short tmp=this.flags;
             for(Flag flag : flags)
@@ -184,10 +183,10 @@ public abstract class BaseMessage implements Message {
                     tmp&=~flag.value();
             this.flags=tmp;
         }
-        return this;
+        return (T)this;
     }
 
-    public Message clearFlag(TransientFlag... flags) {
+    public <T extends Message> T clearFlag(TransientFlag... flags) {
         if(flags != null) {
             short tmp=this.transient_flags;
             for(TransientFlag flag : flags)
@@ -195,7 +194,7 @@ public abstract class BaseMessage implements Message {
                     tmp&=~flag.value();
             this.transient_flags=(byte)tmp;
         }
-        return this;
+        return (T)this;
     }
 
     /**
@@ -253,44 +252,6 @@ public abstract class BaseMessage implements Message {
     }
 
     /*---------------------------------------------------------------------*/
-
-
-    public Message copy() {
-        return copy(true);
-    }
-
-   /**
-    * Create a copy of the message. If offset and length are used (to refer to another buffer), the
-    * copy will contain only the subset offset and length point to, copying the subset into the new
-    * copy.
-    *
-    * @param copy_buffer
-    * @return Message with specified data
-    */
-    public Message copy(boolean copy_buffer) {
-        return copy(copy_buffer, true);
-    }
-
-
-
-
-    /**
-     * Copies a message. Copies only headers with IDs >= starting_id or IDs which are in the copy_only_ids list
-     * @param copy_buffer
-     * @param starting_id
-     * @param copy_only_ids
-     * @return
-     */
-    public Message copy(boolean copy_buffer, short starting_id, short... copy_only_ids) {
-        Message retval=copy(copy_buffer, false);
-        for(Map.Entry<Short,Header> entry: getHeaders().entrySet()) {
-            short id=entry.getKey();
-            if(id >= starting_id || Util.containsId(id, copy_only_ids))
-                retval.putHeader(id, entry.getValue());
-        }
-        return retval;
-    }
-
 
 
     public String toString() {

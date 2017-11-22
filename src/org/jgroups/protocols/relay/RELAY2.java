@@ -655,7 +655,7 @@ public class RELAY2 extends Protocol {
 
     /** Copies the message, but only the headers above the current protocol (RELAY) (or RpcDispatcher related headers) */
     protected Message copy(Message msg) {
-        return msg.copy(true, Global.BLOCKS_START_ID, this.prots_above);
+        return Util.copy(msg, true, Global.BLOCKS_START_ID, this.prots_above);
     }
 
 
