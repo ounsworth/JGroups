@@ -8,6 +8,7 @@ import org.jgroups.util.Util;
 
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.IOException;
 import java.util.function.Supplier;
 
 /**
@@ -263,10 +264,9 @@ public class BytesMessage extends BaseMessage {
 
     @Override public void writeTo(DataOutput out) throws Exception {
         super.writeTo(out);
-        out.writeInt(buf != null? length : -1);
-        if(buf != null)
-            out.write(buf, offset, length);
+        writePayload(out);
     }
+
 
    /**
     * Writes the message to the output stream, but excludes the dest and src addresses unless the
@@ -275,9 +275,7 @@ public class BytesMessage extends BaseMessage {
     */
     @Override public void writeToNoAddrs(Address src, DataOutput out, short... excluded_headers) throws Exception {
         super.writeToNoAddrs(src, out, excluded_headers);
-        out.writeInt(buf != null? length : -1);
-        if(buf != null)
-            out.write(buf, offset, length);
+        writePayload(out);
     }
 
 
@@ -289,6 +287,12 @@ public class BytesMessage extends BaseMessage {
             in.readFully(buf, 0, len);
             length=len;
         }
+    }
+
+    protected void writePayload(DataOutput out) throws IOException {
+        out.writeInt(buf != null? length : -1);
+        if(buf != null)
+            out.write(buf, offset, length);
     }
 
     /* --------------------------------- End of Interface Streamable ----------------------------- */

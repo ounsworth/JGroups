@@ -116,7 +116,6 @@ public abstract class BaseMessage implements Message {
     public int                   getNumHeaders()           {return Headers.size(this.headers);}
     public Map<Short,Header>     getHeaders()              {return Headers.getHeaders(this.headers);}
     public String                printHeaders()            {return Headers.printHeaders(this.headers);}
-    public <T extends Object> T  getObject()               {return getObject(null);}
 
 
     /**

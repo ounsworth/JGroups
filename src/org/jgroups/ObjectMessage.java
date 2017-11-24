@@ -125,21 +125,6 @@ public class ObjectMessage extends BaseMessage {
         return (T)obj;
     }
 
-    /**
-     * Uses custom serialization to create an object from the buffer of the message. Note that this is dangerous when
-     * using your own classloader, e.g. inside of an application server ! Most likely, JGroups will use the system
-     * classloader to deserialize the buffer into an object, whereas (for example) a web application will want to use
-     * the webapp's classloader, resulting in a ClassCastException. The recommended way is for the application to use
-     * their own serialization and only pass byte[] buffer to JGroups.<p/>
-     * As of 3.5, a classloader can be passed in. It will be used first to find a class, before contacting
-     * the other classloaders in the list. If null, the default list of classloaders will be used.
-     * @return the object
-     */
-    public <T extends Object> T getObject(ClassLoader loader) {
-        return (T)obj;
-    }
-
-
 
    /**
     * Create a copy of the message. If offset and length are used (to refer to another buffer), the

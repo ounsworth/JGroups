@@ -20,7 +20,7 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Returns the type of the message, e.g. BYTES_MSG, OBJ_MSG etc */
     byte getType();
 
-    /** Creates an instance of a message */
+    /** Creates a supplier that can create an instance of a message */
     Supplier<? extends Message> create();
 
     /** Returns the destination address to send the message to. A null value sends the message to all cluster members */
@@ -93,17 +93,22 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Returns true if this message has a byte[] array as payload, false otherwise.  */
     boolean                     hasArray();
 
-
+    /** Returns the offset of the byte[] array at which user data starts. Throws an exception if the message
+     * does not have a byte[] array payload (if {@link #hasArray()} is false).<br/>
+     * Note that this is a convenience method, as most messages are of type {@link BytesMessage}. */
     int                         getOffset();
 
+    /** Returns the length of the byte[] array payload. If the message does not have a byte[] array payload
+     * ({@link #hasArray()} is false), then the serialized size may be returned, or an implementation may choose
+     * to throw an exception */
     int                         getLength();
 
 
     /**
-     * Returns a <em>reference</em> to the payload (byte buffer). Note that this buffer should not be
-     * modified as we do not copy the buffer on copy() or clone(): the buffer of the copied message
-     * is simply a reference to the old buffer.<br/>
-     * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
+     * Returns a <em>reference</em> to the payload (byte array). Note that this array should not be
+     * modified as we do not copy the array on copy() or clone(): the array of the copied message
+     * is simply a reference to the old array.<br/>
+     * Even if offset and length are used: we return the <em>entire</em> array, not a subset.
      */
     byte[]                      getRawBuffer();
 
@@ -111,11 +116,20 @@ public interface Message extends Streamable, Constructable<Message> {
 
     <T extends Message> T       setBuffer(Buffer buf);
 
-    <T extends Message> T       setObject(Object obj);
-
+    /**
+     * Convenience method to get an object from the payload. If the payload is a byte[] array (e.g. as in
+     * {@link BytesMessage}), an attempt to de-serialize the array into an object is made, and the object returned.<br/>
+     * If the payload is an object (e.g. as is the case in {@link ObjectMessage}), the object will be returned directly.
+     */
     <T extends Object> T        getObject();
 
-    <T extends Object> T        getObject(ClassLoader loader);
+    /**
+     * Convenience method to set an object in a message. In a {@link ObjectMessage}, the object is set directly. In a
+     * {@link BytesMessage}, the object is serialized into a byte[] array and then the array is set as the payload of
+     * the message
+     */
+    <T extends Message> T       setObject(Object obj);
+
 
 
 
