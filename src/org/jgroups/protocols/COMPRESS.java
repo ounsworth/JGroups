@@ -77,7 +77,7 @@ public class COMPRESS extends Protocol {
         if(length >= min_size) {
             boolean serialize=!msg.hasArray();
             ByteArray tmp=null;
-            byte[] payload=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
+            byte[] payload=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             length=serialize? tmp.getLength() : msg.getLength();
 

@@ -164,7 +164,7 @@ public class BytesMessage extends BaseMessage {
      */
     public <T extends Message> T setBuffer(ByteArray buf) {
         if(buf != null) {
-            this.buf=buf.getBuf();
+            this.buf=buf.getArray();
             this.offset=buf.getOffset();
             this.length=buf.getLength();
         }

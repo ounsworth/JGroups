@@ -197,7 +197,7 @@ public class FRAG extends Protocol {
         try {
             // write message into a byte buffer and fragment it
             ByteArray tmp=Util.messageToBuffer(msg);
-            byte[] buffer=tmp.getBuf();
+            byte[] buffer=tmp.getArray();
             byte[][] fragments=Util.fragmentBuffer(buffer, frag_size, tmp.getLength());
             num_frags=fragments.length;
             num_sent_frags+=num_frags;

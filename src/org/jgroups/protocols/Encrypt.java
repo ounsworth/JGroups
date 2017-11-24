@@ -345,7 +345,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
                 msg.setSrc(local_addr);
 
             ByteArray serialized_msg=Util.messageToBuffer(msg);
-            byte[] encrypted_msg=code(serialized_msg.getBuf(),serialized_msg.getOffset(),serialized_msg.getLength(),false);
+            byte[] encrypted_msg=code(serialized_msg.getArray(), serialized_msg.getOffset(), serialized_msg.getLength(), false);
 
             if(sign_msgs) {
                 long checksum=computeChecksum(encrypted_msg, 0, encrypted_msg.length);
@@ -363,7 +363,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
         boolean serialize=!msg.hasArray();
         ByteArray tmp=null;
-        byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
+        byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
         int offset=serialize? tmp.getOffset() : msg.getOffset();
         int length=serialize? tmp.getLength() : msg.getLength();
 

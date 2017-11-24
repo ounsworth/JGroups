@@ -493,7 +493,7 @@ public class UtilTest {
 
     private static void _testMessage(Message msg) throws Exception {
         ByteArray buf=Util.messageToByteBuffer(msg);
-        Message msg2=Util.byteBufferToMessage(buf.getBuf(), buf.getOffset(), buf.getLength());
+        Message msg2=Util.byteBufferToMessage(buf.getArray(), buf.getOffset(), buf.getLength());
         Assert.assertEquals(msg.getSrc(), msg2.getSrc());
         Assert.assertEquals(msg.getDest(), msg2.getDest());
         Assert.assertEquals(msg.getLength(), msg2.getLength());
@@ -644,7 +644,7 @@ public class UtilTest {
         ByteArray buf=Util.objectToBuffer(obj);
         assert buf != null;
         assert buf.getLength() > 0;
-        Object obj2=Util.objectFromByteBuffer(buf.getBuf(), buf.getOffset(), buf.getLength());
+        Object obj2=Util.objectFromByteBuffer(buf.getArray(), buf.getOffset(), buf.getLength());
         System.out.println("obj=" + obj + ", obj2=" + obj2 + " (type=" + obj.getClass().getName() + ", length=" + buf.getLength() + " bytes)");
         Assert.assertEquals(obj, obj2);
     }

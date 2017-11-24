@@ -233,7 +233,7 @@ public class FRAG2 extends Protocol {
         try {
             boolean serialize=!msg.hasArray();
             ByteArray tmp=null;
-            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
+            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             int length=serialize? tmp.getLength() : msg.getLength();
             final List<Range> fragments=Util.computeFragOffsets(offset, length, frag_size);

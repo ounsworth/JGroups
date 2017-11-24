@@ -142,7 +142,7 @@ public class UnicastTestTcpSlow {
         try {
             // msg.writeTo(output);
             output.writeInt(buffer.getLength());
-            output.write(buffer.getBuf(),buffer.getOffset(),buffer.getLength());
+            output.write(buffer.getArray(), buffer.getOffset(), buffer.getLength());
         }
         finally {
             output_lock.unlock();
@@ -322,7 +322,7 @@ public class UnicastTestTcpSlow {
                     try {
                         // msg.writeTo(output);
                         output.writeInt(buffer.getLength());
-                        output.write(buffer.getBuf(), buffer.getOffset(), buffer.getLength());
+                        output.write(buffer.getArray(), buffer.getOffset(), buffer.getLength());
                         // output.flush();
                     }
                     finally {
