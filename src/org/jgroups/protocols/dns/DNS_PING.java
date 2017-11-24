@@ -154,7 +154,7 @@ public class DNS_PING extends Discovery {
             final Message msg = new BytesMessage(addr).setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
                     .putHeader(this.id, hdr);
             if (data != null)
-                msg.setBuffer(marshal(data));
+                msg.setArray(marshal(data));
 
             if (async_discovery_use_separate_thread_per_request)
                 timer.execute(() -> sendDiscoveryRequest(msg), sends_can_block);

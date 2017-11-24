@@ -83,14 +83,14 @@ public abstract class EncryptTest {
         Stream.of(ra, rb, rc).map(MyReceiver::list).map(l -> l.stream().map(msg -> (String)msg.getObject())
           .collect(ArrayList::new, ArrayList::add, (x, y) -> {})).forEach(System.out::println);
         assertForEachReceiver(r -> r.size() == 3);
-        assertForEachMessage(msg -> msg.getRawBuffer() == null);
+        assertForEachMessage(msg -> msg.getArray() == null);
     }
 
     /** Same as above, but all message payloads are empty (0-length String) */
     public void testRegularMessageReceptionWithEmptyMessages() throws Exception {
-        a.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
-        b.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
-        c.send(new BytesMessage(null).setBuffer(new byte[0], 0, 0));
+        a.send(new BytesMessage(null).setArray(new byte[0], 0, 0));
+        b.send(new BytesMessage(null).setArray(new byte[0], 0, 0));
+        c.send(new BytesMessage(null).setArray(new byte[0], 0, 0));
         for(int i=0; i < 10; i++) {
             if(ra.size() == 3 && rb.size() == 3 && rc.size() == 3)
                 break;
@@ -98,7 +98,7 @@ public abstract class EncryptTest {
         }
         assertForEachReceiver(r -> r.size() == 3);
         assertForEachMessage(msg -> msg.getLength() == 0);
-        assertForEachMessage(msg -> Arrays.equals(msg.getRawBuffer(), new byte[0]));
+        assertForEachMessage(msg -> Arrays.equals(msg.getArray(), new byte[0]));
     }
 
     //@Test(groups=Global.FUNCTIONAL,singleThreaded=true)
@@ -181,7 +181,7 @@ public abstract class EncryptTest {
 
         byte[] buf="hello from rogue".getBytes();
         byte[] encrypted_buf=encrypt.code(buf, 0, buf.length, false);
-        msg.setBuffer(encrypted_buf, 0, encrypted_buf.length);
+        msg.setArray(encrypted_buf, 0, encrypted_buf.length);
         long checksum=encrypt.computeChecksum(encrypted_buf, 0, encrypted_buf.length);
         byte[] tmp=encrypt.encryptChecksum(checksum);
         hdr.signature(tmp);
@@ -296,7 +296,7 @@ public abstract class EncryptTest {
                                     rogue_addr, a.getAddress(), b.getAddress(), c.getAddress());
 
         Message view_change_msg=new BytesMessage().putHeader(GMS_ID, new GMS.GmsHeader(GMS.GmsHeader.VIEW))
-          .setBuffer(marshal(rogue_view));
+          .setArray(marshal(rogue_view));
         rogue.send(view_change_msg);
 
         for(int i=0; i < 10; i++) {

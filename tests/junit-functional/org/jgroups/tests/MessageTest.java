@@ -134,14 +134,14 @@ public class MessageTest {
 
     public void testBufferSize() throws Exception {
         Message m1=new BytesMessage(null, "bela");
-        assert m1.getRawBuffer() != null;
-        assert m1.getRawBuffer() != null;
-        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
+        assert m1.getArray() != null;
+        assert m1.getArray() != null;
+        Assert.assertEquals(m1.getArray().length, m1.getLength());
         byte[] new_buf={'m', 'i', 'c', 'h', 'e', 'l', 'l', 'e'};
-        m1.setBuffer(new_buf, 0, new_buf.length);
-        assert m1.getRawBuffer() != null;
+        m1.setArray(new_buf, 0, new_buf.length);
+        assert m1.getArray() != null;
         Assert.assertEquals(new_buf.length, m1.getLength());
-        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
+        Assert.assertEquals(m1.getArray().length, m1.getLength());
     }
 
 
@@ -153,10 +153,10 @@ public class MessageTest {
         byte[] b1, b2;
 
         b1=new byte[m1.getLength()];
-        System.arraycopy(m1.getRawBuffer(), m1.getOffset(), b1, 0, m1.getLength());
+        System.arraycopy(m1.getArray(), m1.getOffset(), b1, 0, m1.getLength());
 
         b2=new byte[m2.getLength()];
-        System.arraycopy(m2.getRawBuffer(), m2.getOffset(), b2, 0, m2.getLength());
+        System.arraycopy(m2.getArray(), m2.getOffset(), b2, 0, m2.getLength());
 
         Assert.assertEquals(4, b1.length);
         Assert.assertEquals(3, b2.length);
@@ -167,11 +167,11 @@ public class MessageTest {
     public static void testSetBufferWithNullBuffer() {
         byte[] buf={'b', 'e', 'l', 'a'};
         Message m1=new BytesMessage();
-        m1.setBuffer(buf, 1, 2); // dummy data with non 0 oiffset and length
+        m1.setArray(buf, 1, 2); // dummy data with non 0 oiffset and length
         Assert.assertEquals(1, m1.getOffset());
         Assert.assertEquals(2, m1.getLength());
 
-        m1.setBuffer(null, 1, 2); // dummy offset and length, is ignored
+        m1.setArray(null, 1, 2); // dummy offset and length, is ignored
         Assert.assertEquals(0, m1.getOffset());
         Assert.assertEquals(0, m1.getLength());
     }
@@ -197,10 +197,10 @@ public class MessageTest {
         Message m1=new BytesMessage(null, buf, 0, 4);
         Message m2=new BytesMessage(null, buf, 4, 3);
 
-        Assert.assertEquals(buf.length, m1.getRawBuffer().length);
+        Assert.assertEquals(buf.length, m1.getArray().length);
         Assert.assertEquals(4, m1.getLength());
 
-        Assert.assertEquals(buf.length, m2.getRawBuffer().length);
+        Assert.assertEquals(buf.length, m2.getArray().length);
         Assert.assertEquals(3, m2.getLength());
     }
 
@@ -210,7 +210,7 @@ public class MessageTest {
         String s1="Bela Ban";
         Message m1=new BytesMessage(null, s1);
         Assert.assertEquals(0, m1.getOffset());
-        Assert.assertEquals(m1.getRawBuffer().length, m1.getLength());
+        Assert.assertEquals(m1.getArray().length, m1.getLength());
         String s2=m1.getObject();
         Assert.assertEquals(s2, s1);
     }

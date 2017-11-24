@@ -132,12 +132,12 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
                 state_requesters.add(msg.getSrc());
                 break;
             case StateHeader.STATE_RSP:
-                handleStateRsp(hdr.getDigest(), msg.getSrc(), msg.getRawBuffer());
+                handleStateRsp(hdr.getDigest(), msg.getSrc(), msg.getArray());
                 break;
             case StateHeader.STATE_EX:
                 closeHoleFor(msg.getSrc());
                 try {
-                    handleException(Util.exceptionFromBuffer(msg.getRawBuffer(), msg.getOffset(), msg.getLength()));
+                    handleException(Util.exceptionFromBuffer(msg.getArray(), msg.getOffset(), msg.getLength()));
                 }
                 catch(Throwable t) {
                     log.error("failed deserializaing state exception", t);
@@ -343,7 +343,7 @@ public class STATE_TRANSFER extends Protocol implements ProcessingQueue.Handler<
 
     protected void sendException(Address requester, Throwable exception) {
         try {
-            Message ex_msg=new BytesMessage(requester).setBuffer(Util.exceptionToBuffer(exception))
+            Message ex_msg=new BytesMessage(requester).setArray(Util.exceptionToBuffer(exception))
               .putHeader(getId(), new StateHeader(StateHeader.STATE_EX));
             down(ex_msg);
         }

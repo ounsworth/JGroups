@@ -112,7 +112,7 @@ public class NioServerTest2 {
                 bad++;
                 byte[] copy=new byte[msg.getLength()];
                 byte[] buf=null;
-                buf=msg.getRawBuffer();
+                buf=msg.getArray();
                 System.arraycopy(buf, msg.getOffset(), copy, 0, copy.length);
                 bad_msgs.add(copy);
             }

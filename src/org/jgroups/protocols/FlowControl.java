@@ -373,12 +373,12 @@ public abstract class FlowControl extends Protocol {
         switch(hdr.type) {
             case FcHeader.REPLENISH:
                 num_credit_responses_received++;
-                handleCredit(msg.getSrc(), bufferToLong(msg.getRawBuffer(), msg.getOffset()));
+                handleCredit(msg.getSrc(), bufferToLong(msg.getArray(), msg.getOffset()));
                 break;
             case FcHeader.CREDIT_REQUEST:
                 num_credit_requests_received++;
                 Address sender=msg.getSrc();
-                Long requested_credits=bufferToLong(msg.getRawBuffer(), msg.getOffset());
+                Long requested_credits=bufferToLong(msg.getArray(), msg.getOffset());
                 if(requested_credits != null)
                     handleCreditRequest(received, sender,requested_credits);
                 break;

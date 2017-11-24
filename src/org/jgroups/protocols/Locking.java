@@ -233,7 +233,7 @@ abstract public class Locking extends Protocol {
 
         Request req=null;
         try {
-            req=Util.streamableFromBuffer(Request.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            req=Util.streamableFromBuffer(Request.class, msg.getArray(), msg.getOffset(), msg.getLength());
         }
         catch(Exception ex) {
             log.error("failed deserializng request", ex);

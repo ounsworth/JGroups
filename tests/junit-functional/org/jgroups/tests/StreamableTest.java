@@ -48,7 +48,7 @@ public class StreamableTest {
         m3.readFrom(in);
 
         Assert.assertEquals(4, m3.getLength());
-        Assert.assertEquals(4, m3.getRawBuffer().length);
+        Assert.assertEquals(4, m3.getArray().length);
         Assert.assertEquals(0, m3.getOffset());
 
         output=new ByteArrayOutputStream();
@@ -69,7 +69,7 @@ public class StreamableTest {
 
 
         Assert.assertEquals(3, m4.getLength());
-        Assert.assertEquals(3, m4.getRawBuffer().length);
+        Assert.assertEquals(3, m4.getArray().length);
         Assert.assertEquals(0, m4.getOffset());
     }
 

@@ -186,7 +186,7 @@ public class COUNTER extends Protocol {
             return up_prot.up(msg);
 
         try {
-            Object obj=streamableFromBuffer(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            Object obj=streamableFromBuffer(msg.getArray(), msg.getOffset(), msg.getLength());
             if(log.isTraceEnabled())
                 log.trace("[" + local_addr + "] <-- [" + msg.getSrc() + "] " + obj);
 

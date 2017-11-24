@@ -402,7 +402,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
                     handleResendingOfFirstMessage(sender, hdr.timestamp());
                     break;
                 case UnicastHeader3.XMIT_REQ:  // received ACK for previously sent message
-                    handleXmitRequest(sender, Util.streamableFromBuffer(SeqnoList.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength()));
+                    handleXmitRequest(sender, Util.streamableFromBuffer(SeqnoList.class, msg.getArray(), msg.getOffset(), msg.getLength()));
                     break;
                 case UnicastHeader3.CLOSE:
                     log.trace(local_addr + "%s <-- CLOSE(%s: conn-id=%s)", local_addr, sender, hdr.conn_id);
@@ -670,7 +670,7 @@ public class UNICAST3 extends Protocol implements AgeOutCache.Handler<Address> {
 
     /** Sends a retransmit request to the given sender */
     protected void retransmit(SeqnoList missing, Address sender) {
-        Message xmit_msg=new BytesMessage(sender).setBuffer(Util.streamableToBuffer(missing))
+        Message xmit_msg=new BytesMessage(sender).setArray(Util.streamableToBuffer(missing))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL).putHeader(id, UnicastHeader3.createXmitReqHeader());
         if(is_trace)
             log.trace("%s: sending XMIT_REQ (%s) to %s", local_addr, missing, sender);

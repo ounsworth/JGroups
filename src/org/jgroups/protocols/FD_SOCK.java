@@ -303,12 +303,12 @@ public class FD_SOCK extends Protocol implements Runnable {
             // Return the cache to the sender of this message
             case FdHeader.GET_CACHE:
                 msg=new BytesMessage(msg.getSrc()).setFlag(Message.Flag.INTERNAL)
-                  .putHeader(this.id, new FdHeader(FdHeader.GET_CACHE_RSP)).setBuffer(marshal(cache));
+                  .putHeader(this.id, new FdHeader(FdHeader.GET_CACHE_RSP)).setArray(marshal(cache));
                 down_prot.down(msg);
                 break;
 
             case FdHeader.GET_CACHE_RSP:
-                Map<Address,IpAddress> cachedAddrs=unmarshal(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                Map<Address,IpAddress> cachedAddrs=unmarshal(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(cachedAddrs != null)
                     get_cache_promise.setResult(cachedAddrs);
                 break;

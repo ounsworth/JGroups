@@ -300,7 +300,7 @@ public class Merger {
 
     /** Send back a response containing view and digest to sender */
     protected void sendMergeResponse(Address sender, View view, Digest digest, MergeId merge_id) {
-        Message msg=new BytesMessage(sender).setBuffer(GMS.marshal(view, digest)).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
+        Message msg=new BytesMessage(sender).setArray(GMS.marshal(view, digest)).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
           .putHeader(gms.getId(), new GMS.GmsHeader(GMS.GmsHeader.MERGE_RSP).mergeId(merge_id));
         gms.getDownProtocol().down(msg);
     }
@@ -331,7 +331,7 @@ public class Merger {
 
         long start=System.currentTimeMillis();
         for(Address coord: coords) {
-            Message msg=new BytesMessage(coord).setBuffer(GMS.marshal(view, digest))
+            Message msg=new BytesMessage(coord).setArray(GMS.marshal(view, digest))
               .putHeader(gms.getId(),new GMS.GmsHeader(GMS.GmsHeader.INSTALL_MERGE_VIEW).mergeId(merge_id));
             gms.getDownProtocol().down(msg);
         }
@@ -417,7 +417,7 @@ public class Merger {
     protected void fixDigests() {
         Digest digest=fetchDigestsFromAllMembersInSubPartition(gms.view, null);
         Message msg=new BytesMessage().putHeader(gms.getId(), new GMS.GmsHeader(GMS.GmsHeader.INSTALL_DIGEST))
-          .setBuffer(GMS.marshal(null, digest));
+          .setArray(GMS.marshal(null, digest));
         gms.getDownProtocol().down(msg);
     }
 
@@ -625,7 +625,7 @@ public class Merger {
                 Collection<Address> mbrs=entry.getValue();
                 Message msg=new BytesMessage(coord).setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
                   .putHeader(gms.getId(), new GMS.GmsHeader(GMS.GmsHeader.MERGE_REQ).mbr(gms.local_addr).mergeId(new_merge_id))
-                  .setBuffer(GMS.marshal(mbrs));
+                  .setArray(GMS.marshal(mbrs));
                 gms.getDownProtocol().down(msg);
             }
 

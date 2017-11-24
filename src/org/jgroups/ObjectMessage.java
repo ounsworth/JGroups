@@ -77,7 +77,7 @@ public class ObjectMessage extends BaseMessage {
     }
 
 
-    public byte[]  getRawBuffer()            {swizzle(); return serialized_obj;}
+    public byte[] getArray()            {swizzle(); return serialized_obj;}
 
 
 
@@ -93,7 +93,7 @@ public class ObjectMessage extends BaseMessage {
      * @param offset The initial position
      * @param length The number of bytes
      */
-    public <T extends Message> T setBuffer(byte[] b, int offset, int length) {
+    public <T extends Message> T setArray(byte[] b, int offset, int length) {
         throw new UnsupportedOperationException();
     }
 
@@ -103,7 +103,7 @@ public class ObjectMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public <T extends Message> T setBuffer(ByteArray buf) {
+    public <T extends Message> T setArray(ByteArray buf) {
         throw new UnsupportedOperationException();
     }
 

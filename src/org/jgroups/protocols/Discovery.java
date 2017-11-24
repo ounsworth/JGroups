@@ -269,7 +269,7 @@ public abstract class Discovery extends Protocol {
         if(is_leaving)
             return null; // prevents merging back a leaving member (https://issues.jboss.org/browse/JGRP-1336)
 
-        PingData data=readPingData(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+        PingData data=readPingData(msg.getArray(), msg.getOffset(), msg.getLength());
         Address logical_addr=data != null? data.getAddress() : msg.getSrc();
 
         switch(hdr.type) {
@@ -549,7 +549,7 @@ public abstract class Discovery extends Protocol {
                                          String logical_name, final Address sender, boolean coord) {
         final PingData data=new PingData(logical_addr, is_server, logical_name, physical_addr).coord(coord);
         final Message rsp_msg=new BytesMessage(sender).setFlag(Message.Flag.INTERNAL, Message.Flag.OOB, Message.Flag.DONT_BUNDLE)
-          .putHeader(this.id, new PingHeader(PingHeader.GET_MBRS_RSP)).setBuffer(marshal(data));
+          .putHeader(this.id, new PingHeader(PingHeader.GET_MBRS_RSP)).setArray(marshal(data));
 
         if(stagger_timeout > 0) {
             int view_size=view != null? view.size() : 10;

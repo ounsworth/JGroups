@@ -53,9 +53,9 @@ public class ENCRYPTKeystoreTest {
 
         encrypt.down(msg);
         Message sentMsg=observer.getDownMessages().get("message0");
-        String encText=new String(sentMsg.getRawBuffer(), sentMsg.getOffset(), sentMsg.getLength());
+        String encText=new String(sentMsg.getArray(), sentMsg.getOffset(), sentMsg.getLength());
         assert !encText.equals(messageText);
-        byte[] decodedBytes=encrypt.code(sentMsg.getRawBuffer(), sentMsg.getOffset(), sentMsg.getLength(), true);
+        byte[] decodedBytes=encrypt.code(sentMsg.getArray(), sentMsg.getOffset(), sentMsg.getLength(), true);
         String temp=new String(decodedBytes);
         System.out.printf("decoded text: '%s'\n", temp);
         assert temp.equals(messageText) : String.format("sent: '%s', decoded: '%s'", messageText, temp);
@@ -81,7 +81,7 @@ public class ENCRYPTKeystoreTest {
         Message msg=new BytesMessage(null, encodedBytes).putHeader(ENCRYPT_ID, new EncryptHeader(EncryptHeader.ENCRYPT, symVersion));
         encrypt.up(msg);
         Message rcvdMsg=observer.getUpMessages().get("message0");
-        String decText=new String(rcvdMsg.getRawBuffer(), rcvdMsg.getOffset(), rcvdMsg.getLength());
+        String decText=new String(rcvdMsg.getArray(), rcvdMsg.getOffset(), rcvdMsg.getLength());
         assert decText.equals(messageText);
 
     }
@@ -150,7 +150,7 @@ public class ENCRYPTKeystoreTest {
         encrypt.up(encrypted_msg);
 
         Message decrypted_msg=mock.getUpMessages().get("message1");
-        String temp=new String(decrypted_msg.getRawBuffer(), decrypted_msg.getOffset(), decrypted_msg.getLength());
+        String temp=new String(decrypted_msg.getArray(), decrypted_msg.getOffset(), decrypted_msg.getLength());
         assert "hello world".equals(temp);
     }
 

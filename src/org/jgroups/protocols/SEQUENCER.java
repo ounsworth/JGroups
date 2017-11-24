@@ -431,7 +431,7 @@ public class SEQUENCER extends Protocol {
         }
         else {
             SequencerHeader new_hdr=new SequencerHeader(SequencerHeader.WRAPPED_BCAST, seqno);
-            bcast_msg=new BytesMessage(null, msg.getRawBuffer(), msg.getOffset(), msg.getLength()).putHeader(this.id, new_hdr);
+            bcast_msg=new BytesMessage(null, msg.getArray(), msg.getOffset(), msg.getLength()).putHeader(this.id, new_hdr);
             if(resend) {
                 new_hdr.flush_ack=true;
                 bcast_msg.setFlag(Message.Flag.DONT_BUNDLE);
@@ -453,7 +453,7 @@ public class SEQUENCER extends Protocol {
      */
     protected void unwrapAndDeliver(final Message msg, boolean flush_ack) {
         try {
-            Message msg_to_deliver=Util.streamableFromBuffer(BytesMessage.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            Message msg_to_deliver=Util.streamableFromBuffer(BytesMessage.class, msg.getArray(), msg.getOffset(), msg.getLength());
             SequencerHeader hdr=msg_to_deliver.getHeader(this.id);
             if(flush_ack)
                 hdr.flush_ack=true;

@@ -281,11 +281,11 @@ public class MERGE3 extends Protocol {
                 break;
             case VIEW_REQ:
                 Message view_rsp=new BytesMessage(sender).setFlag(Message.Flag.INTERNAL)
-                  .putHeader(getId(), MergeHeader.createViewResponse()).setBuffer(marshal(view));
+                  .putHeader(getId(), MergeHeader.createViewResponse()).setArray(marshal(view));
                 down_prot.down(view_rsp);
                 break;
             case VIEW_RSP:
-                View tmp_view=readView(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                View tmp_view=readView(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tmp_view != null)
                     view_rsps.add(sender, tmp_view);
                 break;

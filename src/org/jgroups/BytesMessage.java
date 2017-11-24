@@ -76,13 +76,13 @@ public class BytesMessage extends BaseMessage {
     */
     public BytesMessage(Address dest, byte[] buf, int offset, int length) {
         this(dest);
-        setBuffer(buf, offset, length);
+        setArray(buf, offset, length);
     }
 
 
     public BytesMessage(Address dest, ByteArray buf) {
         this(dest);
-        setBuffer(buf);
+        setArray(buf);
     }
 
 
@@ -125,7 +125,7 @@ public class BytesMessage extends BaseMessage {
      * is simply a reference to the old buffer.<br/>
      * Even if offset and length are used: we return the <em>entire</em> buffer, not a subset.
      */
-    public byte[]  getRawBuffer()            {return buf;}
+    public byte[] getArray()              {return buf;}
 
 
 
@@ -141,7 +141,7 @@ public class BytesMessage extends BaseMessage {
      * @param offset The initial position
      * @param length The number of bytes
      */
-    public <T extends Message> T setBuffer(byte[] b, int offset, int length) {
+    public <T extends Message> T setArray(byte[] b, int offset, int length) {
         buf=b;
         if(buf != null) {
             if(offset < 0 || offset > buf.length)
@@ -162,7 +162,7 @@ public class BytesMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public <T extends Message> T setBuffer(ByteArray buf) {
+    public <T extends Message> T setArray(ByteArray buf) {
         if(buf != null) {
             this.buf=buf.getArray();
             this.offset=buf.getOffset();
@@ -181,12 +181,12 @@ public class BytesMessage extends BaseMessage {
     public <T extends Message> T setObject(Object obj) {
         if(obj == null) return (T)this;
         if(obj instanceof byte[])
-            return setBuffer((byte[])obj, 0, ((byte[])obj).length);
+            return setArray((byte[])obj, 0, ((byte[])obj).length);
         if(obj instanceof ByteArray)
-            return setBuffer((ByteArray)obj);
+            return setArray((ByteArray)obj);
         try {
             byte[] tmp=Util.objectToByteBuffer(obj);
-            return setBuffer(tmp, 0, tmp.length);
+            return setArray(tmp, 0, tmp.length);
         }
         catch(Exception ex) {
             throw new IllegalArgumentException(ex);
@@ -242,7 +242,7 @@ public class BytesMessage extends BaseMessage {
         retval.transient_flags=tmp_tflags;
 
         if(copy_buffer && buf != null)
-            retval.setBuffer(buf, offset, length);
+            retval.setArray(buf, offset, length);
 
         //noinspection NonAtomicOperationOnVolatileField
         retval.headers=copy_headers && headers != null? Headers.copy(this.headers) : createHeaders(Util.DEFAULT_HEADERS);

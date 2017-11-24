@@ -578,7 +578,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         }
 
         Message view_change_msg=new BytesMessage().putHeader(this.id, new GmsHeader(GmsHeader.VIEW))
-          .setBuffer(marshal(new_view, digest)).setFlag(Message.TransientFlag.DONT_LOOPBACK);
+          .setArray(marshal(new_view, digest)).setFlag(Message.TransientFlag.DONT_LOOPBACK);
         if(new_view instanceof MergeView) // https://issues.jboss.org/browse/JGRP-1484
             view_change_msg.setFlag(Message.Flag.NO_TOTAL_ORDER);
 
@@ -617,7 +617,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
 
     public void sendJoinResponse(JoinRsp rsp, Address dest) {
         Message m=new BytesMessage(dest).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
-          .setBuffer(marshal(rsp)).setFlag(OOB, INTERNAL);
+          .setArray(marshal(rsp)).setFlag(OOB, INTERNAL);
         getDownProtocol().down(m);
     }
 
@@ -871,7 +871,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 view_handler.add(new Request(Request.JOIN_WITH_STATE_TRANSFER, hdr.mbr, null, hdr.useFlushIfPresent));
                 break;
             case GmsHeader.JOIN_RSP:
-                JoinRsp join_rsp=readJoinRsp(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                JoinRsp join_rsp=readJoinRsp(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(join_rsp != null)
                     impl.handleJoinResponse(join_rsp);
                 break;
@@ -884,7 +884,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 impl.handleLeaveResponse();
                 break;
             case GmsHeader.VIEW:
-                Tuple<View,Digest> tuple=readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                Tuple<View,Digest> tuple=readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tuple == null)
                     return null;
                 View new_view=tuple.getVal1();
@@ -930,13 +930,13 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 return null; // don't pass further up
 
             case GmsHeader.MERGE_REQ:
-                Collection<? extends Address> mbrs=readMembers(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                Collection<? extends Address> mbrs=readMembers(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(mbrs != null)
                     impl.handleMergeRequest(msg.getSrc(), hdr.merge_id, mbrs);
                 break;
 
             case GmsHeader.MERGE_RSP:
-                tuple=readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                tuple=readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tuple == null)
                     return null;
                 MergeData merge_data=new MergeData(msg.getSrc(), tuple.getVal1(), tuple.getVal2(), hdr.merge_rejected);
@@ -946,14 +946,14 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 break;
 
             case GmsHeader.INSTALL_MERGE_VIEW:
-                tuple=readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                tuple=readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tuple == null)
                     return null;
                 impl.handleMergeView(new MergeData(msg.getSrc(), tuple.getVal1(), tuple.getVal2()), hdr.merge_id);
                 break;
 
             case GmsHeader.INSTALL_DIGEST:
-                tuple=readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                tuple=readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tuple == null)
                     return null;
                 Digest tmp=tuple.getVal2();
@@ -988,13 +988,13 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                     Message get_digest_rsp=new BytesMessage(msg.getSrc())
                       .setFlag(OOB, Message.Flag.INTERNAL)
                       .putHeader(this.id, new GmsHeader(GmsHeader.GET_DIGEST_RSP))
-                      .setBuffer(marshal(null, digest));
+                      .setArray(marshal(null, digest));
                     down_prot.down(get_digest_rsp);
                 }
                 break;
 
             case GmsHeader.GET_DIGEST_RSP:
-                tuple=readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                tuple=readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(tuple == null)
                     return null;
                 Digest digest_rsp=tuple.getVal2();
@@ -1002,7 +1002,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 break;
 
             case GmsHeader.GET_CURRENT_VIEW:
-                ViewId view_id=readViewId(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                ViewId view_id=readViewId(msg.getArray(), msg.getOffset(), msg.getLength());
                 if(view_id != null) {
                     // check if my view-id differs from view-id:
                     ViewId my_view_id=this.view != null? this.view.getViewId() : null;
@@ -1012,7 +1012,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 // either my view-id differs from sender's view-id, or sender's view-id is null: send view
                 log.trace("%s: received request for full view from %s, sending view %s", local_addr, msg.getSrc(), view);
                 Message view_msg=new BytesMessage(msg.getSrc()).putHeader(id, new GmsHeader(GmsHeader.VIEW))
-                  .setBuffer(marshal(view, null)).setFlag(OOB, Message.Flag.INTERNAL);
+                  .setArray(marshal(view, null)).setFlag(OOB, Message.Flag.INTERNAL);
                 down_prot.down(view_msg);
                 break;
 
@@ -1087,7 +1087,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
                 if(coord != null) {
                     ViewId view_id=view != null? view.getViewId() : null;
                     Message msg=new BytesMessage(coord).putHeader(id, new GmsHeader(GmsHeader.GET_CURRENT_VIEW))
-                      .setBuffer(marshal(view_id)).setFlag(OOB, Message.Flag.INTERNAL);
+                      .setArray(marshal(view_id)).setFlag(OOB, Message.Flag.INTERNAL);
                     down_prot.down(msg);
                 }
                 return null; // don't pass the event further down

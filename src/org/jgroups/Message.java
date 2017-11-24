@@ -93,6 +93,17 @@ public interface Message extends Streamable, Constructable<Message> {
     /** Returns true if this message has a byte[] array as payload, false otherwise.  */
     boolean                     hasArray();
 
+    /**
+     * Returns a <em>reference</em> to the payload (byte array). Note that this array should not be
+     * modified as we do not copy the array on copy() or clone(): the array of the copied message
+     * is simply a reference to the old array.<br/>
+     * Even if offset and length are used: we return the <em>entire</em> array, not a subset.<br/>
+     * Throws an exception if the message does not have a byte[] array payload ({@link #hasArray()} is false).<br/>
+     * Note that this is a convenience method, as most messages are of type {@link BytesMessage}. It is recommended to
+     * downcast a {@link Message} to the correct subtype and use the methods available there to get/set the payload.
+     */
+    byte[]                      getArray();
+
     /** Returns the offset of the byte[] array at which user data starts. Throws an exception if the message
      * does not have a byte[] array payload (if {@link #hasArray()} is false).<br/>
      * Note that this is a convenience method, as most messages are of type {@link BytesMessage}. */
@@ -103,37 +114,34 @@ public interface Message extends Streamable, Constructable<Message> {
      * to throw an exception */
     int                         getLength();
 
-
     /**
-     * Returns a <em>reference</em> to the payload (byte array). Note that this array should not be
-     * modified as we do not copy the array on copy() or clone(): the array of the copied message
-     * is simply a reference to the old array.<br/>
-     * Even if offset and length are used: we return the <em>entire</em> array, not a subset.
+     * Sets the byte array in a message.<br/>
+     * Throws an exception if the message does not have a byte[] array payload ({@link #hasArray()} is false).<br/>
+     * Note that this is a convenience method, as most messages are of type {@link BytesMessage}. It is recommended to
+     * downcast a {@link Message} to the correct subtype and use the methods available there to get/set the payload.
      */
-    byte[]                      getRawBuffer();
-
-    <T extends Message> T       setBuffer(byte[] b, int offset, int length);
-
-    <T extends Message> T       setBuffer(ByteArray buf);
+    <T extends Message> T       setArray(byte[] b, int offset, int length);
 
     /**
-     * Convenience method to get an object from the payload. If the payload is a byte[] array (e.g. as in
-     * {@link BytesMessage}), an attempt to de-serialize the array into an object is made, and the object returned.<br/>
+     * Sets the byte array in a message.<br/>
+     * Throws an exception if the message does not have a byte[] array payload ({@link #hasArray()} is false).<br/>
+     * Note that this is a convenience method, as most messages are of type {@link BytesMessage}. It is recommended to
+     * downcast a {@link Message} to the correct subtype and use the methods available there to get/set the payload.
+     */
+    <T extends Message> T       setArray(ByteArray buf);
+
+    /**
+     * Gets an object from the payload. If the payload is a byte[] array (e.g. as in {@link BytesMessage}),
+     * an attempt to de-serialize the array into an object is made, and the object returned.<br/>
      * If the payload is an object (e.g. as is the case in {@link ObjectMessage}), the object will be returned directly.
      */
     <T extends Object> T        getObject();
 
     /**
-     * Convenience method to set an object in a message. In a {@link ObjectMessage}, the object is set directly. In a
-     * {@link BytesMessage}, the object is serialized into a byte[] array and then the array is set as the payload of
-     * the message
+     * Sets an object in a message. In a {@link ObjectMessage}, the object is set directly. In a {@link BytesMessage},
+     * the object is serialized into a byte[] array and then the array is set as the payload of the message
      */
     <T extends Message> T       setObject(Object obj);
-
-
-
-
-
 
 
     /**

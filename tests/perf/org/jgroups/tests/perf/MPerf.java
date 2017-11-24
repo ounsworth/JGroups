@@ -381,7 +381,7 @@ public class MPerf extends ReceiverAdapter {
                 break;
 
             case MPerfHeader.NEW_CONFIG:
-                applyNewConfig(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                applyNewConfig(msg.getArray(), msg.getOffset(), msg.getLength());
                 break;
 
             case MPerfHeader.ACK:

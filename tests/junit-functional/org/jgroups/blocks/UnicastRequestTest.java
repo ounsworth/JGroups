@@ -231,7 +231,7 @@ public class UnicastRequestTest {
                         Address sender=msg.getSrc();
                         Object retval=null;
                         try {
-                            retval=Util.objectFromByteBuffer(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                            retval=Util.objectFromByteBuffer(msg.getArray(), msg.getOffset(), msg.getLength());
                         }
                         catch(Exception e) {
                             e.printStackTrace();

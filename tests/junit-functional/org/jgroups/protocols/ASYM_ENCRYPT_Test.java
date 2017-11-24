@@ -168,7 +168,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
         JoinRsp join_rsp=new JoinRsp(rogue_view, null);
         GMS.GmsHeader gms_hdr=new GMS.GmsHeader(GMS.GmsHeader.JOIN_RSP);
         Message rogue_join_rsp=new BytesMessage(b.getAddress(), rogue.getAddress()).putHeader(GMS_ID, gms_hdr)
-          .setBuffer(GMS.marshal(join_rsp)).setFlag(Message.Flag.NO_RELIABILITY); // bypasses NAKACK2 / UNICAST3
+          .setArray(GMS.marshal(join_rsp)).setFlag(Message.Flag.NO_RELIABILITY); // bypasses NAKACK2 / UNICAST3
         rogue.down(rogue_join_rsp);
         for(int i=0; i < 10; i++) {
             if(b.getView().size() > 3)
@@ -382,7 +382,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
         protected Object handleUpEvent(Message msg, EncryptHeader hdr) {
             if(hdr.type() == EncryptHeader.SECRET_KEY_RSP) {
                 try {
-                    key=decodeKey(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    key=decodeKey(msg.getArray(), msg.getOffset(), msg.getLength());
                     System.out.printf("received secret key %s !\n", key);
                 }
                 catch(Exception e) {

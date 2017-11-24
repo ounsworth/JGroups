@@ -198,7 +198,7 @@ public class FragTest {
         protected String msg;
         public String msg() {return msg;}
         public void receive(Message msg) {
-            this.msg=new String(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            this.msg=new String(msg.getArray(), msg.getOffset(), msg.getLength());
         }
     }
 

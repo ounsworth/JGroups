@@ -309,7 +309,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             }
 
             long msg_checksum=decryptChecksum(cipher, signature, 0, signature.length);
-            long actual_checksum=computeChecksum(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            long actual_checksum=computeChecksum(msg.getArray(), msg.getOffset(), msg.getLength());
             if(actual_checksum != msg_checksum) {
                 log.error("%s: dropped message from %s as the message's checksum (%d) did not match the computed checksum (%d)",
                           local_addr, msg.getSrc(), msg_checksum, actual_checksum);
@@ -318,15 +318,15 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         }
 
         if(cipher == null)
-            decrypted_msg=code(msg.getRawBuffer(), msg.getOffset(), msg.getLength(), true);
+            decrypted_msg=code(msg.getArray(), msg.getOffset(), msg.getLength(), true);
         else
-            decrypted_msg=cipher.doFinal(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            decrypted_msg=cipher.doFinal(msg.getArray(), msg.getOffset(), msg.getLength());
 
         if(!encrypt_entire_message) {
             if(hdr.needsDeserialization())
                 msg=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
             else
-                msg.setBuffer(decrypted_msg, 0, decrypted_msg.length);
+                msg.setArray(decrypted_msg, 0, decrypted_msg.length);
             return msg;
         }
         Message ret=Util.messageFromBuffer(decrypted_msg, 0, decrypted_msg.length, msg_factory);
@@ -355,7 +355,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
             // exclude existing headers, they will be seen again when we decrypt and unmarshal the msg at the receiver
             // Message tmp=msg.copy(false, false).setBuffer(encrypted_msg).putHeader(this.id, hdr);
-            Message tmp=new BytesMessage(msg.getDest()).setBuffer(encrypted_msg, 0, encrypted_msg.length)
+            Message tmp=new BytesMessage(msg.getDest()).setArray(encrypted_msg, 0, encrypted_msg.length)
               .putHeader(this.id, hdr.needsDeserialization(true));
             down_prot.down(tmp);
             return;
@@ -363,7 +363,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
         boolean serialize=!msg.hasArray();
         ByteArray tmp=null;
-        byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
+        byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getArray();
         int offset=serialize? tmp.getOffset() : msg.getOffset();
         int length=serialize? tmp.getLength() : msg.getLength();
 
@@ -373,11 +373,11 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
 
         if(msg.getLength() > 0) {
             byte[] b=code(buffer, offset, length, false);
-            msgEncrypted.setBuffer(b, 0, b.length);
+            msgEncrypted.setArray(b, 0, b.length);
         }
         else { // length is 0
             if(buffer != null) // we don't encrypt empty buffers (https://issues.jboss.org/browse/JGRP-2153)
-                msgEncrypted.setBuffer(buffer, offset, length);
+                msgEncrypted.setArray(buffer, offset, length);
         }
         down_prot.down(msgEncrypted);
     }
@@ -459,7 +459,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
                 }
                 catch(Exception e) {
                     log.error("%s: failed decrypting message from %s (offset=%d, length=%d, buf.length=%d): %s, headers are %s",
-                              local_addr, msg.getSrc(), msg.getOffset(), msg.getLength(), msg.getRawBuffer().length, e, msg.printHeaders());
+                              local_addr, msg.getSrc(), msg.getOffset(), msg.getLength(), msg.getArray().length, e, msg.printHeaders());
                     batch.remove(msg);
                 }
             }

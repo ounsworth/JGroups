@@ -224,7 +224,7 @@ public class FRAG3 extends Protocol {
         try {
             boolean serialize=!msg.hasArray();
             ByteArray tmp=null;
-            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
+            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getArray();
             int msg_offset=serialize? tmp.getOffset() : msg.getOffset();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             int original_length=serialize? tmp.getLength() : msg.getLength();
@@ -258,7 +258,7 @@ public class FRAG3 extends Protocol {
                 else
                     frag_msg=msg.copy(false, i == 0);
 
-                frag_msg.setBuffer(buffer, offset, tmp_size).putHeader(this.id, hdr);
+                frag_msg.setArray(buffer, offset, tmp_size).putHeader(this.id, hdr);
                 down_prot.down(frag_msg);
                 offset+=tmp_size;
                 i++;
@@ -355,7 +355,7 @@ public class FRAG3 extends Protocol {
                     // if not yet added: copy the fragment's buffer into msg.buffer at the correct offset
                     int frag_length=frag_msg.getLength();
                     int offset=hdr.offset;
-                    System.arraycopy(frag_msg.getRawBuffer(), frag_msg.getOffset(), buffer, offset, frag_length);
+                    System.arraycopy(frag_msg.getArray(), frag_msg.getOffset(), buffer, offset, frag_length);
                     if(isComplete())
                         return assembleMessage();
                 }
@@ -377,7 +377,7 @@ public class FRAG3 extends Protocol {
          */
         protected Message assembleMessage() {
             return needs_deserialization? Util.messageFromBuffer(buffer, 0, buffer.length, msg_factory)
-              : msg.setBuffer(buffer, 0, buffer.length);
+              : msg.setArray(buffer, 0, buffer.length);
         }
 
         public String toString() {

@@ -233,7 +233,7 @@ public class FRAG2 extends Protocol {
         try {
             boolean serialize=!msg.hasArray();
             ByteArray tmp=null;
-            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
+            byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getArray();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             int length=serialize? tmp.getLength() : msg.getLength();
             final List<Range> fragments=Util.computeFragOffsets(offset, length, frag_size);
@@ -256,7 +256,7 @@ public class FRAG2 extends Protocol {
                 else
                     frag_msg=msg.copy(false, i == 0);
 
-                frag_msg.setBuffer(buffer, (int)r.low, (int)r.high);
+                frag_msg.setArray(buffer, (int)r.low, (int)r.high);
                 FragHeader hdr=new FragHeader(frag_id, i, num_frags).needsDeserialization(serialize);
                 frag_msg.putHeader(this.id, hdr);
                 down_prot.down(frag_msg);
@@ -392,7 +392,7 @@ public class FRAG2 extends Protocol {
             for(int i=0; i < fragments.length; i++) {
                 Message fragment=fragments[i];
                 fragments[i]=null; // help garbage collection a bit
-                byte[] tmp=fragment.getRawBuffer();
+                byte[] tmp=fragment.getArray();
                 int length=fragment.getLength(), offset=fragment.getOffset();
                 System.arraycopy(tmp, offset, combined_buffer, index, length);
                 index+=length;
@@ -400,7 +400,7 @@ public class FRAG2 extends Protocol {
             if(needs_deserialization)
                 retval=Util.messageFromBuffer(combined_buffer, 0, combined_buffer.length, msg_factory);
             else
-                retval.setBuffer(combined_buffer, 0, combined_buffer.length);
+                retval.setArray(combined_buffer, 0, combined_buffer.length);
             return retval;
         }
 

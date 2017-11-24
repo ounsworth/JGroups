@@ -246,7 +246,7 @@ public class AUTH extends Protocol {
 
         JoinRsp joinRes=new JoinRsp(error_msg); // specify the error message on the JoinRsp
         Message msg = new BytesMessage(dest).putHeader(GMS_ID, new GMS.GmsHeader(GMS.GmsHeader.JOIN_RSP))
-          .setBuffer(GMS.marshal(joinRes));
+          .setArray(GMS.marshal(joinRes));
         if(this.authenticate_coord)
             msg.putHeader(this.id, new AuthHeader(this.auth_token));
         down_prot.down(msg);

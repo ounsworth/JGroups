@@ -612,7 +612,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
 
             case NakAckHeader2.XMIT_REQ:
                 try {
-                    SeqnoList missing=Util.streamableFromBuffer(SeqnoList.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    SeqnoList missing=Util.streamableFromBuffer(SeqnoList.class, msg.getArray(), msg.getOffset(), msg.getLength());
                     if(missing != null)
                         handleXmitReq(msg.getSrc(), missing, hdr.sender);
                 }
@@ -660,7 +660,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
                     break;
                 case NakAckHeader2.XMIT_REQ:
                     try {
-                        SeqnoList missing=Util.streamableFromBuffer(SeqnoList.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                        SeqnoList missing=Util.streamableFromBuffer(SeqnoList.class, msg.getArray(), msg.getOffset(), msg.getLength());
                         if(missing != null)
                             handleXmitReq(msg.getSrc(), missing, hdr.sender);
                     }
@@ -1421,7 +1421,7 @@ public class NAKACK2 extends Protocol implements DiagnosticsHandler.ProbeHandler
                 dest=random_member;
         }
 
-        Message retransmit_msg=new BytesMessage(dest).setBuffer(Util.streamableToBuffer(missing_msgs))
+        Message retransmit_msg=new BytesMessage(dest).setArray(Util.streamableToBuffer(missing_msgs))
           .setFlag(Message.Flag.OOB, Message.Flag.INTERNAL)
           .putHeader(this.id, NakAckHeader2.createXmitRequestHeader(sender));
 

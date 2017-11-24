@@ -183,14 +183,14 @@ public class STOMP extends Protocol implements Runnable {
             if(forward_non_client_generated_msgs) {
                 HashMap<String, String> hdrs=new HashMap<>();
                 hdrs.put("sender", msg.getSrc().toString());
-                sendToClients(hdrs, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                sendToClients(hdrs, msg.getArray(), msg.getOffset(), msg.getLength());
             }
             return up_prot.up(msg);
         }
 
         switch(hdr.type) {
             case MESSAGE:
-                sendToClients(hdr.headers, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                sendToClients(hdr.headers, msg.getArray(), msg.getOffset(), msg.getLength());
                 break;
             case ENDPOINT:
                 String tmp_endpoint=hdr.headers.get("endpoint");

@@ -75,13 +75,13 @@ public abstract class BaseMessage implements Message {
     */
     public BaseMessage(Address dest, byte[] buf, int offset, int length) {
         this(dest);
-        setBuffer(buf, offset, length);
+        setArray(buf, offset, length);
     }
 
 
     public BaseMessage(Address dest, ByteArray buf) {
         this(dest);
-        setBuffer(buf);
+        setArray(buf);
     }
 
 

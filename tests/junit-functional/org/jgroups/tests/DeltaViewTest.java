@@ -131,7 +131,7 @@ public class DeltaViewTest {
             int count=1;
             for(Message msg: join_rsps) {
                 try {
-                    JoinRsp join_rsp=Util.streamableFromBuffer(JoinRsp.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    JoinRsp join_rsp=Util.streamableFromBuffer(JoinRsp.class, msg.getArray(), msg.getOffset(), msg.getLength());
                     System.out.printf("join-rsp #%d to %s: %s\n", count++, msg.getDest(), join_rsp.getView());
                 }
                 catch(Throwable t) {
@@ -143,7 +143,7 @@ public class DeltaViewTest {
             count=1;
             for(Message msg: views) {
                 try {
-                    Tuple<View,Digest> tuple=GMS._readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    Tuple<View,Digest> tuple=GMS._readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                     System.out.printf("view #%d: %s\n", count++, tuple.getVal1());
                 }
                 catch(Throwable t) {
@@ -161,7 +161,7 @@ public class DeltaViewTest {
             join_rsp_msg=join_rsps.remove(0);
             JoinRsp join_rsp=null;
             try {
-                join_rsp=Util.streamableFromBuffer(JoinRsp.class, join_rsp_msg.getRawBuffer(), join_rsp_msg.getOffset(), join_rsp_msg.getLength());
+                join_rsp=Util.streamableFromBuffer(JoinRsp.class, join_rsp_msg.getArray(), join_rsp_msg.getOffset(), join_rsp_msg.getLength());
             }
             catch(Exception e) {
                 throw new RuntimeException(e);

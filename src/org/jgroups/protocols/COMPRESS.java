@@ -77,7 +77,7 @@ public class COMPRESS extends Protocol {
         if(length >= min_size) {
             boolean serialize=!msg.hasArray();
             ByteArray tmp=null;
-            byte[] payload=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getRawBuffer();
+            byte[] payload=serialize? (tmp=Util.messageToBuffer(msg)).getArray() : msg.getArray();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             length=serialize? tmp.getLength() : msg.getLength();
 
@@ -97,7 +97,7 @@ public class COMPRESS extends Protocol {
                         copy=new BytesMessage(msg.getDest());
                     else
                         copy=msg.copy(false, true);
-                    copy.setBuffer(compressed_payload, 0, compressed_size)
+                    copy.setArray(compressed_payload, 0, compressed_size)
                       .putHeader(this.id, new CompressHeader(length).needsDeserialization(serialize));
                     if(log.isTraceEnabled())
                         log.trace("compressed payload from %d bytes to %d bytes", length, compressed_size);
@@ -156,7 +156,7 @@ public class COMPRESS extends Protocol {
 
     /** Returns a new message as a result of uncompressing msg, or null if msg couldn't be uncompressed */
     protected Message uncompress(Message msg, int original_size, boolean needs_deserialization) {
-        byte[] compressed_payload=msg.getRawBuffer();
+        byte[] compressed_payload=msg.getArray();
         if(compressed_payload != null && compressed_payload.length > 0) {
             byte[] uncompressed_payload=new byte[original_size];
             Inflater inflater=null;
@@ -171,7 +171,7 @@ public class COMPRESS extends Protocol {
                         return Util.messageFromBuffer(uncompressed_payload, 0, uncompressed_payload.length, msg_factory);
                     }
                     else
-                        return msg.copy(false, true).setBuffer(uncompressed_payload, 0, uncompressed_payload.length);
+                        return msg.copy(false, true).setArray(uncompressed_payload, 0, uncompressed_payload.length);
                 }
                 catch(DataFormatException e) {
                     log.error(Util.getMessage("CompressionFailure"), e);

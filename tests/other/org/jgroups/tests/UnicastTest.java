@@ -288,7 +288,7 @@ public class UnicastTest {
 
 
         public void receive(Message msg) {
-            byte[] buf=msg.getRawBuffer();
+            byte[] buf=msg.getArray();
             byte   type=buf[msg.getOffset()];
 
             switch(type) {

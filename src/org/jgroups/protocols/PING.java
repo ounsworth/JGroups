@@ -57,7 +57,7 @@ public class PING extends Discovery {
           .setFlag(Message.Flag.INTERNAL, Message.Flag.DONT_BUNDLE, Message.Flag.OOB)
           .setFlag(Message.TransientFlag.DONT_LOOPBACK);
         if(data != null)
-            msg.setBuffer(marshal(data));
+            msg.setArray(marshal(data));
         sendMcastDiscoveryRequest(msg);
     }
 

@@ -208,7 +208,7 @@ public abstract class StreamingStateTransfer extends Protocol implements Process
                     handleStateRsp(sender, hdr);
                     break;
                 case StateHeader.STATE_PART:
-                    handleStateChunk(sender, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    handleStateChunk(sender, msg.getArray(), msg.getOffset(), msg.getLength());
                     break;
                 case StateHeader.STATE_EOF:
                     log.trace("%s <-- EOF <-- %s", local_addr, sender);
@@ -216,7 +216,7 @@ public abstract class StreamingStateTransfer extends Protocol implements Process
                     break;
                 case StateHeader.STATE_EX:
                     try {
-                        handleException(Util.exceptionFromBuffer(msg.getRawBuffer(), msg.getOffset(), msg.getLength()));
+                        handleException(Util.exceptionFromBuffer(msg.getArray(), msg.getOffset(), msg.getLength()));
                     }
                     catch(Throwable t) {
                         log.error("failed deserializaing state exception", t);
@@ -338,7 +338,7 @@ public abstract class StreamingStateTransfer extends Protocol implements Process
 
     protected void sendException(Address requester, Throwable exception) {
         try {
-            Message ex_msg=new BytesMessage(requester).setBuffer(Util.exceptionToBuffer(exception))
+            Message ex_msg=new BytesMessage(requester).setArray(Util.exceptionToBuffer(exception))
               .putHeader(getId(), new StateHeader(StateHeader.STATE_EX));
             down(ex_msg);
         }

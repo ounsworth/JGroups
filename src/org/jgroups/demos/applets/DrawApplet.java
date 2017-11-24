@@ -74,7 +74,7 @@ public class DrawApplet extends Applet implements MouseMotionListener, ActionLis
                         return;
                     }
 
-                    instream=new DataInputStream(new ByteArrayInputStream(msg.getRawBuffer(), msg.getOffset(), msg.getLength()));
+                    instream=new DataInputStream(new ByteArrayInputStream(msg.getArray(), msg.getOffset(), msg.getLength()));
                     int r=0;
                     try {
                         r=instream.readInt();

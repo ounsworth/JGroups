@@ -245,11 +245,11 @@ public class RELAY extends Protocol {
 
             case FORWARD:
                 if(is_coord)
-                    forward(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    forward(msg.getArray(), msg.getOffset(), msg.getLength());
                 break;
 
             case VIEW:
-                return installView(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                return installView(msg.getArray(), msg.getOffset(), msg.getLength());
 
             case BROADCAST_VIEW:
                 break;
@@ -532,11 +532,11 @@ public class RELAY extends Protocol {
                 case DISSEMINATE: // should not occur here, but we'll ignore it anyway
                     break;
                 case FORWARD:
-                    sendOnLocalCluster(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    sendOnLocalCluster(msg.getArray(), msg.getOffset(), msg.getLength());
                     break;
                 case VIEW:
                     try {
-                        ViewData data=Util.streamableFromByteBuffer(ViewData.class, msg.getRawBuffer(),
+                        ViewData data=Util.streamableFromByteBuffer(ViewData.class, msg.getArray(),
                                                                     msg.getOffset(), msg.getLength());
                         // replace addrs with proxies
                         if(data.remote_view != null) {

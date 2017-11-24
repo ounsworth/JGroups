@@ -233,7 +233,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
         switch(hdr.getType()) {
             case GMS.GmsHeader.JOIN_RSP:
                 try {
-                    JoinRsp join_rsp=Util.streamableFromBuffer(JoinRsp.class, msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    JoinRsp join_rsp=Util.streamableFromBuffer(JoinRsp.class, msg.getArray(), msg.getOffset(), msg.getLength());
                     View new_view=join_rsp != null? join_rsp.getView() : null;
                     return new_view != null? new_view.getCoord() : null;
                 }
@@ -243,7 +243,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
                 break;
             case GMS.GmsHeader.INSTALL_MERGE_VIEW:
                 try {
-                    Tuple<View,Digest> tuple=GMS._readViewAndDigest(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+                    Tuple<View,Digest> tuple=GMS._readViewAndDigest(msg.getArray(), msg.getOffset(), msg.getLength());
                     View new_view=tuple != null? tuple.getVal1() : null;
                     return new_view != null? new_view.getCoord() : null;
                 }
@@ -331,7 +331,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
             return;
         log.debug("%s: received secret key request from %s", local_addr, msg.getSrc());
         try {
-            PublicKey tmpKey=generatePubKey(msg.getRawBuffer());
+            PublicKey tmpKey=generatePubKey(msg.getArray());
             sendSecretKey(secret_key, tmpKey, msg.getSrc());
         }
         catch(Exception e) {
@@ -351,7 +351,7 @@ public class ASYM_ENCRYPT extends Encrypt<KeyStore.PrivateKeyEntry> {
             return;
         }
         try {
-            SecretKey tmp=decodeKey(msg.getRawBuffer(), msg.getOffset(), msg.getLength());
+            SecretKey tmp=decodeKey(msg.getArray(), msg.getOffset(), msg.getLength());
             if(tmp == null)
                 sendKeyRequest(key_server_addr); // unable to understand response, let's try again
             else {

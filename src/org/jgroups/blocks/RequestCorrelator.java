@@ -360,7 +360,7 @@ public class RequestCorrelator {
             case Header.EXC_RSP:
                 Request req=requests.get(hdr.req_id);
                 if(req != null)
-                    handleResponse(req, msg.getSrc(), msg.getRawBuffer(), msg.getOffset(), msg.getLength(), hdr.type == Header.EXC_RSP);
+                    handleResponse(req, msg.getSrc(), msg.getArray(), msg.getOffset(), msg.getLength(), hdr.type == Header.EXC_RSP);
                 break;
 
             default:
@@ -435,7 +435,7 @@ public class RequestCorrelator {
                 return;
             }
         }
-        Message rsp=makeReply(req).setFlag(req.getFlags(false), false).setBuffer(rsp_buf)
+        Message rsp=makeReply(req).setFlag(req.getFlags(false), false).setArray(rsp_buf)
           .clearFlag(Message.Flag.RSVP, Message.Flag.INTERNAL); // JGRP-1940
         sendResponse(rsp, req_id, is_exception);
     }
