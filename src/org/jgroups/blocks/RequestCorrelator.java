@@ -118,7 +118,7 @@ public class RequestCorrelator {
      * @param req A request (usually the object that invokes this method). Its methods {@code receiveResponse()} and
      *            {@code suspect()} will be invoked when a message has been received or a member is suspected.
      */
-    public void sendRequest(Collection<Address> dest_mbrs, Buffer data, Request req, RequestOptions opts) throws Exception {
+    public void sendRequest(Collection<Address> dest_mbrs, ByteArray data, Request req, RequestOptions opts) throws Exception {
         if(transport == null) {
             log.warn("transport is not available !");
             return;
@@ -171,7 +171,7 @@ public class RequestCorrelator {
     }
 
     /** Sends a request to a single destination */
-    public void sendUnicastRequest(Address dest, Buffer data, Request req, RequestOptions opts) throws Exception {
+    public void sendUnicastRequest(Address dest, ByteArray data, Request req, RequestOptions opts) throws Exception {
         if(transport == null) {
             if(log.isWarnEnabled()) log.warn("transport is not available !");
             return;
@@ -417,7 +417,7 @@ public class RequestCorrelator {
 
 
     protected void sendReply(final Message req, final long req_id, Object reply, boolean is_exception) {
-        Buffer rsp_buf;
+        ByteArray rsp_buf;
         try {  // retval could be an exception, or a real value
             rsp_buf=replyToBuffer(reply, marshaller);
         }
@@ -455,7 +455,7 @@ public class RequestCorrelator {
         transport.down(rsp);
     }
 
-    protected static Buffer replyToBuffer(Object obj, Marshaller marshaller) throws Exception {
+    protected static ByteArray replyToBuffer(Object obj, Marshaller marshaller) throws Exception {
         int estimated_size=marshaller != null? marshaller.estimatedSize(obj) : 50;
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(estimated_size, true);
         if(marshaller != null)

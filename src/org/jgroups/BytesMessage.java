@@ -2,7 +2,7 @@
 package org.jgroups;
 
 
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.Headers;
 import org.jgroups.util.Util;
 
@@ -80,7 +80,7 @@ public class BytesMessage extends BaseMessage {
     }
 
 
-    public BytesMessage(Address dest, Buffer buf) {
+    public BytesMessage(Address dest, ByteArray buf) {
         this(dest);
         setBuffer(buf);
     }
@@ -162,7 +162,7 @@ public class BytesMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public <T extends Message> T setBuffer(Buffer buf) {
+    public <T extends Message> T setBuffer(ByteArray buf) {
         if(buf != null) {
             this.buf=buf.getBuf();
             this.offset=buf.getOffset();
@@ -182,8 +182,8 @@ public class BytesMessage extends BaseMessage {
         if(obj == null) return (T)this;
         if(obj instanceof byte[])
             return setBuffer((byte[])obj, 0, ((byte[])obj).length);
-        if(obj instanceof Buffer)
-            return setBuffer((Buffer)obj);
+        if(obj instanceof ByteArray)
+            return setBuffer((ByteArray)obj);
         try {
             byte[] tmp=Util.objectToByteBuffer(obj);
             return setBuffer(tmp, 0, tmp.length);

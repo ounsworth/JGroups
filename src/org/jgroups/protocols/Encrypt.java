@@ -344,7 +344,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
             if(msg.getSrc() == null)
                 msg.setSrc(local_addr);
 
-            Buffer serialized_msg=Util.messageToBuffer(msg);
+            ByteArray serialized_msg=Util.messageToBuffer(msg);
             byte[] encrypted_msg=code(serialized_msg.getBuf(),serialized_msg.getOffset(),serialized_msg.getLength(),false);
 
             if(sign_msgs) {
@@ -362,7 +362,7 @@ public abstract class Encrypt<E extends KeyStore.Entry> extends Protocol {
         }
 
         boolean serialize=!msg.hasArray();
-        Buffer tmp=null;
+        ByteArray tmp=null;
         byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
         int offset=serialize? tmp.getOffset() : msg.getOffset();
         int length=serialize? tmp.getLength() : msg.getLength();

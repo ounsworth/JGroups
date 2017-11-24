@@ -123,7 +123,7 @@ public class RpcDispatcherSerializationTest extends ChannelTestBase {
             }
             else {
                 out.writeByte(OBJ);
-                Buffer buf=Util.objectToBuffer(obj);
+                ByteArray buf=Util.objectToBuffer(obj);
                 out.write(buf.getBuf(), buf.getOffset(), buf.getLength());
             }
         }

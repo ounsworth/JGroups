@@ -6,7 +6,7 @@ import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.ManagedAttribute;
 import org.jgroups.annotations.Property;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.MessageBatch;
 import org.jgroups.util.Util;
 
@@ -196,7 +196,7 @@ public class FRAG extends Protocol {
 
         try {
             // write message into a byte buffer and fragment it
-            Buffer tmp=Util.messageToBuffer(msg);
+            ByteArray tmp=Util.messageToBuffer(msg);
             byte[] buffer=tmp.getBuf();
             byte[][] fragments=Util.fragmentBuffer(buffer, frag_size, tmp.getLength());
             num_frags=fragments.length;

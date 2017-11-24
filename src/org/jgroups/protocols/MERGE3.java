@@ -308,7 +308,7 @@ public class MERGE3 extends Protocol {
         return ret;
     }
 
-    public static Buffer marshal(View view) {
+    public static ByteArray marshal(View view) {
         return Util.streamableToBuffer(view);
     }
 

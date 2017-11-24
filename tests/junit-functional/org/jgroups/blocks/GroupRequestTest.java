@@ -4,7 +4,7 @@ package org.jgroups.blocks;
 import org.jgroups.*;
 import org.jgroups.protocols.relay.SiteUUID;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.RspList;
 import org.jgroups.util.UUID;
 import org.jgroups.util.Util;
@@ -95,7 +95,7 @@ public class GroupRequestTest {
         corr.setGroupRequest(req);
 
         System.out.println("group request is " + req);
-        RspList<Long> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Long> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         assert req.isDone();
         Assert.assertEquals(3, results.size());
         Assert.assertEquals(1, results.numReceived());
@@ -127,7 +127,7 @@ public class GroupRequestTest {
         });
         corr.setGroupRequest(req);
         System.out.println("group request is " + req);
-        RspList<Long> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Long> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         assert req.isDone();
         Assert.assertEquals(3, results.size());
         Assert.assertEquals(2, results.numReceived());
@@ -223,7 +223,7 @@ public class GroupRequestTest {
         GroupRequest<Integer> req=new GroupRequest<>(corr, Arrays.asList(a, b, c), RequestOptions.SYNC());
         corr.setGroupRequest(req);
         req.cancel(true);
-        RspList<Integer> rsps=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Integer> rsps=req.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("rsps:\n" + rsps);
         assert rsps.size() == 3;
         long num_not_received=rsps.values().stream().filter(rsp -> !rsp.wasReceived()).count();
@@ -234,7 +234,7 @@ public class GroupRequestTest {
         final GroupRequest<Integer> req2=new GroupRequest<>(corr, Arrays.asList(a, b, c), RequestOptions.SYNC());
         corr.setGroupRequest(req2);
         new Thread(() -> {Util.sleep(1000); req2.cancel(true);}).start();
-        rsps=req2.execute(new Buffer(buf, 0, buf.length), true);
+        rsps=req2.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("rsps:\n" + rsps);
         assert rsps.size() == 3;
         num_not_received=rsps.values().stream().filter(rsp -> !rsp.wasReceived()).count();
@@ -298,7 +298,7 @@ public class GroupRequestTest {
         // instantiate request with dummy correlator
         GroupRequest<Long> req=new GroupRequest<>(corr, dests, new RequestOptions(ResponseMode.GET_ALL, timeout));
         corr.setGroupRequest(req);
-        RspList<Long> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Long> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("group request is " + req);
         assert req.isDone();
         Assert.assertEquals(dests.size(), results.size());
@@ -311,7 +311,7 @@ public class GroupRequestTest {
         MyCorrelator corr=new MyCorrelator(async, responses, 0);
         GroupRequest<Object> req=new GroupRequest<>(corr, dests, new RequestOptions(ResponseMode.GET_ALL, 0));
         corr.setGroupRequest(req);
-        RspList<Object> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Object> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("group request is " + req);
         assert req.isDone();
         Assert.assertEquals(2, results.size());
@@ -330,7 +330,7 @@ public class GroupRequestTest {
         MyCorrelator corr=new MyCorrelator(async, responses, 0);
         GroupRequest<Long> req=new GroupRequest<>(corr, dests, new RequestOptions(ResponseMode.GET_ALL, 0));
         corr.setGroupRequest(req);
-        RspList<Long> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Long> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("group request is " + req);
         assert req.isDone();
         Assert.assertEquals(2, results.size());
@@ -347,7 +347,7 @@ public class GroupRequestTest {
 
         corr.setGroupRequest(req);
         System.out.println("group request before execution: " + req);
-        RspList<Object> results=req.execute(new Buffer(buf, 0, buf.length), true);
+        RspList<Object> results=req.execute(new ByteArray(buf, 0, buf.length), true);
         System.out.println("group request after execution: " + req);
         assert req.isDone();
         Assert.assertEquals(2, results.size());
@@ -379,7 +379,7 @@ public class GroupRequestTest {
         }
 
         @Override
-        public void sendRequest(Collection<Address> dest_mbrs, Buffer data, Request req, RequestOptions opts) throws Exception {
+        public void sendRequest(Collection<Address> dest_mbrs, ByteArray data, Request req, RequestOptions opts) throws Exception {
             send();
         }
 

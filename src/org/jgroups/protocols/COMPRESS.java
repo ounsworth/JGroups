@@ -4,7 +4,7 @@ import org.jgroups.*;
 import org.jgroups.annotations.MBean;
 import org.jgroups.annotations.Property;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.MessageBatch;
 import org.jgroups.util.Util;
 
@@ -76,7 +76,7 @@ public class COMPRESS extends Protocol {
         int length=msg.getLength(); // takes offset/length (if set) into account
         if(length >= min_size) {
             boolean serialize=!msg.hasArray();
-            Buffer tmp=null;
+            ByteArray tmp=null;
             byte[] payload=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             length=serialize? tmp.getLength() : msg.getLength();

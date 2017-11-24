@@ -6,7 +6,7 @@ import org.jgroups.conf.ClassConfigurator;
 import org.jgroups.protocols.pbcast.*;
 import org.jgroups.stack.Protocol;
 import org.jgroups.stack.ProtocolStack;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.ByteArrayDataOutputStream;
 import org.jgroups.util.Util;
 import org.testng.annotations.AfterMethod;
@@ -352,7 +352,7 @@ public class ASYM_ENCRYPT_Test extends EncryptTest {
     }
 
 
-    protected static Buffer marshalView(final View view) throws Exception {
+    protected static ByteArray marshalView(final View view) throws Exception {
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(Global.SHORT_SIZE + view.serializedSize());
         out.writeShort(determineFlags(view));
         view.writeTo(out);

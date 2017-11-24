@@ -929,7 +929,7 @@ public class FLUSH extends Protocol {
         }
     }
 
-    protected static Buffer marshal(final Collection<? extends Address> participants, final Digest digest) {
+    protected static ByteArray marshal(final Collection<? extends Address> participants, final Digest digest) {
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(512);
         try {
             Util.writeAddresses(participants, out);

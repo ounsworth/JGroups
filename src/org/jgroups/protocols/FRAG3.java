@@ -223,7 +223,7 @@ public class FRAG3 extends Protocol {
     protected void fragment(final Message msg) {
         try {
             boolean serialize=!msg.hasArray();
-            Buffer tmp=null;
+            ByteArray tmp=null;
             byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
             int msg_offset=serialize? tmp.getOffset() : msg.getOffset();
             int offset=serialize? tmp.getOffset() : msg.getOffset();

@@ -608,7 +608,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         if(jr == null || joiners == null || joiners.isEmpty())
             return;
 
-        Buffer marshalled_jr=marshal(jr);
+        ByteArray marshalled_jr=marshal(jr);
         for(Address joiner: joiners) {
             log.trace("%s: sending join-rsp to %s: view=%s (%d mbrs)", local_addr, joiner, jr.getView(), jr.getView().size());
             sendJoinResponse(marshalled_jr, joiner);
@@ -621,7 +621,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         getDownProtocol().down(m);
     }
 
-    protected void sendJoinResponse(Buffer marshalled_rsp, Address dest) {
+    protected void sendJoinResponse(ByteArray marshalled_rsp, Address dest) {
         Message m=new BytesMessage(dest, marshalled_rsp).putHeader(this.id, new GmsHeader(GmsHeader.JOIN_RSP))
           .setFlag(OOB, INTERNAL);
         getDownProtocol().down(m);
@@ -1162,7 +1162,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         return retval;
     }
 
-    protected static Buffer marshal(final View view, final Digest digest) {
+    protected static ByteArray marshal(final View view, final Digest digest) {
         try {
             int expected_size=Global.SHORT_SIZE;
             if(view != null)
@@ -1185,11 +1185,11 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         }
     }
 
-    public static Buffer marshal(JoinRsp join_rsp) {
+    public static ByteArray marshal(JoinRsp join_rsp) {
         return Util.streamableToBuffer(join_rsp);
     }
 
-    protected static Buffer marshal(Collection<? extends Address> mbrs) {
+    protected static ByteArray marshal(Collection<? extends Address> mbrs) {
         try {
             final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream((int)Util.size(mbrs));
             Util.writeAddresses(mbrs, out);
@@ -1200,7 +1200,7 @@ public class GMS extends Protocol implements DiagnosticsHandler.ProbeHandler {
         }
     }
 
-    protected static Buffer marshal(final ViewId view_id) {
+    protected static ByteArray marshal(final ViewId view_id) {
         try {
             final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(Util.size(view_id));
             Util.writeViewId(view_id, out);

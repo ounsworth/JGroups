@@ -5,7 +5,7 @@ import org.jgroups.*;
 import org.jgroups.protocols.TpHeader;
 import org.jgroups.protocols.UnicastHeader3;
 import org.jgroups.protocols.pbcast.NakAckHeader2;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.ByteArrayDataOutputStream;
 import org.jgroups.util.Util;
 import org.testng.annotations.Test;
@@ -38,7 +38,7 @@ public class MessageSizeTest {
     public static void testMulticast() throws Exception {
         Address src=Util.createRandomAddress();
         Message msg=createMessage(null, src);
-        Buffer buf=marshal(msg);
+        ByteArray buf=marshal(msg);
         System.out.println("buf = " + buf);
 
         int len=buf.getLength();
@@ -62,7 +62,7 @@ public class MessageSizeTest {
         Address dest=Util.createRandomAddress();
         Address src=Util.createRandomAddress();
         Message msg=createMessage(dest, src);
-        Buffer buf=marshal(msg);
+        ByteArray buf=marshal(msg);
         System.out.println("buf = " + buf);
 
         int len=buf.getLength();
@@ -84,7 +84,7 @@ public class MessageSizeTest {
         return 100.0* (1.0 - (new_length / (double)old_length));
     }
 
-    private static Buffer marshal(Message msg) throws Exception {
+    private static ByteArray marshal(Message msg) throws Exception {
         ByteArrayDataOutputStream dos=new ByteArrayDataOutputStream(msg.size() + 50);
         Address dest=msg.getDest();
         boolean multicast=dest == null;

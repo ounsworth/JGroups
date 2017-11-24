@@ -136,7 +136,7 @@ public class UnicastTestTcpSlow {
             flags+=(byte)2;
         dos.writeByte(flags);
         msg.writeTo(dos);
-        Buffer buffer=dos.getBuffer();
+        ByteArray buffer=dos.getBuffer();
 
         output_lock.lock(); // need to sync if we have more than 1 sender
         try {
@@ -316,7 +316,7 @@ public class UnicastTestTcpSlow {
                     if(i > 0 && do_print > 0 && i % do_print == 0)
                         System.out.println("-- sent " + i);
 
-                    Buffer buffer=writeMessage(msg);
+                    ByteArray buffer=writeMessage(msg);
 
                     output_lock.lock(); // need to sync if we have more than 1 sender
                     try {
@@ -335,7 +335,7 @@ public class UnicastTestTcpSlow {
             }
         }
 
-        protected Buffer writeMessage(final Message msg) throws Exception {
+        protected ByteArray writeMessage(final Message msg) throws Exception {
             dos.position(0);
             byte flags=0;
             dos.writeShort(Version.version); // write the version
@@ -343,7 +343,7 @@ public class UnicastTestTcpSlow {
                 flags+=(byte)2;
             dos.writeByte(flags);
             msg.writeTo(dos);
-            return new Buffer(dos.buffer(), 0, dos.position());
+            return new ByteArray(dos.buffer(), 0, dos.position());
         }
     }
 

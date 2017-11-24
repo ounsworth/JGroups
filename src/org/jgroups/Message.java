@@ -1,6 +1,6 @@
 package org.jgroups;
 
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.Streamable;
 
 import java.io.DataOutput;
@@ -114,7 +114,7 @@ public interface Message extends Streamable, Constructable<Message> {
 
     <T extends Message> T       setBuffer(byte[] b, int offset, int length);
 
-    <T extends Message> T       setBuffer(Buffer buf);
+    <T extends Message> T       setBuffer(ByteArray buf);
 
     /**
      * Convenience method to get an object from the payload. If the payload is a byte[] array (e.g. as in

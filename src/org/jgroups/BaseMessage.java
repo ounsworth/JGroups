@@ -3,7 +3,7 @@ package org.jgroups;
 
 
 import org.jgroups.conf.ClassConfigurator;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.Headers;
 import org.jgroups.util.Util;
 
@@ -79,7 +79,7 @@ public abstract class BaseMessage implements Message {
     }
 
 
-    public BaseMessage(Address dest, Buffer buf) {
+    public BaseMessage(Address dest, ByteArray buf) {
         this(dest);
         setBuffer(buf);
     }

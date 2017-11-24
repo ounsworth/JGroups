@@ -686,7 +686,7 @@ public class STABLE extends Protocol {
     }
 
 
-    public static Buffer marshal(Digest digest) {
+    public static ByteArray marshal(Digest digest) {
         return Util.streamableToBuffer(digest);
     }
 

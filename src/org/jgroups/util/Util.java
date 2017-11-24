@@ -614,9 +614,9 @@ public class Util {
     }
 
 
-    public static Buffer objectToBuffer(Object obj) throws Exception {
+    public static ByteArray objectToBuffer(Object obj) throws Exception {
         if(obj == null)
-            return new Buffer(TYPE_NULL_ARRAY);
+            return new ByteArray(TYPE_NULL_ARRAY);
 
         if(obj instanceof Throwable) {
             ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(512, true);
@@ -643,7 +643,7 @@ public class Util {
                 return out_stream.getBuffer();
             }
         }
-        return new Buffer(marshalPrimitiveType(type, obj));
+        return new ByteArray(marshalPrimitiveType(type, obj));
     }
 
 
@@ -874,7 +874,7 @@ public class Util {
         writeException(causes, t, out);
     }
 
-    public static Buffer exceptionToBuffer(Throwable t) throws Exception {
+    public static ByteArray exceptionToBuffer(Throwable t) throws Exception {
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(512, true);
         exceptionToStream(t, out);
         return out.getBuffer();
@@ -1029,7 +1029,7 @@ public class Util {
         return Arrays.copyOf(out.buffer(), out.position());
     }
 
-    public static Buffer streamableToBuffer(Streamable obj) {
+    public static ByteArray streamableToBuffer(Streamable obj) {
         int expected_size=obj instanceof SizeStreamable? ((SizeStreamable)obj).serializedSize() +1 : 512;
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(expected_size);
         try {
@@ -1041,7 +1041,7 @@ public class Util {
         }
     }
 
-    public static Buffer messageToBuffer(Message msg) {
+    public static ByteArray messageToBuffer(Message msg) {
         int expected_size=msg.size() +1;
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(expected_size);
         try {
@@ -1857,7 +1857,7 @@ public class Util {
     }
 
 
-    public static Buffer messageToByteBuffer(Message msg) throws Exception {
+    public static ByteArray messageToByteBuffer(Message msg) throws Exception {
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(msg.size() +1);
 
         out.writeBoolean(msg != null);

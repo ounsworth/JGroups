@@ -762,7 +762,7 @@ public class FD_SOCK extends Protocol implements Runnable {
         return Objects.equals(local_addr, next) ? null : next;
     }
 
-    public static Buffer marshal(LazyRemovalCache<Address,IpAddress> addrs) {
+    public static ByteArray marshal(LazyRemovalCache<Address,IpAddress> addrs) {
         final ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(512);
         try {
             int size=addrs != null? addrs.size() : 0;

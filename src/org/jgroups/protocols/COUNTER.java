@@ -433,7 +433,7 @@ public class COUNTER extends Protocol {
 
     protected void sendRequest(Address dest, Request req) {
         try {
-            Buffer buffer=requestToBuffer(req);
+            ByteArray buffer=requestToBuffer(req);
             Message msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
                 msg.setFlag(Message.Flag.DONT_BUNDLE);
@@ -450,7 +450,7 @@ public class COUNTER extends Protocol {
 
     protected void sendResponse(Address dest, Response rsp) {
         try {
-            Buffer buffer=responseToBuffer(rsp);
+            ByteArray buffer=responseToBuffer(rsp);
             Message rsp_msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
                 rsp_msg.setFlag(Message.Flag.DONT_BUNDLE);
@@ -468,7 +468,7 @@ public class COUNTER extends Protocol {
     protected void updateBackups(String name, long value, long version) {
         Request req=new UpdateRequest(name, value, version);
         try {
-            Buffer buffer=requestToBuffer(req);
+            ByteArray buffer=requestToBuffer(req);
             if(backup_coords != null && !backup_coords.isEmpty()) {
                 for(Address backup_coord: backup_coords)
                     send(backup_coord, buffer);
@@ -479,7 +479,7 @@ public class COUNTER extends Protocol {
         }
     }
 
-    protected void send(Address dest, Buffer buffer) {
+    protected void send(Address dest, ByteArray buffer) {
         try {
             Message rsp_msg=new BytesMessage(dest, buffer).putHeader(id, new CounterHeader());
             if(bypass_bundling)
@@ -497,21 +497,21 @@ public class COUNTER extends Protocol {
     }
 
 
-    protected static Buffer requestToBuffer(Request req) throws Exception {
+    protected static ByteArray requestToBuffer(Request req) throws Exception {
         return streamableToBuffer(REQUEST,(byte)requestToRequestType(req).ordinal(), req);
     }
 
-    protected static Buffer responseToBuffer(Response rsp) throws Exception {
+    protected static ByteArray responseToBuffer(Response rsp) throws Exception {
         return streamableToBuffer(RESPONSE,(byte)responseToResponseType(rsp).ordinal(), rsp);
     }
 
-    protected static Buffer streamableToBuffer(byte req_or_rsp, byte type, Streamable obj) throws Exception {
+    protected static ByteArray streamableToBuffer(byte req_or_rsp, byte type, Streamable obj) throws Exception {
         int expected_size=obj instanceof SizeStreamable? ((SizeStreamable)obj).serializedSize() : 100;
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(expected_size);
         out.writeByte(req_or_rsp);
         out.writeByte(type);
         obj.writeTo(out);
-        return new Buffer(out.buffer(), 0, out.position());
+        return new ByteArray(out.buffer(), 0, out.position());
     }
 
     protected static Streamable streamableFromBuffer(byte[] buf, int offset, int length) throws Exception {

@@ -232,7 +232,7 @@ public class FRAG2 extends Protocol {
     protected void fragment(Message msg) {
         try {
             boolean serialize=!msg.hasArray();
-            Buffer tmp=null;
+            ByteArray tmp=null;
             byte[] buffer=serialize? (tmp=Util.messageToBuffer(msg)).getBuf() : msg.getRawBuffer();
             int offset=serialize? tmp.getOffset() : msg.getOffset();
             int length=serialize? tmp.getLength() : msg.getLength();

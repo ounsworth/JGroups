@@ -531,7 +531,7 @@ public abstract class Discovery extends Protocol {
         return (PingData)Util.streamableFromByteBuffer(PingData.class, data);
     }
 
-    public static Buffer marshal(PingData data) {
+    public static ByteArray marshal(PingData data) {
         return Util.streamableToBuffer(data);
     }
 

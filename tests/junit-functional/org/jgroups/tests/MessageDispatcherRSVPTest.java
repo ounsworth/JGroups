@@ -125,7 +125,7 @@ public class MessageDispatcherRSVPTest {
         try {
             Address target=unicast? channels[1].getAddress() : null;
             byte[] data="bla".getBytes();
-            Buffer buf=new Buffer(data, 0, data.length);
+            ByteArray buf=new ByteArray(data, 0, data.length);
             Message msg=new BytesMessage(target, "bla");
             msg.setFlag(Message.Flag.RSVP);
             closer.start();
@@ -155,7 +155,7 @@ public class MessageDispatcherRSVPTest {
     protected void sendMessageOnClosedChannel(Address dest, Message.Flag... flags) throws Exception {
         RequestOptions opts=RequestOptions.SYNC().timeout(2000).flags(flags);
         byte[] data="bla".getBytes();
-        Buffer buf=new Buffer(data, 0, data.length);
+        ByteArray buf=new ByteArray(data, 0, data.length);
         channels[0].close();
         try {
             if(dest == null) // multicast

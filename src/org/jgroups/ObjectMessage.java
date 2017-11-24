@@ -103,7 +103,7 @@ public class ObjectMessage extends BaseMessage {
      * message, it would still have a ref to the original byte[] buffer passed in as argument, and so we would
      * retransmit a changed byte[] buffer !
      */
-    public <T extends Message> T setBuffer(Buffer buf) {
+    public <T extends Message> T setBuffer(ByteArray buf) {
         throw new UnsupportedOperationException();
     }
 

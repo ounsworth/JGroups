@@ -314,7 +314,7 @@ public class SEQUENCER extends Protocol {
             for(Map.Entry<Long,Message> entry: forward_table.entrySet()) {
                 Long key=entry.getKey();
                 Message msg=entry.getValue();
-                Buffer buf;
+                ByteArray buf;
                 try {
                     buf=Util.streamableToBuffer(msg);
                 }
@@ -347,7 +347,7 @@ public class SEQUENCER extends Protocol {
             Map.Entry<Long,Message> entry=forward_table.firstEntry();
             final Long key=entry.getKey();
             Message msg=entry.getValue();
-            Buffer     buf;
+            ByteArray buf;
 
             try {
                 buf=Util.streamableToBuffer(msg);

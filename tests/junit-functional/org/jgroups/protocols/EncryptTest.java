@@ -6,7 +6,7 @@ import org.jgroups.demos.KeyStoreGenerator;
 import org.jgroups.protocols.pbcast.GMS;
 import org.jgroups.protocols.pbcast.NAKACK2;
 import org.jgroups.protocols.pbcast.NakAckHeader2;
-import org.jgroups.util.Buffer;
+import org.jgroups.util.ByteArray;
 import org.jgroups.util.ByteArrayDataOutputStream;
 import org.jgroups.util.MyReceiver;
 import org.jgroups.util.Util;
@@ -317,7 +317,7 @@ public abstract class EncryptTest {
     }
 
 
-    protected static Buffer marshal(final View view) throws Exception {
+    protected static ByteArray marshal(final View view) throws Exception {
         ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(Util.size(view));
         out.writeShort(1);
         if(view != null)

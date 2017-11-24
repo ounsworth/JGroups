@@ -33,7 +33,7 @@ public class ByteArrayDataOutputStream implements DataOutput {
     public ByteArrayDataOutputStream position(int pos)            {this.pos=checkBounds(pos); return this;}
     public int                       position()                   {return pos;}
     public byte[]                    buffer()                     {return buf;}
-    public Buffer                    getBuffer()                  {return new Buffer(buf, 0, pos);}
+    public ByteArray getBuffer()                  {return new ByteArray(buf, 0, pos);}
     public ByteBuffer                getByteBuffer()              {return ByteBuffer.wrap(buf, 0, pos);}
     public boolean                   growExponentially()          {return grow_exponentially;}
     public ByteArrayDataOutputStream growExponentially(boolean b) {grow_exponentially=b; return this;}

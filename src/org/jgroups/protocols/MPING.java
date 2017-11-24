@@ -289,7 +289,7 @@ public class MPING extends PING implements Runnable {
                 msg.setSrc(local_addr);
             ByteArrayDataOutputStream out=new ByteArrayDataOutputStream(msg.size()+1);
             msg.writeTo(out);
-            Buffer buf=out.getBuffer();
+            ByteArray buf=out.getBuffer();
             DatagramPacket packet=new DatagramPacket(buf.getBuf(), buf.getOffset(), buf.getLength(), mcast_addr, mcast_port);
             if(mcast_send_sockets != null) {
                 MulticastSocket s;
