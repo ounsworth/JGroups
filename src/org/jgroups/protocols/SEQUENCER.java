@@ -68,6 +68,8 @@ public class SEQUENCER extends Protocol {
     /** Used for each resent message to wait until the message has been received */
     protected final Promise<Long>               ack_promise=new Promise<>();
 
+    protected MessageFactory                    msg_factory;
+
 
 
     @Property(description="Size of the set to store received seqnos (for duplicate checking)")
@@ -101,6 +103,10 @@ public class SEQUENCER extends Protocol {
         forwarded_msgs=bcast_msgs=received_forwards=received_bcasts=delivered_bcasts=0L;
     }
 
+    public void init() throws Exception {
+        super.init();
+        msg_factory=getTransport().getMessageFactory();
+    }
 
     public void start() throws Exception {
         super.start();
@@ -316,7 +322,7 @@ public class SEQUENCER extends Protocol {
                 Message msg=entry.getValue();
                 ByteArray buf;
                 try {
-                    buf=Util.streamableToBuffer(msg);
+                    buf=Util.messageToBuffer(msg);
                 }
                 catch(Exception e) {
                     log.error(Util.getMessage("FlushingBroadcastingFailed"), e);
@@ -350,7 +356,7 @@ public class SEQUENCER extends Protocol {
             ByteArray buf;
 
             try {
-                buf=Util.streamableToBuffer(msg);
+                buf=Util.messageToBuffer(msg);
             }
             catch(Exception e) {
                 log.error(Util.getMessage("FlushingBroadcastingFailed"), e);
@@ -414,7 +420,7 @@ public class SEQUENCER extends Protocol {
         byte type=flush? SequencerHeader.FLUSH : SequencerHeader.FORWARD;
         try {
             SequencerHeader hdr=new SequencerHeader(type, seqno);
-            Message forward_msg=new BytesMessage(target, Util.streamableToBuffer(msg)).putHeader(this.id, hdr);
+            Message forward_msg=new BytesMessage(target, Util.messageToBuffer(msg)).putHeader(this.id, hdr);
             down_prot.down(forward_msg);
             forwarded_msgs++;
         }
@@ -453,7 +459,7 @@ public class SEQUENCER extends Protocol {
      */
     protected void unwrapAndDeliver(final Message msg, boolean flush_ack) {
         try {
-            Message msg_to_deliver=Util.streamableFromBuffer(BytesMessage.class, msg.getArray(), msg.getOffset(), msg.getLength());
+            Message msg_to_deliver=Util.messageFromBuffer(msg.getArray(), msg.getOffset(), msg.getLength(), msg_factory);
             SequencerHeader hdr=msg_to_deliver.getHeader(this.id);
             if(flush_ack)
                 hdr.flush_ack=true;
